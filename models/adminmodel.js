@@ -23,6 +23,8 @@ const AdminSchema=new mongoose.Schema({
     },
     request:{
         type:String,
+        enum:['approved','rejected'],
+        required:[true,'please approve or reject the request']
     }
 });
 AdminSchema.pre("save",async function(next){
