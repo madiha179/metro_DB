@@ -31,5 +31,5 @@ const PaymentSchema=new mongoose.Schema({
     }
     }]
 });
-const payment=mongoose.model('payment',PaymentSchema);
-module.exports=payment;
+const Payment=mongoose.model('Payment',PaymentSchema);
+module.exports=Payment;
