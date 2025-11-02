@@ -2,6 +2,9 @@ const mongoose=require('mongoose');
 const validator=require('validator');
 const bcrypt=require('bcryptjs');
 const UserSchema=new mongoose.Schema({
+    ssn:{
+        type:Number
+    },
     name:{
         type:String,
         required:[true,'Please provied Your Name ']
