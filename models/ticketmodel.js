@@ -7,7 +7,7 @@ ticketSchema = new mongoose.Schema({
     no_of_stations:{
         type: Number,
         require: [true, 'Please provided the number of station']
-    }
+    },
 });
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
