@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 const dotenv=require('dotenv');
 const express=require('express');
+const apperr = require('./utils/appError.js');
 const swaggerDocs=require('./swagger/swaggerDoc.js')
 const userRouter=require('./routes/userRoute')
 dotenv.config({path:'config.env'});
@@ -18,6 +19,9 @@ mongoose.connect(DB,{
   .catch(err => console.error("❌ DB connection error:", err));
   swaggerDocs(app);
   app.use('/api/v1/users',userRouter);
+  app.all('*', (req, res, next) => {
+  next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
+});
 app.listen(port,()=>{
-    console.log("working on 3000")
+    console.log(`Server running on PORT: ${port}`);
 });
