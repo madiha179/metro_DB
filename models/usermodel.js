@@ -2,6 +2,9 @@ const mongoose=require('mongoose');
 const validator=require('validator');
 const bcrypt=require('bcryptjs');
 const UserSchema=new mongoose.Schema({
+    ssn:{
+        type:Number
+    },
     name:{
         type:String,
         required:[true,'Please provied Your Name ']
@@ -16,28 +19,44 @@ const UserSchema=new mongoose.Schema({
     photo:{
         type:String
     },
-    password:{
-        type:String,
-        required:[true,'please provied password'],
-        select:false,
-        minlength:8
+    password: {
+  type: String,
+  required: [true, 'Please provide a password'],
+  minlength: [8, 'Password must be at least 8 characters long'],
+  validate: {
+    validator: function (value) {
+      return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value);
     },
+    message:
+      'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.'
+  },
+  select: false
+},
     confirm_password:{
         type:String,
         required:[true,'please confirm your password'],
-        validator:function(el){
-            return el===this.password
-        },
-        message:'passwords are not the same'
+        validate: {
+  validator: function(el) {
+    return el === this.password;
+  },
+  message: 'Passwords are not the same'
+}
     },
     phone:{
-        type:Number,
-    },
+        type:String,
+        validate: {
+  validator: function(v) {
+    return /^[0-9]{11}$/.test(v);
+  },
+  message: props => `${props.value} is not a valid phone number!`
+}   
+},
     age:{
         type:Number
     },
     gender:{
-        type:String
+        type:String,
+        enum: ['male', 'female']
     }
 });
 //Hash password before saving 
