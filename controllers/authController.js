@@ -2,6 +2,7 @@ const User=require('./../models/usermodel');
 const jwt=require('jsonwebtoken');
 const AppError=require('./../utils/appError');
 const CatchAsync=require('./../utils/catchAsyncError');
+const filterObj=require('./../utils/filterObject');
 //sign token
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -29,16 +30,17 @@ const createSendToken=(user,statusCode,res)=>{
   });
 };
 exports.SignUp=CatchAsync(async (req,res,next)=>{
-    const newUser= await User.create({
-        name:req.body.name,
-        email:req.body.email,
-        password:req.body.password,
-        confirm_password:req.body.confirm_password,
-         phone:req.body.phone,
-         photo:req.body.photo,
-         age:req.body.age,
-         gender:req.body.gender,
-         ssn:req.body.ssn
-    });
+  const filterBody=filterObj(
+    req.body,
+    'name',
+    'email',
+    'password',
+    'confirm_password',
+    'phone',
+    'photo',
+    'age',
+    'gender',
+    'ssn');
+    const newUser= await User.create(filterBody);
     createSendToken(newUser,201,res);
 })
