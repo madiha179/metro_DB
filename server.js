@@ -10,8 +10,6 @@ app.use(express.json());
 const port = process.env.PORT|| 3000;
 const DB=process.env.DATABASE;
 mongoose.connect(DB,{
-   useNewUrlParser: true,
-  useUnifiedTopology: true,
   serverSelectionTimeoutMS: 30000,
   socketTimeoutMS: 45000,
 })
