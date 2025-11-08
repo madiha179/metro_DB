@@ -42,7 +42,7 @@ exports.SignUp=CatchAsync(async (req,res,next)=>{
     'gender',
     'ssn');
     const existingUser= await User.findOne({email:filterBody.email});
-    if(!existingUser){
+    if(existingUser){
       return next(new AppError('User with this email already exist',400));
     }
     const newUser= await User.create(filterBody);
