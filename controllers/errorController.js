@@ -7,11 +7,9 @@ const handleCastErrorDB=err=>{
 };
 //handle if user enter a data that already exist like enter an email that already store in data
 const handleDuplicateFieldsDB =err=>{
-  //err.errmsg => message comes from mongodb
-  ///(["'])(\\?.)*?\1/ => regular expression try to find the duplicate value in error text
-  const value= err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-  console.log(value);
-   const message = `Duplicate field value: ${value}. Please use another value!`;
+ const field = Object.keys(err.keyValue || {})[0] || 'field';
+  const value = err.keyValue ? err.keyValue[field] : 'unknown';
+  const message = `Duplicate field value: '${value}'. Please use another ${field}!`;
   return new AppError(message, 400);
 };
 // if user enter data not matching the condition which define in schema
