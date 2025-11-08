@@ -2,8 +2,9 @@ const mongoose=require('mongoose');
 const dotenv=require('dotenv');
 const express=require('express');
 const apperr = require('./utils/appError.js');
-const swaggerDocs=require('./swagger/swaggerDoc.js')
-const userRouter=require('./routes/userRoute')
+const globalError=require('./controllers/errorController.js');
+const swaggerDocs=require('./swagger/swaggerDoc.js');
+const userRouter=require('./routes/userRoute');
 dotenv.config({path:'config.env'});
 const app=express();
 app.use(express.json());
@@ -20,6 +21,7 @@ mongoose.connect(DB,{
   app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
+app.use(globalError);
 app.listen(port,()=>{
     console.log(`Server running on PORT: ${port}`);
 });
