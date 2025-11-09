@@ -5,6 +5,7 @@ const apperr = require('./utils/appError.js');
 const globalError=require('./controllers/errorController.js');
 const swaggerDocs=require('./swagger/swaggerDoc.js');
 const userRouter=require('./routes/userRoute');
+const { createDefaultAdmin } = require('./models/adminmodel.js');
 dotenv.config({path:'config.env'});
 const app=express();
 app.use(express.json());

@@ -62,4 +62,4 @@ AdminSchema.methods.correctpassword=async function (candidatepassword,password) 
         console.error('Error creating admin:', error);
     }
 };
- module.exports = { Admin };
+ module.exports = { Admin,createDefaultAdmin  };
