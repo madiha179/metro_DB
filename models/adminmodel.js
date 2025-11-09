@@ -44,32 +44,13 @@ AdminSchema.pre("save",async function(next){
 AdminSchema.methods.correctpassword=async function (candidatepassword,password) {
     return await bcrypt.compare(candidatepassword,password);}
     const Admin=mongoose.model('admin',AdminSchema);
-     const createAdmin=  async ()=>{
-        try{
-         const adminExists = await Admin.findOne({ email: "admin@gmail.com" });
-          if (!adminExists) {
-            const admin = new Admin({
-                ssn: 2875642015314,
-                name: "System Administrator",
-                password: "Admin$12345", 
-                gender: "male",
-                email: "admin@gmail.com",
-                request:'pending'
-            });
-            await admin.save();}
-    }
-    catch (error) {
-        console.error('Error creating admin:', error);
-    }
-}
-setTimeout(async () => {
-    try {
-        await createAdmin();
-    } catch (error) {
-        console.log('retry admin creation');
-        setTimeout(async () => {
-            await createAdmin();
-        }, 5000);
-    }
-}, 3000);
+  const createAdmin=new Admin({
+    ssn:28730125615274,
+    name:'Joe',
+    password:'Admin$123',
+    request:'pending'
+  })
+  createAdmin.save().then(docs=>{
+    console.log(docs)
+  }).catch(err=>{console.log("ERORR",err)})
  module.exports = { Admin };
