@@ -44,7 +44,7 @@ AdminSchema.pre("save",async function(next){
 AdminSchema.methods.correctpassword=async function (candidatepassword,password) {
     return await bcrypt.compare(candidatepassword,password);}
     const Admin=mongoose.model('admin',AdminSchema);
-    const createDefaultAdmin = async () => {
+   const createDefaultAdmin = async () => {
     try {
         const adminData = {
             ssn: 28730125615274,
@@ -62,5 +62,4 @@ AdminSchema.methods.correctpassword=async function (candidatepassword,password) 
         console.error('Error creating admin:', error);
     }
 };
-mongoose.connection.once('connected', createDefaultAdmin);
  module.exports = { Admin };

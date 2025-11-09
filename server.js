@@ -14,11 +14,14 @@ mongoose.connect(DB,{
   serverSelectionTimeoutMS: 30000,
   socketTimeoutMS: 45000,
 })
-.then(() => console.log("✅ DB connection successful"))
-  .catch(err => console.error("❌ DB connection error:", err));
-  swaggerDocs(app);
-  app.use('/api/v1/users',userRouter);
-  app.all('*', (req, res, next) => {
+.then(async () => {
+  console.log("✅ DB connection successful");
+  await createDefaultAdmin();
+})
+.catch(err => console.error("❌ DB connection error:", err));
+swaggerDocs(app);
+app.use('/api/v1/users',userRouter);
+app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 app.use(globalError);
