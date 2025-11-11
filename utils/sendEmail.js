@@ -13,8 +13,8 @@ module.exports = class Email {
       host: 'smtp-relay.brevo.com',
       port: 587,
       auth: {
-        user: process.env.BREVO_EMAIL,
-        pass: process.env.BREVO_SMTP_KEY
+        user: "9b566b001@smtp-brevo.com",
+        pass: "xsmtpsib-f925be78b4ad8e2b7f064e5ba0b4521bf8411f0bea5a2f46a00862aa8baa7646-kHMkwkVaB7R7udet"
       }
     });
   }
