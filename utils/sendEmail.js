@@ -1,7 +1,6 @@
 const fs = require('fs');
 const htmlToText = require('html-to-text');
-const { MailerSend, EmailParams, Recipient, Sender } = require("mailersend");
-
+const nodemailer = require('nodemailer');
 module.exports = class Email {
   constructor(user, url) {
     this.to = user.email;
@@ -9,25 +8,31 @@ module.exports = class Email {
     this.url = url;
     this.from = process.env.EMAIL_FROM;
   }
+  newTransport() {
+    // Development: Mailtrap
+    return nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+  }
 
   async send(template, subject) {
     let html = fs.readFileSync(`${__dirname}/../views/emails/${template}.html`, 'utf-8');
     html = html.replace('{{firstName}}', this.firstName).replace('{{url}}', this.url);
 
-    const mailerSend = new MailerSend({
-      api_key: process.env.MAILERSEND_API_KEY
-    });
+    const mailOptions = {
+      from: this.from,
+      to: this.to,
+      subject,
+      html,
+      text: htmlToText.convert(html)
+    };
 
-    const recipients = [ new Recipient(this.to) ];
-
-    const emailParams = new EmailParams()
-      .setFrom(new Sender(this.from, "Metro Mate"))
-      .setTo(recipients)
-      .setSubject(subject)
-      .setHtml(html)
-      .setText(htmlToText.convert(html));
-
-    await mailerSend.email.send(emailParams);
+    await this.newTransport().sendMail(mailOptions);
   }
 
   async sendWelcome() {
