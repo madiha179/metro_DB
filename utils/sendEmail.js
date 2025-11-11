@@ -29,7 +29,7 @@ module.exports = class Email {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         await sgMail.send(mailOptions);
       } else {
-        // Development: Mailtrap/local SMTP
+        // for local test NODE_ENV ===development
         const transporter = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
           port: process.env.EMAIL_PORT,
@@ -45,12 +45,7 @@ module.exports = class Email {
       throw new Error('There was an error sending the email. Try again later!');
     }
   }
-
-  async sendWelcome() {
-    await this.send('Welcome', 'Welcome To Metro Mate App');
-  }
-
-  async sendResetPassword() {
+ async sendResetPassword() {
     await this.send('resetPassEmail', 'Your Password reset Token valid for only 10 minutes');
   }
 };
