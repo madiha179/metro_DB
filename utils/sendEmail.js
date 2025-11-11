@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const htmlToText = require('html-to-text');
-
 module.exports = class Email {
   constructor(user, url) {
     this.to = user.email;
@@ -9,13 +8,13 @@ module.exports = class Email {
     this.url = url;
     this.from = `Metro Mate <${process.env.EMAIL_FROM}>`;
   }
-
   newTransport() {
     return nodemailer.createTransport({
-      service: 'Gmail',
+      host: 'smtp-relay.brevo.com',
+      port: 587,
       auth: {
-        user: process.env.GMAIL_EMAIL,
-        pass: process.env.GMAIL_APP_PASSWORD
+        user: process.env.BREVO_EMAIL,
+        pass: process.env.BREVO_SMTP_KEY
       }
     });
   }
