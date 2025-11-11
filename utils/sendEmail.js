@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const sgMail = require('@sendgrid/mail');
+const { Resend } = require('resend');
 const fs = require('fs');
 const htmlToText = require('html-to-text');
 
@@ -8,23 +8,28 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = `Metro Mate <${process.env.EMAIL_FROM}>`;
+    this.from = process.env.NODE_ENV === 'production' 
+      ? 'Metro Mate <onboarding@resend.dev>'  
+      : `Metro Mate <${process.env.EMAIL_FROM}>`; 
   }
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      // SendGrid SMTP
-      return nodemailer.createTransport({
-        host: 'smtp.sendgrid.net',
-        port: 587,
-        auth: {
-          user: 'apikey', 
-          pass: process.env.SENDGRID_API_KEY  
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      return {
+        sendMail: async (mailOptions) => {
+          await resend.emails.send({
+            from: 'Metro Mate <onboarding@resend.dev>',
+            to: mailOptions.to,
+            subject: mailOptions.subject,
+            html: mailOptions.html,
+            text: mailOptions.text
+          });
         }
-      });
+      }
     }
 
-    // Development (mailtrip)
+    // Development (Mailtrap)
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -34,13 +39,12 @@ module.exports = class Email {
       }
     });
   }
-
   async send(template, subject) {
     let html = fs.readFileSync(`${__dirname}/../views/emails/${template}.html`, 'utf-8');
     html = html.replace('{{firstName}}', this.firstName).replace('{{url}}', this.url);
     
     const mailOptions = {
-      from: this.from,
+      from: this.from, 
       to: this.to,
       subject,
       html,
