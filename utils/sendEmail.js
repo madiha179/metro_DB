@@ -1,6 +1,8 @@
 const fs = require('fs');
 const htmlToText = require('html-to-text');
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
+
 module.exports = class Email {
   constructor(user, url) {
     this.to = user.email;
@@ -8,8 +10,15 @@ module.exports = class Email {
     this.url = url;
     this.from = process.env.EMAIL_FROM;
   }
+
   newTransport() {
-    // Development: Mailtrap
+    if (process.env.NODE_ENV === 'production') {
+      // Production: SendGrid Web API
+      sgMail.setApiKey(process.env.API_KEY);
+      return sgMail;
+    }
+
+    // Development: Mailtrap or local SMTP
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -32,7 +41,11 @@ module.exports = class Email {
       text: htmlToText.convert(html)
     };
 
-    await this.newTransport().sendMail(mailOptions);
+    if (process.env.NODE_ENV === 'production') {
+      await this.newTransport().send(mailOptions);
+    } else {
+      await this.newTransport().sendMail(mailOptions);
+    }
   }
 
   async sendWelcome() {
