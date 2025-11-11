@@ -25,6 +25,9 @@ app.use('/api/v1/users',userRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
 app.use(globalError);
 app.listen(port,()=>{
     console.log(`Server running on PORT: ${port}`);
