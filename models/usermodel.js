@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 const validator=require('validator');
 const bcrypt=require('bcryptjs');
+const crypto=require('crypto');
 const UserSchema=new mongoose.Schema({
     ssn:{
         type:Number
@@ -57,7 +58,11 @@ const UserSchema=new mongoose.Schema({
     gender:{
         type:String,
         enum: ['male', 'female']
-    }
+    },
+    passwordChangedAt: Date,
+    passwordResetToken:String,
+    passwordResetExpires:Date,
+
 });
 //Hash password before saving 
 UserSchema.pre('save',async function (next){
@@ -67,8 +72,23 @@ UserSchema.pre('save',async function (next){
     this.confirm_password=undefined;
     next();
 });
+//change password time middelware
+UserSchema.pre('save',function(next){
+  if(!this.isModified('password')||this.isNew) return next();
+  this.passwordChangedAt = Date.now()-1000;
+  next();
+});
 // compare passwords
 UserSchema.methods.correctPassword=async function (candidatepassword,password) {
     return await bcrypt.compare(candidatepassword,password);}
+    //create Password Reset Token
+    UserSchema.methods.createPasswordResetToken = function() {
+      const resetToken= crypto.randomBytes(32).toString('hex');
+      this.passwordResetToken=crypto.createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+      this.passwordResetExpires=Date.now()+10*60*1000;
+      return resetToken;
+    }
 const User=mongoose.model('User',UserSchema);
 module.exports=User;
