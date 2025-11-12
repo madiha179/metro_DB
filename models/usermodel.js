@@ -59,10 +59,7 @@ const UserSchema=new mongoose.Schema({
         type:String,
         enum: ['male', 'female']
     },
-<<<<<<< HEAD
-=======
     passwordChangedAt: Date,
->>>>>>> reset-password-task
     passwordResetToken:String,
     passwordResetExpires:Date,
 
@@ -84,10 +81,7 @@ UserSchema.pre('save',function(next){
 // compare passwords
 UserSchema.methods.correctPassword=async function (candidatepassword,password) {
     return await bcrypt.compare(candidatepassword,password);}
-<<<<<<< HEAD
-=======
     //create Password Reset Token
->>>>>>> reset-password-task
     UserSchema.methods.createPasswordResetToken = function() {
       const resetToken= crypto.randomBytes(32).toString('hex');
       this.passwordResetToken=crypto.createHash('sha256')
