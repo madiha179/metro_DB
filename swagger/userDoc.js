@@ -59,3 +59,67 @@
  *       500:
  *         description: Server error
  */
+/**
+ * @swagger
+ * /api/v1/users/forgotpassword:
+ *   post:
+ *     summary: Send a password reset link to user's email
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user1@gmail.com
+ *     responses:
+ *       200:
+ *         description: Password reset email sent successfully
+ *       400:
+ *         description: Invalid email
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/resetpassword/{token}:
+ *   patch:
+ *     summary: Reset password using token sent via email
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token received in email for resetting password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *               - confirm_password
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: newPassword123
+ *               confirm_password:
+ *                 type: string
+ *                 example: newPassword123
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid token or passwords do not match
+ *       500:
+ *         description: Server error
+ */
