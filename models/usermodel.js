@@ -59,6 +59,10 @@ const UserSchema=new mongoose.Schema({
         type:String,
         enum: ['male', 'female']
     },
+<<<<<<< HEAD
+=======
+    passwordChangedAt: Date,
+>>>>>>> reset-password-task
     passwordResetToken:String,
     passwordResetExpires:Date,
 
@@ -71,9 +75,19 @@ UserSchema.pre('save',async function (next){
     this.confirm_password=undefined;
     next();
 });
+//change password time middelware
+UserSchema.pre('save',function(next){
+  if(!this.isModified('password')||this.isNew) return next();
+  this.passwordChangedAt = Date.now()-1000;
+  next();
+});
 // compare passwords
 UserSchema.methods.correctPassword=async function (candidatepassword,password) {
     return await bcrypt.compare(candidatepassword,password);}
+<<<<<<< HEAD
+=======
+    //create Password Reset Token
+>>>>>>> reset-password-task
     UserSchema.methods.createPasswordResetToken = function() {
       const resetToken= crypto.randomBytes(32).toString('hex');
       this.passwordResetToken=crypto.createHash('sha256')
