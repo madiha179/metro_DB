@@ -54,7 +54,6 @@ exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   if(!user){return next(new AppError('user not found please try with another email',404))}
   //generate random reset Token
     const resetToken=user.createPasswordResetToken();
-      console.log(resetToken);
     // save resetToken data
     await user.save({ validateBeforeSave: false});
   //send it to user email
@@ -62,6 +61,9 @@ exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   const resetURL=`${req.protocol}://${req.get('host')}/api/v1/users/resetpassword/${resetToken}`;
   await new Email(user,resetURL).sendResetPassword();
   res.status(200).json({
+    data:{
+     resetToken 
+    },
     status:'success',
     message:'token sent to email'
   })
