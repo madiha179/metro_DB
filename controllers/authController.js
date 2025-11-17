@@ -94,3 +94,21 @@ exports.resetPassword =catchAsyncError(async(req,res,next)=>{
     //3-log user in 
     createSendToken(user,200,res);
 });
+
+//login section
+exports.Login =CatchAsync(async (req, res, next) => {
+  const {email, password} = req.body;
+  if(!email || !password)
+    return next(new AppError("Email and password are required!", 400));
+  
+  const user = await User.findOne({email}).select('+password');
+  
+  if(!user || !(await User.correctPassword(password, user.password)))
+    return next(new AppError('Incorrect email or password!', 401));
+  
+  const token = signToken(user.id);
+  res.status(200).json({
+    status: 'success',
+    token
+  });
+});

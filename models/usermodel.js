@@ -90,5 +90,7 @@ UserSchema.methods.correctPassword=async function (candidatepassword,password) {
       this.passwordResetExpires=Date.now()+10*60*1000;
       return resetToken;
     }
+
+
 const User=mongoose.model('User',UserSchema);
 module.exports=User;
