@@ -1,5 +1,6 @@
 const mongoose=require('mongoose');
 const bcrypt=require('bcryptjs');
+const validator=require('validator');
 const AdminSchema=new mongoose.Schema({
     ssn:{
         type:Number,
@@ -15,6 +16,13 @@ const AdminSchema=new mongoose.Schema({
         select:false,
         minlength:8
     },
+    email:{
+            type:String,
+            required:[true,'Please provied your email'],
+            unique:true,
+            lowercase:true,
+            validate:[validator.isEmail,'please provied a valid email']
+        },
     gender:{
         type:String
     },
@@ -23,7 +31,8 @@ const AdminSchema=new mongoose.Schema({
     },
     request:{
         type:String,
-        enum:['approved','rejected'],
+        enum:['approved','rejected','pending'],
+        default:'pending',
         required:[true,'please approve or reject the request']
     }
 });
@@ -35,4 +44,22 @@ AdminSchema.pre("save",async function(next){
 AdminSchema.methods.correctpassword=async function (candidatepassword,password) {
     return await bcrypt.compare(candidatepassword,password);}
     const Admin=mongoose.model('admin',AdminSchema);
-    module.exports=Admin;
+   const createDefaultAdmin = async () => {
+    try {
+        const adminData = {
+            ssn: 28730125615274,
+            name: 'Joe',
+            password: 'Admin$123',
+            email: 'admin@gmail.com',
+            request: 'pending'
+        };
+        const adminExists = await Admin.findOne({ email: adminData.email });
+        if (!adminExists) {
+            await Admin.create(adminData);
+            console.log(' Default admin created successfully');
+        }
+    } catch (error) {
+        console.error('Error creating admin:', error);
+    }
+};
+ module.exports = { Admin,createDefaultAdmin  };

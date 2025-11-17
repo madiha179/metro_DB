@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 const validator=require('validator');
 const bcrypt=require('bcryptjs');
+const crypto=require('crypto');
 const UserSchema=new mongoose.Schema({
     ssn:{
         type:Number
@@ -13,35 +14,55 @@ const UserSchema=new mongoose.Schema({
         type:String,
         required:[true,'Please provied your email'],
         unique:true,
-        lowcase:true,
+        lowercase:true,
         validate:[validator.isEmail,'please provied a valid email']
     },
     photo:{
         type:String
     },
-    password:{
-        type:String,
-        required:[true,'please provied password'],
-        select:false,
-        minlength:8
+    password: {
+  type: String,
+  required: [true, 'Please provide a password'],
+  minlength: [8, 'Password must be at least 8 characters long'],
+  validate: {
+    validator: function (value) {
+      return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value);
     },
+    message:
+      'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.'
+  },
+  select: false
+},
     confirm_password:{
         type:String,
         required:[true,'please confirm your password'],
-        validator:function(el){
-            return el===this.password
-        },
-        message:'passwords are not the same'
+        validate: {
+  validator: function(el) {
+    return el === this.password;
+  },
+  message: 'Passwords are not the same'
+}
     },
     phone:{
-        type:Number,
-    },
+        type:String,
+        validate: {
+  validator: function(v) {
+    return /^[0-9]{11}$/.test(v);
+  },
+  message: props => `${props.value} is not a valid phone number!`
+}   
+},
     age:{
         type:Number
     },
     gender:{
-        type:String
-    }
+        type:String,
+        enum: ['male', 'female']
+    },
+    passwordChangedAt: Date,
+    passwordResetToken:String,
+    passwordResetExpires:Date,
+
 });
 //Hash password before saving 
 UserSchema.pre('save',async function (next){
@@ -51,8 +72,23 @@ UserSchema.pre('save',async function (next){
     this.confirm_password=undefined;
     next();
 });
+//change password time middelware
+UserSchema.pre('save',function(next){
+  if(!this.isModified('password')||this.isNew) return next();
+  this.passwordChangedAt = Date.now()-1000;
+  next();
+});
 // compare passwords
 UserSchema.methods.correctPassword=async function (candidatepassword,password) {
     return await bcrypt.compare(candidatepassword,password);}
+    //create Password Reset Token
+    UserSchema.methods.createPasswordResetToken = function() {
+      const resetToken= crypto.randomBytes(32).toString('hex');
+      this.passwordResetToken=crypto.createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+      this.passwordResetExpires=Date.now()+10*60*1000;
+      return resetToken;
+    }
 const User=mongoose.model('User',UserSchema);
 module.exports=User;
