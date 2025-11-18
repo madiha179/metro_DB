@@ -61,6 +61,36 @@
  */
 /**
  * @swagger
+ * /api/v1/users/login:
+ *   post:
+ *     summary: login users 
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user1@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: user1234
+ *     responses:
+ *       200:
+ *         description: user login successfully
+ *       400:
+ *         description: Invalid email or wrong password
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
  * /api/v1/users/forgotpassword:
  *   post:
  *     summary: Send a password reset link to user's email
