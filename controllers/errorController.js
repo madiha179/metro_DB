@@ -1,4 +1,3 @@
-const AppError = require('./../utils/appError');
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -39,6 +38,19 @@ module.exports = (err, req, res, next) => {
       return res.status(400).json({
         status: 'fail',
         message: message
+      });
+    }
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Invalid token. Please log in again.'
+      });
+    }
+
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Your token has expired. Please log in again.'
       });
     }
     if (err.isOperational) {

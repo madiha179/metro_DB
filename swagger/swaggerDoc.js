@@ -9,6 +9,15 @@ const options = {
       version: "1.0.0",
       description: "API document for metro project",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
   apis: [
     path.join(__dirname, "userDoc.js"),
