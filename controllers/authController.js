@@ -1,11 +1,11 @@
 const User=require('./../models/usermodel');
 const jwt=require('jsonwebtoken');
 const crypto=require('crypto');
+const { promisify }=require('util');
 const AppError=require('./../utils/appError');
 const CatchAsync=require('./../utils/catchAsyncError');
 const filterObj=require('./../utils/filterObject');
 const Email=require('./../utils/sendEmail');
-const catchAsyncError = require('./../utils/catchAsyncError');
 //sign token
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -77,7 +77,7 @@ exports.forgotPassword = CatchAsync(async (req,res,next)=>{
      return next(new AppError('There was an error sending the email. Try again later!', 500));
   }
 });
-exports.resetPassword =catchAsyncError(async(req,res,next)=>{
+exports.resetPassword =CatchAsync(async(req,res,next)=>{
   //1- get user based on token
   const hashToken =crypto.createHash('sha256')
   .update(req.params.token)
@@ -112,3 +112,39 @@ exports.Login =CatchAsync(async (req, res, next) => {
     token
   });
 });
+exports.protect=CatchAsync(async(req,res,next)=>{
+  //1- get token and check 
+  let token;
+  if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+    token=req.headers.authorization.split(' ')[1];
+  }
+  if(!token){
+    return next (new AppError('you are not logged in ! please login to get access',401));
+  }
+  //2- verification
+  const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET);
+  //3- check if user still exist
+  const currentUser=await User.findById(decoded.id);
+  if(!currentUser){
+    return next(new AppError('user no longer exist',401));
+  }
+  //4 check if user changed password after token was create
+  if(currentUser.changePasswordAfter(decoded.iat)){
+    return next(new AppError('user recently change password! please login again',401));
+  }
+  //let user access to protected
+  req.user=currentUser;
+  next();
+});
+exports.changePassword=CatchAsync(async(req,res,next)=>{
+  //1- get user 
+  const user=await User.findById(req.user.id).select('+password');
+  //2- compare currentpassword with user stored password
+  if(!(await user.correctPassword(req.body.currentpassword,user.password))){
+    return next(new AppError('Your current password is wrong',401));
+  }
+  user.password=req.body.password;
+  user.confirm_password=req.body.confirm_password;
+  await user.save();
+  createSendToken(user,200,res)
+})

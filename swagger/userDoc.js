@@ -123,3 +123,56 @@
  *       500:
  *         description: Server error
  */
+/**
+ * @swagger
+ *   /api/v1/users/changepassword:
+ *   patch:
+ *     summary: change password
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - cuurentpassword
+ *               - password
+ *               - confirm_password
+ *             properties:
+ *               cuurentpassword:
+ *                  type: string
+ *                  example: Password123
+ *               password:
+ *                 type: string
+ *                 example: newPassword123
+ *               confirm_password:
+ *                 type: string
+ *                 example: newPassword123
+ *     responses:
+ *       200:
+ *         description: Password change successfully
+ *       400:
+ *         description: wrong current password or passwords do not match
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/profile/username:
+ *   get:
+ *     summary: return username
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     
+ *     responses:
+ *       200:
+ *         description: return username
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
