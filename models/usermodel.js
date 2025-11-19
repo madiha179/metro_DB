@@ -47,7 +47,7 @@ const UserSchema=new mongoose.Schema({
         type:String,
         validate: {
   validator: function(v) {
-    return /^[0-9]{11}$/.test(v);
+    return /^01[0125][0-9]{8}$/.test(v);
   },
   message: props => `${props.value} is not a valid phone number!`
 }   
@@ -99,7 +99,5 @@ UserSchema.methods.changePasswordAfter= function(JWTTimestamp){
       this.passwordResetExpires=Date.now()+10*60*1000;
       return resetToken;
     }
-
-
 const User=mongoose.model('User',UserSchema);
 module.exports=User;
