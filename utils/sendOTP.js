@@ -8,3 +8,4 @@ auth: {
     pass: process.env.AUTH_PASS
 }
 });
+module.exports = transporter;
