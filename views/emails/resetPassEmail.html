@@ -6,21 +6,13 @@
         font-family: Arial, sans-serif;
         color: #333;
       }
-      .btn {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color:rgb(103, 181, 244);
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-      }
     </style>
   </head>
   <body>
     <h1>Hello, {{firstName}}</h1>
     <p>We received a request to reset your password.</p>
-    <p>Click the button below to reset it:</p>
-    <a href="{{resetUrl}}" class="btn">Reset Password</a>
+    <p>Your OTP {{otp}} enter it in the app to reset your password</p>
+   
     <p>If you didn't request this, ignore this email.</p>
   </body>
 </html>

@@ -4,16 +4,16 @@ const nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
 
 module.exports = class Email {
-  constructor(user, url) {
+  constructor(user, otp) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
-    this.url = url;
+    this.otp = otp;
     this.from = process.env.EMAIL_FROM;
   }
 
   async send(template, subject) {
     let html = fs.readFileSync(`${__dirname}/../views/emails/${template}.html`, 'utf-8');
-    html = html.replace('{{firstName}}', this.firstName).replace('{{url}}', this.url);
+    html = html.replace('{{firstName}}', this.firstName).replace('{{otp}}', this.otp);
 
     const mailOptions = {
       to: this.to,
@@ -46,6 +46,6 @@ module.exports = class Email {
     }
   }
  async sendResetPassword() {
-    await this.send('resetPassEmail', 'Your Password reset Token valid for only 10 minutes');
+    await this.send('resetPassEmail', 'Your Password reset OTP valid for only 1 Hour');
   }
 };
