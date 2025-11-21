@@ -6,6 +6,8 @@ const AppError=require('./../utils/appError');
 const CatchAsync=require('./../utils/catchAsyncError');
 const filterObj=require('./../utils/filterObject');
 const Email=require('./../utils/sendEmail');
+const transporter = require('./../utils/sendOTP')
+
 //sign token
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -46,7 +48,7 @@ exports.SignUp=CatchAsync(async (req,res,next)=>{
     'gender',
     'ssn');
     const newUser= await User.create(filterBody);
-    createSendToken(newUser,201,res);
+    await sendOTPVerificationEmail(newUser, res, next);
 });
 exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   // get user based on posted email 
@@ -144,3 +146,30 @@ exports.changePassword=CatchAsync(async(req,res,next)=>{
   await user.save();
   createSendToken(user,200,res)
 })
+
+//send OTP
+exports.sendOTPVerificationEmail = CatchAsync(async (user, res, next) => {
+    const { _id, email } = user;
+
+    const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
+    const hashedOTP = await bcrypt.hash(otp, 10);
+
+    await UserOTPVerification.create({
+      userId: _id,
+      otp: hashedOTP,
+      createdAt: Date.now(),
+      expireAt: Date.now() + 3600000, // 1 hour
+    });
+
+    const mailOptions = {
+      from: "text@gmail.com",
+      to: email,
+      subject: "Verify Your Email",
+      html: `
+          <p>Enter <b>${otp}</b> to verify your email</p>
+          <p>This code <b>expires in 1 hour</b></p>
+        `,
+    };
+    await transporter.sendMail(mailOptions);
+    createSendToken(newUser,201,res);
+});
