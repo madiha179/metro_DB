@@ -6,9 +6,6 @@ const AppError=require('./../utils/appError');
 const CatchAsync=require('./../utils/catchAsyncError');
 const filterObj=require('./../utils/filterObject');
 const Email=require('./../utils/sendEmail');
-const transporter = require('./../utils/sendOTP');
-const UserOTPVerification = require('../models/UserOTPVerification');
-const catchAsyncError = require('./../utils/catchAsyncError');
 
 //sign token
 const signToken = id => {
@@ -50,7 +47,7 @@ exports.SignUp=CatchAsync(async (req,res,next)=>{
     'gender',
     'ssn');
     const newUser= await User.create(filterBody);
-    await sendOTPVerificationEmail(newUser, res, next);
+    createSendToken(newUser,201,res);
 });
 exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   // get user based on posted email 
@@ -154,72 +151,3 @@ exports.Login =CatchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-//send OTP
-exports.sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
-    const { _id, email } = req.body;
-
-    const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
-    const hashedOTP = await bcrypt.hash(otp, 10);
-
-    await UserOTPVerification.create({
-      userId: _id,
-      otp: hashedOTP,
-      createdAt: Date.now(),
-      expireAt: Date.now() + 3600000, // 1 hour
-    });
-
-    const mailOptions = {
-      from: "text@gmail.com",
-      to: email,
-      subject: "Verify Your Email",
-      html: `
-          <p>Enter <b>${otp}</b> to verify your email</p>
-          <p>This code <b>expires in 1 hour</b></p>
-        `,
-    };
-    console.log("otp section");
-    await transporter.sendMail(mailOptions);
-    createSendToken(newUser,201,res);
-});
-
-// verify OTP
-exports.verifyOTP = CatchAsync(async (req, res, next) => {
-  const {userId, otp} = req.body;
-  if(!userId || !otp){
-    return next(new AppError('Empty OTP details', 400));
-  }
-  const userOTPRecord = await UserOTPVerification.find({userId,});
-  if(!userOTPRecord){
-    return next(new AppError("Account doesn't exist or has been verified already. Please signup or login"));
-  }
-
-  const {expireAt} = userOTPRecord[0];
-  if(expireAt < Date.now()){
-    await UserOTPVerification.deleteMany({userId});
-    return next(new AppError("OTP expired. Please request again.", 400));
-  }
-
-  const hashedOTP = userOTPRecord[0].otp;
-  const validOTP = await bcrypt.compare(otp, hashedOTP);
-  if(!validOTP){
-    return next(new AppError("Invalid OTP", 400));
-  }
-  
-  await UserOTPVerification.deleteMany({userId});
-  await User.findByIdAndUpdate(userId, {verified: true});
-  // await User.updateOne({_id: userId}, {verified: true});
-  res.status(200).json({
-    message: "Email verified successfully."
-  });
-});
-
-//resend verification
-exports.resendOTP = CatchAsync(async (req, res, next) => {
-  const {userId, email} = req.body;
-
-  if(!userId || !email){
-    return next(new AppError('Email or userId missing', 400));
-  }
-  await UserOTPVerification.deleteMany({userId});
-  this.sendOTPVerificationEmail({_id: userId, email}, res, next);
-});

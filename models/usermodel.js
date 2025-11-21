@@ -62,10 +62,6 @@ const UserSchema=new mongoose.Schema({
     passwordChangedAt: Date,
     passwordResetToken:String,
     passwordResetExpires:Date,
-  verified: {
-    type: Boolean,
-    default: false,
-  },
 });
 //Hash password before saving 
 UserSchema.pre('save',async function (next){
