@@ -37,26 +37,6 @@ const createSendToken=(user,statusCode,res)=>{
     }
   });
 };
-
-//send OTP
-const sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
-  const { _id, email } = req.body;
-  const user = User.findOne({_id, email}); 
-
-  const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
-  const hashedOTP = await bcrypt.hash(otp, 10);
-
-  await UserOTPVerification.create({
-    userId: _id,
-    otp: hashedOTP,
-    createdAt: Date.now(),
-    expireAt: Date.now() + 3600000, // 1 hour
-  });
-
-  await new Email(user, otp).sendOTP();
-  createSendToken(newUser,201,res);
-});
-
 exports.SignUp=CatchAsync(async (req,res,next)=>{
   const filterBody=filterObj(
     req.body,
@@ -174,6 +154,24 @@ exports.Login =CatchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+//send OTP
+exports.sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
+  const { _id, email } = req.body;
+  const user = User.findOne({_id, email}); 
+
+  const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
+  const hashedOTP = await bcrypt.hash(otp, 10);
+
+  await UserOTPVerification.create({
+    userId: _id,
+    otp: hashedOTP,
+    createdAt: Date.now(),
+    expireAt: Date.now() + 3600000, // 1 hour
+  });
+
+  await new Email(user, otp).sendOTP();
+  createSendToken(newUser,201,res);
+});
 
 // verify OTP
 exports.verifyOTP = CatchAsync(async (req, res, next) => {
