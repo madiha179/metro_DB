@@ -6,9 +6,11 @@ userRouter.post('/register',authcontroller.SignUp);
 userRouter.post('/forgotpassword',authcontroller.forgotPassword);
 userRouter.patch('/resetpassword/:token',authcontroller.resetPassword);
 
-//login
+//login section
 userRouter.post('/login',authcontroller.Login);
-
+//otp section
+userRouter.post('/verifyOTP', authcontroller.verifyOTP);
+userRouter.post('/resendOTPVerification', authcontroller.resendOTP);
 
 userRouter.patch('/changepassword',authcontroller.protect,authcontroller.changePassword);
 userRouter.get('/profile/username',authcontroller.protect,userController.getUserByName);
