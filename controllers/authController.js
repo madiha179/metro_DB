@@ -148,38 +148,29 @@ exports.Login =CatchAsync(async (req, res, next) => {
   if(!user || !(await user.correctPassword(password, user.password)))
     return next(new AppError('Incorrect email or password!', 401));
   
-  if(!user.verified){
-    return next(new AppError("Email not verified.", 403));
-  }
+  // if(!user.verified){
+  //   return next(new AppError("Email not verified.", 403));
+  // }
   createSendToken(user, 200, res);
 });
 
 //send OTP
 exports.sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
-    const { _id, email } = req.body;
+  const { _id, email } = req.body;
+  const user = User.findOne({_id, email}); 
 
-    const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
-    const hashedOTP = await bcrypt.hash(otp, 10);
+  const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
+  const hashedOTP = await bcrypt.hash(otp, 10);
 
-    await UserOTPVerification.create({
-      userId: _id,
-      otp: hashedOTP,
-      createdAt: Date.now(),
-      expireAt: Date.now() + 3600000, // 1 hour
-    });
+  await UserOTPVerification.create({
+    userId: _id,
+    otp: hashedOTP,
+    createdAt: Date.now(),
+    expireAt: Date.now() + 3600000, // 1 hour
+  });
 
-    const mailOptions = {
-      from: "text@gmail.com",
-      to: email,
-      subject: "Verify Your Email",
-      html: `
-          <p>Enter <b>${otp}</b> to verify your email</p>
-          <p>This code <b>expires in 1 hour</b></p>
-        `,
-    };
-    console.log("otp section");
-    await transporter.sendMail(mailOptions);
-    createSendToken(newUser,201,res);
+  const result = new Email(user, otp).sendOTP();
+  createSendToken(newUser,201,res);
 });
 
 // verify OTP
