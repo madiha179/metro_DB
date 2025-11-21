@@ -7,7 +7,7 @@ const CatchAsync=require('./../utils/catchAsyncError');
 const filterObj=require('./../utils/filterObject');
 const Email=require('./../utils/sendEmail');
 const transporter = require('./../utils/sendOTP');
-const UserOTPVerification = require('../models/UserOTPVerification');
+const UserOTPVerification = require('./../models/userOTPVerification');
 const catchAsyncError = require('./../utils/catchAsyncError');
 
 //sign token
