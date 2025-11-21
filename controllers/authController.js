@@ -169,7 +169,7 @@ const sendOTPVerification = CatchAsync(async (user) => {
   });
 
   await new Email(user, otp).sendOTP();
-  createSendToken(newUser,201,res);
+  createSendToken(user,201,res);
 });
 
 // verify OTP
