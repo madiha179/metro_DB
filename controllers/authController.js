@@ -51,7 +51,7 @@ exports.SignUp=CatchAsync(async (req,res,next)=>{
     'gender',
     'ssn');
     const newUser= await User.create(filterBody);
-    await sendOTPVerification(newUser._id, newUser.email);
+    await sendOTPVerification(newUser);
 });
 exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   // get user based on posted email 
@@ -156,8 +156,8 @@ exports.Login =CatchAsync(async (req, res, next) => {
 });
 
 //send OTP
-const sendOTPVerification = CatchAsync(async (_id, email) => {
-
+const sendOTPVerification = CatchAsync(async (user) => {
+  const {_id, email} = user;
   const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
   const hashedOTP = await bcrypt.hash(otp, 10);
 
