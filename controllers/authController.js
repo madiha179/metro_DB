@@ -9,6 +9,17 @@ const Email=require('./../utils/sendEmail');
 const { env } = require('process');
 const bcrypt=require('bcryptjs');
 const UserOTPVerification = require('../models/UserOTPVerification');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  auth: {
+    user: process.env.AUTH_USER,
+    pass: process.env.AUTH_PASS
+  }
+});
+
 //sign token
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -49,11 +60,8 @@ exports.SignUp=CatchAsync(async (req,res,next)=>{
     'gender',
     'ssn');
     const newUser= await User.create(filterBody);
-
     //send otp verification email after create token
     await sendOTPVerificationEmail(newUser, res, next);
-
-    
 });
 exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   // get user based on posted email 
@@ -154,19 +162,38 @@ exports.changePassword=CatchAsync(async(req,res,next)=>{
 
 //send otp verification email
 const sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
-  const {_id, email} = req;
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
   const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
-  const user = User.findOne({email:req.body.email});
   
+  const mailOptions = {
+    from: "test@example.com",
+    to: user.email,
+    subject: "erify Your Email",
+    html: `<p>Enter <b>${otp}</b> in the app to verify your email address and complete the signup.</p>
+    <p>This code <b>expires in 1 hour</b></p>`
+  }
+
+  const emailResult = await transporter.sendMail(mailOptions);
+  if (!emailResult) {
+    return next(new AppError("Failed to send OTP email", 500));
+  }
+
   const expireDate = Date.now() + 60 * 60 * 1000; // 1 hour
   const hashOTP = await bcrypt.hash(otp, 10);
   const newOTPVerification = new UserOTPVerification({
-    userId: _id,
+    userId: user._id,
     otp: hashOTP,
     createdAt: Date.now(),
     expireAt: expireDate
   });
+  
+
   await new Email(user, otp).sendOTPVerification();
+  await transporter.sendMail(mailOptions);
+
   await newOTPVerification.save();
   createSendToken(user,201,res);
 });
