@@ -6,6 +6,9 @@ const AppError=require('./../utils/appError');
 const CatchAsync=require('./../utils/catchAsyncError');
 const filterObj=require('./../utils/filterObject');
 const Email=require('./../utils/sendEmail');
+const { env } = require('process');
+const bcrypt=require('bcryptjs');
+const UserOTPVerification = require('../models/UserOTPVerification');
 //sign token
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -46,7 +49,11 @@ exports.SignUp=CatchAsync(async (req,res,next)=>{
     'gender',
     'ssn');
     const newUser= await User.create(filterBody);
-    createSendToken(newUser,201,res);
+
+    //send otp verification email after create token
+    await sendOTPVerificationEmail(newUser, res, next);
+
+    
 });
 exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   // get user based on posted email 
@@ -144,3 +151,22 @@ exports.changePassword=CatchAsync(async(req,res,next)=>{
   await user.save();
   createSendToken(user,200,res)
 })
+
+//send otp verification email
+const sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
+  const {_id, email} = req;
+  const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
+  const user = User.findOne({email:req.body.email});
+  
+  const expireDate = Date.now() + 60 * 60 * 1000; // 1 hour
+  const hashOTP = await bcrypt.hash(otp, 10);
+  const newOTPVerification = new UserOTPVerification({
+    userId: _id,
+    otp: hashOTP,
+    createdAt: Date.now(),
+    expireAt: expireDate
+  });
+  await new Email(user, otp).sendOTPVerification();
+  await newOTPVerification.save();
+  createSendToken(user,201,res);
+});
