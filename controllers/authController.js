@@ -51,7 +51,7 @@ exports.SignUp=CatchAsync(async (req,res,next)=>{
     'gender',
     'ssn');
     const newUser= await User.create(filterBody);
-    await sendOTPVerificationEmail(newUser, res, next);
+    await sendOTPVerification(newUser._id, newUser.email);
 });
 exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   // get user based on posted email 
@@ -156,9 +156,7 @@ exports.Login =CatchAsync(async (req, res, next) => {
 });
 
 //send OTP
-const sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
-  const user = await User.findOne({_id, email}); 
-  const { _id, email } = user;
+const sendOTPVerification = CatchAsync(async (_id, email) => {
 
   const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
   const hashedOTP = await bcrypt.hash(otp, 10);
@@ -213,5 +211,5 @@ exports.resendOTP = CatchAsync(async (req, res, next) => {
     return next(new AppError('Email or userId missing', 400));
   }
   await UserOTPVerification.deleteMany({userId});
-  this.sendOTPVerificationEmail({_id: userId, email}, res, next);
+  this.sendOTPVerification({_id: userId, email}, res, next);
 });
