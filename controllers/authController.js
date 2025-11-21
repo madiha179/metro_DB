@@ -51,7 +51,7 @@ exports.SignUp=CatchAsync(async (req,res,next)=>{
     'gender',
     'ssn');
     const newUser= await User.create(filterBody);
-    await sendOTPVerification(newUser);
+    await sendOTPVerification(newUser, res, next);
 });
 exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   // get user based on posted email 
