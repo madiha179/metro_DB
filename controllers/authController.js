@@ -39,7 +39,7 @@ const createSendToken=(user,statusCode,res)=>{
 };
 
 //send OTP
-exports.sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
+const sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
   const { _id, email } = req.body;
   const user = User.findOne({_id, email}); 
 
