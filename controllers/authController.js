@@ -9,6 +9,7 @@ const Email=require('./../utils/sendEmail');
 const transporter = require('./../utils/sendOTP');
 const UserOTPVerification = require('./../models/userOTPVerification');
 const catchAsyncError = require('./../utils/catchAsyncError');
+const bcrypt = require('bcryptjs');
 
 //sign token
 const signToken = id => {
@@ -155,9 +156,9 @@ exports.Login =CatchAsync(async (req, res, next) => {
 });
 
 //send OTP
-exports.sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
-  const { _id, email } = req.body;
-  const user = User.findOne({_id, email}); 
+const sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
+  const user = await User.findOne({_id, email}); 
+  const { _id, email } = user;
 
   const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
   const hashedOTP = await bcrypt.hash(otp, 10);
@@ -176,13 +177,13 @@ exports.sendOTPVerificationEmail = CatchAsync(async (req, res, next) => {
 // verify OTP
 exports.verifyOTP = CatchAsync(async (req, res, next) => {
   const {userId, otp} = req.body;
-  if(!userId || !otp){
+  if(!userId || !otp)
     return next(new AppError('Empty OTP details', 400));
-  }
+  
   const userOTPRecord = await UserOTPVerification.find({userId,});
-  if(!userOTPRecord){
+  if(userOTPRecord === 0)
     return next(new AppError("Account doesn't exist or has been verified already. Please signup or login"), 400);
-  }
+  
 
   const {expireAt} = userOTPRecord[0];
   if(expireAt < Date.now()){
