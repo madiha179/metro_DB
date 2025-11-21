@@ -190,7 +190,7 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
   }
   const userOTPRecord = await UserOTPVerification.find({userId,});
   if(!userOTPRecord){
-    return next(new AppError("Account doesn't exist or has been verified already. Please signup or login"));
+    return next(new AppError("Account doesn't exist or has been verified already. Please signup or login"), 400);
   }
 
   const {expireAt} = userOTPRecord[0];

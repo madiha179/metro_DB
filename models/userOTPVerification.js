@@ -15,9 +15,10 @@ const UserOTPVerificationSchema = new mongoose.Schema({
     },
     expireAt: {
         type: Date,
-        required: true
+        required: true,
+        index: {expires: 0}
     }
-});
+}, { timestamps: true });
 
 const UserOTPVerification = mongoose.model(
     "UserOTPVerification",

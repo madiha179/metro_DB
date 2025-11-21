@@ -206,3 +206,63 @@
  *       500:
  *         description: Server error
  */
+/**
+* @swagger
+* /api/v1/users/verifyOTP:
+*   post:
+*     summary: Verify user OTP
+*     tags: [Users, UserOTPVerification]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required:
+*               - userId
+*               - otp
+*             properties:
+*               userId:
+*                 type: string
+*                 example: "64f8a2c1b3e8f3a1d2c12345"
+*               otp:
+*                 type: integer
+*                 example: 99999
+*     responses:
+*       200:
+*         description: Email verified successfully
+*       400:
+*         description: Bad Request (Invalid OTP, expired OTP, or account issue)
+*       500:
+*         description: Server error
+*/
+/**
+ * @swagger
+* /api/v1/users/resendOTP:
+*   post:
+*     summary: resend user OTP
+*     tags: [Users]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required:
+*               - userId
+*               - email
+*             properties:
+*               userId:
+*                 type: string
+*                 example: "64f8a2c1b3e8f3a1d2c12345"
+*               email:
+*                 type: string
+*                 example: test@gmail.com
+*     responses:
+*       200:
+*         description: Resend the OTP successfully
+*       400:
+*         description: Email or userId missing
+*       500:
+*         description: Server error
+ */
