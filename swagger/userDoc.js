@@ -136,12 +136,13 @@
  *           schema:
  *             type: object
  *             required:
+ *               - otp
  *               - password
  *               - confirm_password
  *             properties:
  *               otp:
- *               type:string
- *               example:55555
+ *                 type: string
+ *                 example: "55555"
  *               password:
  *                 type: string
  *                 example: newPassword123
@@ -156,6 +157,7 @@
  *       500:
  *         description: Server error
  */
+
 /**
  * @swagger
  *   /api/v1/users/changepassword:
