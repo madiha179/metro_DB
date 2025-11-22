@@ -234,7 +234,7 @@
 *                 type: string
 *                 example: "99999"
 *     responses:
-*       verified: true || false
+*       verified: (if verified return "true", else error 400)
 *       200:
 *         description: Email verified successfully
 *       400:
