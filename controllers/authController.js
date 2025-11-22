@@ -180,7 +180,7 @@ exports.Login =CatchAsync(async (req, res, next) => {
 
 //send OTP
 const sendOTPVerification = CatchAsync(async (user, res, next) => {
-  const {_id, email} = user;
+  const {_id} = user;
   const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
   const hashedOTP = await bcrypt.hash(otp, 10);
 
@@ -197,15 +197,22 @@ const sendOTPVerification = CatchAsync(async (user, res, next) => {
 
 // verify OTP
 exports.verifyOTP = CatchAsync(async (req, res, next) => {
-  const {userId, otp} = req.body;
-  if(!userId || !otp)
+  const {email, otp} = req.body;
+  if(!email || !otp)
     return next(new AppError('Empty OTP details', 400));
   
+  const user = await User.findOne({email});
+  if (!user) 
+    return next(new AppError("User not found", 404));
+  
+  const userId = user._id;
   const userOTPRecord = await UserOTPVerification.find({userId});
+
   if(userOTPRecord.length === 0)
     return next(new AppError("Account doesn't exist or has been verified already. Please signup or login"), 400);
 
   const {expireAt} = userOTPRecord[0];
+  
   if(expireAt < Date.now()){
     await UserOTPVerification.deleteMany({userId});
     return next(new AppError("OTP expired. Please request again.", 400));
@@ -220,19 +227,23 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
   await UserOTPVerification.deleteMany({userId});
   await User.findByIdAndUpdate(userId, {verified: true});
   res.status(200).json({
+    veriifed: "true",
     message: "Email verified successfully."
   });
 });
 
 //resend verification
 exports.resendOTP = CatchAsync(async (req, res, next) => {
-  const {userId, email} = req.body;
 
-  if(!userId || !email){
-    return next(new AppError('Email or userId missing', 400));
-  }
+  const {email} = req.body;
+  if(!email)
+    return next(new AppError('Email is missing', 400));
+  
+  const user = await User.findOne({email});
+  if(!user)
+    return next(new AppError('User not found', 400));
+  
+  const userId = user._id;
   await UserOTPVerification.deleteMany({userId});
-  sendOTPVerification(req, res, next);
-
-
+  sendOTPVerification(user, res, next);
 });
