@@ -10,7 +10,7 @@ userRouter.patch('/resetpassword/:token',authcontroller.resetPassword);
 userRouter.post('/login',authcontroller.Login);
 //otp section
 userRouter.post('/verifyOTP', authcontroller.verifyOTP);
-userRouter.post('/resendOTPVerification', authcontroller.resendOTP);
+userRouter.post('/resendOTP', authcontroller.resendOTP);
 
 userRouter.patch('/changepassword',authcontroller.protect,authcontroller.changePassword);
 userRouter.get('/profile/username',authcontroller.protect,userController.getUserByName);

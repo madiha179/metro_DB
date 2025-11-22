@@ -200,10 +200,9 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
   if(!userId || !otp)
     return next(new AppError('Empty OTP details', 400));
   
-  const userOTPRecord = await UserOTPVerification.find({userId,});
-  if(userOTPRecord === 0)
+  const userOTPRecord = await UserOTPVerification.find({userId});
+  if(userOTPRecord.length === 0)
     return next(new AppError("Account doesn't exist or has been verified already. Please signup or login"), 400);
-  
 
   const {expireAt} = userOTPRecord[0];
   if(expireAt < Date.now()){
@@ -219,7 +218,6 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
   
   await UserOTPVerification.deleteMany({userId});
   await User.findByIdAndUpdate(userId, {verified: true});
-  // await User.updateOne({_id: userId}, {verified: true});
   res.status(200).json({
     message: "Email verified successfully."
   });
@@ -233,5 +231,5 @@ exports.resendOTP = CatchAsync(async (req, res, next) => {
     return next(new AppError('Email or userId missing', 400));
   }
   await UserOTPVerification.deleteMany({userId});
-  this.sendOTPVerification({_id: userId, email}, res, next);
+  sendOTPVerification(req, res, next);
 });
