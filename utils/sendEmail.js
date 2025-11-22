@@ -46,7 +46,7 @@ module.exports = class Email {
     }
   }
  async sendResetPassword() {
-    await this.send('resetPassEmail', 'Your Password reset OTP valid for only 1 Hour');
+    await this.send('resetPassEmail', 'Your Password reset OTP valid for only 10 mintues');
   }
   async sendOTP() {
     await this.send('sendOTP', 'send OTP verification');
