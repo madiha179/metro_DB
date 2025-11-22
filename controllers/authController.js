@@ -196,10 +196,12 @@ const sendOTPVerification = CatchAsync(async (user, res, next) => {
 
 // verify OTP
 exports.verifyOTP = CatchAsync(async (req, res, next) => {
-  const {userId, otp} = req.body;
-  if(!userId || !otp)
+  const {email, otp} = req.body;
+  if(!email || !otp)
     return next(new AppError('Empty OTP details', 400));
   
+  const user = User.findOne({email});
+  const userId = user._id;
   const userOTPRecord = await UserOTPVerification.find({userId});
   if(userOTPRecord.length === 0)
     return next(new AppError("Account doesn't exist or has been verified already. Please signup or login"), 400);
@@ -225,8 +227,10 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
 
 //resend verification
 exports.resendOTP = CatchAsync(async (req, res, next) => {
-  const {userId, email} = req.body;
 
+  const {email} = req.body;
+  const user = User.findOne({email});
+  const userId = user._id;
   if(!userId || !email){
     return next(new AppError('Email or userId missing', 400));
   }
