@@ -229,11 +229,14 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
 exports.resendOTP = CatchAsync(async (req, res, next) => {
 
   const {email} = req.body;
-  const user = User.findOne({email});
+  if(!email)
+    return next(new AppError('Email is missing', 400));
+  
+  const user = await User.findOne({email});
+  if(!user)
+    return next(new AppError('User not found', 400));
+  
   const userId = user._id;
-  if(!userId || !email){
-    return next(new AppError('Email or userId missing', 400));
-  }
   await UserOTPVerification.deleteMany({userId});
   sendOTPVerification(req, res, next);
 });

@@ -224,16 +224,17 @@
 *           schema:
 *             type: object
 *             required:
-*               - userId
+*               - email
 *               - otp
 *             properties:
-*               userId:
+*               email:
 *                 type: string
-*                 example: "64f8a2c1b3e8f3a1d2c12345"
+*                 example: "test@gmail.com"
 *               otp:
-*                 type: integer
-*                 example: 99999
+*                 type: string
+*                 example: "99999"
 *     responses:
+*       verified: true || false
 *       200:
 *         description: Email verified successfully
 *       400:
@@ -254,12 +255,8 @@
 *           schema:
 *             type: object
 *             required:
-*               - userId
 *               - email
 *             properties:
-*               userId:
-*                 type: string
-*                 example: "64f8a2c1b3e8f3a1d2c12345"
 *               email:
 *                 type: string
 *                 example: test@gmail.com
