@@ -221,6 +221,7 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
   await UserOTPVerification.deleteMany({userId});
   await User.findByIdAndUpdate(userId, {verified: true});
   res.status(200).json({
+    veriifed: "true",
     message: "Email verified successfully."
   });
 });
@@ -238,5 +239,5 @@ exports.resendOTP = CatchAsync(async (req, res, next) => {
   
   const userId = user._id;
   await UserOTPVerification.deleteMany({userId});
-  sendOTPVerification(req, res, next);
+  sendOTPVerification(user, res, next);
 });
