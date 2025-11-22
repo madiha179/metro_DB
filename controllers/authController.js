@@ -61,16 +61,25 @@ exports.forgotPassword = CatchAsync(async (req,res,next)=>{
     const resetToken=user.createPasswordResetToken();
     // save resetToken data
     await user.save({ validateBeforeSave: false});
-  //send it to user email
+    //otp 
+     const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
+  const hashedOTP = await bcrypt.hash(otp, 10);
+  await UserOTPVerification.create({
+    userId: user._id,
+    otp: hashedOTP,
+    createdAt: Date.now(),
+    expireAt: Date.now() + 10*60*1000, // 10 min
+  });
+  //send token and otp  to user email
   try{
-    const otp=
+    
   await new Email(user,otp).sendResetPassword();
   res.status(200).json({
     data:{
      resetToken 
     },
     status:'success',
-    message:'token sent to email'
+    message:'OTP sent to email'
   })
   }catch(err){
     user.passwordResetToken=undefined;
@@ -91,11 +100,24 @@ exports.resetPassword =CatchAsync(async(req,res,next)=>{
   //2- token has not Expired => user and set new pass
   if(!user){
     return next(new AppError('Token is invalid or expired'))}
-    user.password=req.body.password,
-    user.confirm_password=req.body.confirm_password,
-    user.passwordResetToken=undefined,
-    user.passwordResetExpires=undefined
+    //otp
+   const otpRecord = await UserOTPVerification.findOne({
+    userId: user._id,
+    expireAt: { $gt: Date.now() }
+  });
+     if (!otpRecord)
+    return next(new AppError("OTP expired or not found.", 400));
+  const { otp } = req.body;
+  const validOTP = await bcrypt.compare(otp, otpRecord.otp);
+
+  if (!validOTP)
+    return next(new AppError("Invalid OTP.", 400));
+    user.password=req.body.password;
+    user.confirm_password=req.body.confirm_password;
+    user.passwordResetToken=undefined;
+    user.passwordResetExpires=undefined;
     await user.save();
+    await UserOTPVerification.deleteMany({ userId: user._id });
     //3-log user in 
     createSendToken(user,200,res);
 });
