@@ -209,5 +209,5 @@ exports.resendOTP = CatchAsync(async (req, res, next) => {
     return next(new AppError('Email or userId missing', 400));
   }
   await UserOTPVerification.deleteMany({userId});
-  this.sendOTPVerification(req, res, next);
+  sendOTPVerification(req, res, next);
 });
