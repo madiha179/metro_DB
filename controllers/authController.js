@@ -212,7 +212,7 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
     return next(new AppError("Account doesn't exist or has been verified already. Please signup or login"), 400);
 
   const {expireAt} = userOTPRecord[0];
-  
+
   if(expireAt < Date.now()){
     await UserOTPVerification.deleteMany({userId});
     return next(new AppError("OTP expired. Please request again.", 400));
@@ -227,7 +227,7 @@ exports.verifyOTP = CatchAsync(async (req, res, next) => {
   await UserOTPVerification.deleteMany({userId});
   await User.findByIdAndUpdate(userId, {verified: true});
   res.status(200).json({
-    veriifed: "true",
+    veriifed: true,
     message: "Email verified successfully."
   });
 });

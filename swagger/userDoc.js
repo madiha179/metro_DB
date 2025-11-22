@@ -234,9 +234,16 @@
 *                 type: string
 *                 example: "99999"
 *     responses:
-*       verified: (if verified return "true", else error 400)
 *       200:
 *         description: Email verified successfully
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 verified:
+*                   type: boolean
+*                   example: true
 *       400:
 *         description: Bad Request (Invalid OTP, expired OTP, or account issue)
 *       500:
