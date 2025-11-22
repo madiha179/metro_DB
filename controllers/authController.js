@@ -76,7 +76,8 @@ exports.forgotPassword = CatchAsync(async (req,res,next)=>{
   await new Email(user,otp).sendResetPassword();
   res.status(200).json({
     data:{
-     resetToken 
+     resetToken ,
+     otp
     },
     status:'success',
     message:'OTP sent to email'
@@ -232,4 +233,6 @@ exports.resendOTP = CatchAsync(async (req, res, next) => {
   }
   await UserOTPVerification.deleteMany({userId});
   sendOTPVerification(req, res, next);
+
+
 });
