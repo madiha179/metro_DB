@@ -124,6 +124,9 @@ exports.resetPassword =CatchAsync(async(req,res,next)=>{
 });
 
 exports.protect=CatchAsync(async(req,res,next)=>{
+  if(req.cookies.jwt==='loggedout'){
+    return next (new AppError('please login again',401));
+  }
   //1- get token and check 
   let token;
   if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
@@ -247,3 +250,16 @@ exports.resendOTP = CatchAsync(async (req, res, next) => {
   await UserOTPVerification.deleteMany({userId});
   sendOTPVerification(user, res, next);
 });
+
+/*exports.logout = (req, res) => {
+  const cookieOptions = {
+    expires: new Date(Date.now() - 10 * 1000), 
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production'
+  };
+  res.cookie('jwt', 'loggedout', cookieOptions);
+  res.status(200).json({
+    status: 'success',
+    message: 'Logged out successfully'
+  });
+};*/

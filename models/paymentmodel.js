@@ -1,5 +1,10 @@
 const mongoose=require('mongoose');
 const PaymentSchema=new mongoose.Schema({
+    userid:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
+        required:true
+    },
     payment_history:[{
         issuing_date:{
         type:Date,
@@ -18,11 +23,13 @@ const PaymentSchema=new mongoose.Schema({
     },
     payment_method:{
         type:String,
-        enum:['visa card','fawry'],
+        enum:['visa card','fawry','metro mate wallet'],
+        default:'metro mate wallet',
         required: true
     },
     invoice_number:{
-        type:Number
+        type:Number,
+        required:true
     },
     payment_status:{
          type: String,
