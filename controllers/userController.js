@@ -1,5 +1,5 @@
 const User=require('./../models/usermodel');
-const Payment=require('./../models/paymentModel');
+const Payment=require('./../models/paymentmodel');
 const wallet=require('./../models/walletModel')
 const catchAsync=require('./../utils/catchAsyncError');
 const filterObject=require('./../utils/filterObject');
