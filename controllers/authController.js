@@ -100,7 +100,7 @@ exports.resetPassword =CatchAsync(async(req,res,next)=>{
   const user=await User.findOne({passwordResetToken:hashToken,passwordResetExpires:{$gt:Date.now()}});
   //2- token has not Expired => user and set new pass
   if(!user){
-    return next(new AppError('Token is invalid or expired'))}
+    return next(new AppError('Token is invalid or expired',400))}
     //otp
    const otpRecord = await UserOTPVerification.findOne({
     userId: user._id,
