@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 const dotenv=require('dotenv');
 const express=require('express');
+const cookieParser=require('cookie-parser');
 const apperr = require('./utils/appError.js');
 const globalError=require('./controllers/errorController.js');
 const swaggerDocs=require('./swagger/swaggerDoc.js');
@@ -21,6 +22,7 @@ mongoose.connect(DB,{
   await createDefaultAdmin();
 })
 .catch(err => console.error("❌ DB connection error:", err));
+app.use(cookieParser());
 swaggerDocs(app);
 app.use('/api/v1/users',userRouter);
 app.use('/api/v1/trips',TripRouter);

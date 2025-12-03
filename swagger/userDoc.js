@@ -194,23 +194,7 @@
  *       500:
  *         description: Server error
  */
-/**
- * @swagger
- *   /api/v1/users/profile/username:
- *   get:
- *     summary: return username
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     
- *     responses:
- *       200:
- *         description: return username
- *       400:
- *         description: user not login 
- *       500:
- *         description: Server error
- */
+
 /**
 * @swagger
 * /api/v1/users/verifyOTP:
@@ -274,4 +258,163 @@
 *         description: Email or userId missing
 *       500:
 *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/profile/username:
+ *   get:
+ *     summary: return username
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     
+ *     responses:
+ *       200:
+ *         description: return username
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/profile/email:
+ *   get:
+ *     summary: return email
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     
+ *     responses:
+ *       200:
+ *         description: return email
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ *   /api/v1/users/profile/photo:
+ *   get:
+ *     summary: return photo
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     
+ *     responses:
+ *       200:
+ *         description: return photo
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/profile/verified:
+ *   get:
+ *     summary: return verified status
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     
+ *     responses:
+ *       200:
+ *         description: return verified or not
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/profile/getpaymentmethod:
+ *   get:
+ *     summary: return last payment method 
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     
+ *     responses:
+ *       200:
+ *         description: return payment method 
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/profile/getbalance:
+ *   get:
+ *     summary: return balance and currency 
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     
+ *     responses:
+ *       200:
+ *         description: return balance and currency 
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/profile/updateuserphoto:
+ *   put:
+ *     summary: update user profile photo
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required:
+*               - photo
+*             properties:
+*               photo:
+*                 type: string
+*                 
+ *     responses:
+ *       200:
+ *         description: photo updated
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/profile/updateusername:
+ *   put:
+ *     summary: update username
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required:
+*               - name
+*             properties:
+*               photo:
+*                 type: string
+*                 
+ *     responses:
+ *       200:
+ *         description: name updated
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
  */
