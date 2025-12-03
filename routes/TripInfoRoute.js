@@ -3,6 +3,6 @@ const TripController = require('./../controllers/TripInfoController');
 const TripRouter = express.Router();
 
 TripRouter.get('/station', TripController.getStation);
-TripRouter.post('/tripInfo', TripController.tripInfo);
+TripRouter.post('/info', TripController.tripInfo);
 
 module.exports = TripRouter;

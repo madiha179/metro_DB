@@ -15,7 +15,7 @@
 
 /**
  * @swagger
- * /api/v1/trips/tripInfo:
+ * /api/v1/trips/info:
  *   post:
  *     summary: Return station list, number of stations, distance, time, and ticket price
  *     tags: [Stations]
