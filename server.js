@@ -5,6 +5,7 @@ const apperr = require('./utils/appError.js');
 const globalError=require('./controllers/errorController.js');
 const swaggerDocs=require('./swagger/swaggerDoc.js');
 const userRouter=require('./routes/userRoute');
+const TripRouter = require('./routes/TripInfoRoute.js');
 const { createDefaultAdmin } = require('./models/adminmodel.js');
 dotenv.config({path:'config.env'});
 const app=express();
@@ -22,6 +23,7 @@ mongoose.connect(DB,{
 .catch(err => console.error("❌ DB connection error:", err));
 swaggerDocs(app);
 app.use('/api/v1/users',userRouter);
+app.use('/api/v1/trips',TripRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });

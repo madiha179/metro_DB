@@ -172,9 +172,9 @@ exports.Login =CatchAsync(async (req, res, next) => {
   if(!user || !(await user.correctPassword(password, user.password)))
     return next(new AppError('Incorrect email or password!', 401));
   
-  // if(!user.verified){
-  //   return next(new AppError("Email not verified.", 403));
-  // }
+  if(!user.verified){
+    return next(new AppError("Email not verified.", 403));
+  }
   createSendToken(user, 200, res);
 });
 

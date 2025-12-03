@@ -16,6 +16,16 @@ const stationSchema = new mongoose.Schema({
         required: [true, 'Station position/order is required'], 
         min: 1,
     },
+    is_transfer: {
+        type: Boolean,
+        default: false
+    },
+    transfer_to:[
+        {
+            line:{type: Number},
+            position: {type: Number}
+        }
+    ],
 });
 
 const Station = mongoose.Model('station', stationSchema);
