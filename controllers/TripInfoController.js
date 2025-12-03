@@ -55,9 +55,9 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
                 $lte: max1
             }
         }).sort("position");
-        const taransferTarget = transfer.transfer_to.find(obj => obj.line == end.line_number);
-        const min2 = Math.min(end.position, taransferTarget.position);
-        const max2 = Math.max(end.position, taransferTarget.position);
+        const transferTarget = transfer.transfer_to.find(obj => obj.line == end.line_number);
+        const min2 = Math.min(end.position, transferTarget.position);
+        const max2 = Math.max(end.position, transferTarget.position);
         const secondList = await Station.find({
             line_number: end.line_number
             ,position: {
@@ -67,11 +67,12 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         }).sort("position");
         count = 
         Math.abs(transfer.position - start.position) + 
-        Math.abs(end.position - taransferTarget.position); 
+        Math.abs(end.position - transferTarget.position); 
         stationList = [...firstList, ...secondList];
     }
     
-    const {price} = await Ticket.findOne({no_of_stations: {$gte: count}}).sort("no_of_stations");
+    const ticket = await Ticket.findOne({ no_of_stations: { $gte: count } }).sort({ no_of_stations: 1 });
+    const ticketPrice = ticket ? ticket.price : 0;
     const distance = count * DISTANCE;
     const time = count * TIME;
     res.status(200).json({
@@ -79,6 +80,6 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         count,
         distance,
         time,
-        ticketPrice: price
+        ticketPrice
     });
 });
