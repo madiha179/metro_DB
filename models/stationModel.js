@@ -28,5 +28,5 @@ const stationSchema = new mongoose.Schema({
     ],
 });
 
-const Station = mongoose.Model('station', stationSchema);
+const Station = mongoose.model('Station', stationSchema);
 module.exports = Station;
