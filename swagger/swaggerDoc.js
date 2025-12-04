@@ -21,6 +21,8 @@ const options = {
   },
   apis: [
     path.join(__dirname, "userDoc.js"),
+    path.join(__dirname, "tripDoc.js"),
+    path.join(__dirname, "ticketPaymentDocs.js"),
     path.join(__dirname, "../routes/*.js"),
   ],
 };
