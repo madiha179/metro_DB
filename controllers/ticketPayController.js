@@ -1,9 +1,11 @@
 const axios = require('axios');
+const crypto=require('crypto');
 const Ticket = require('../models/ticketmodel');
 const User = require('../models/usermodel');
 const PaymentHistory = require('../models/paymentmodel');
 const catchAsync = require('./../utils/catchAsyncError');
 const AppError = require('./../utils/appError');
+const {calculateHmac}=require('./../utils/calculateHmac');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 
@@ -120,6 +122,38 @@ exports.createPayment = catchAsync(async (req, res, next) => {
     });
   }
 });
+
+exports.handleWebhook=catchAsync(async(req,res)=>{
+  try{
+    const secret=process.env.PAYMOB_HMAC_SECRET;
+    const receivedHmac=req.query.hmac;//from paymob
+    const rawBody = req.body.toString();//raw json from webhook
+    const calculated=crypto.createHmac("sha512",secret)
+    .update(rawBody)
+    .digest('hex');
+    if(receivedHmac!==calculated)
+      return res.status(401).send("Invalid HMAC");
+    const data=JSON.parse(rawBody.toString());
+    const{
+      success,
+      amount_cents,
+      order:{id:orderId},
+      source_data:{subtype}
+    }=data;
+    const payment=await PaymentHistory.findOne({"payment_history.invoice_number":orderId});
+    if(!payment) return res.status(404).send("payment record not found");
+    const payItem=payment.payment_history[0];
+    payItem.payment_status=success?"paid":"pending";
+    await payment.save();
+    res.status(200).send("webhook received");
+  }
+  catch(err){
+    console.error(err);
+    res.status(500).send("error processing webhook");
+  }
+});
+
+
 
 async function payWithPaymob(paymentKey, paymentMethod) {
   let source;
