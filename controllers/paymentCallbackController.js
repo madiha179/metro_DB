@@ -9,19 +9,19 @@ exports.transactionProcessed = async (req, res) => {
     console.log("Webhook received:", parsedBody);
 
     const orderId = parsedBody.order?.id;
-    const success = parsedBody.success;
-    const amountCents = parsedBody.amount_cents;
+const success = parsedBody.success;
+const amountCents = Number(parsedBody.amount_cents) || 0;
 
-    const updated = await Payment.updateOne(
-      { "payment_history.invoice_number": orderId },
-      {
-        $set: {
-          "payment_history.$.payment_status": success ? "paid" : "failed",
-          "payment_history.$.amount_paid": amountCents / 100,
-          "payment_history.$.paying_date": success ? new Date() : null
-        }
-      }
-    );
+const updated = await Payment.updateOne(
+  { "payment_history.invoice_number": orderId },
+  {
+    $set: {
+      "payment_history.$.payment_status": success ? "paid" : "failed",
+      "payment_history.$.amount_paid": success ? amountCents / 100 : 0,
+      "payment_history.$.paying_date": success ? new Date() : null
+    }
+  }
+);
 
     if (updated.modifiedCount === 0) {
       return res.status(404).json({ message: "Payment record not found" });
