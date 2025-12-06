@@ -23,13 +23,14 @@ exports.transactionProcessed = async (req, res) => {
      let collected='';
      for(let i=0;i<paymobKeys.length;i++){
       const key=paymobKeys[i];
-      collected+=getNested(parsedBody.obj,paymobKeys[i])|| '';
+      const value=getNested(parsedBody.obj,paymobKeys[i])|| '';
+      collected+=value;
       console.log(`${key}:`, value);
      }
     const calculatedHmac=crypto.createHmac("sha512",secret).update(collected).digest("hex");
     if(calculatedHmac!==hmac){
       if (calculatedHmac !== hmac) {
-  console.warn(" HMAC mismatch");
+  return res.status(403).json({ message: "HMAC validation failed" });
 }
     }
     console.log("Calculated HMAC:", calculatedHmac);
