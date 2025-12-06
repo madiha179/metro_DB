@@ -71,7 +71,7 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         stationList = [...firstList, ...secondList];
     }
     
-    const ticket = await Ticket.findOne({ no_of_stations: { $gte: count } }).sort({ no_of_stations: 1 });
+    const ticket = await Ticket.findOne({ no_of_stations: { $gte: count } });
     const ticketPrice = ticket ? ticket.price : 0;
     const distance = count * DISTANCE;
     const time = count * TIME;
