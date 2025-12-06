@@ -8,7 +8,7 @@ exports.transactionProcessed = async (req, res) => {
 
     console.log("Webhook received:", parsedBody);
 
-    const orderId = parsedBody.obj?.order?.id;
+    const orderId = Number(parsedBody.obj?.order?.data?.order_info);
     const success = parsedBody.obj?.order?.success;
     const amountCents = Number(parsedBody.obj?.order?.amount_cents) || 0;
 
