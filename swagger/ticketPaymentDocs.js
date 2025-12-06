@@ -31,7 +31,7 @@
  *                 example: fawry
  *     responses:
  *       200:
- *         description: Payment key created successfully
+ *         description: Payment key created successfully and send OrderId
  *       400:
  *         description: Payment failed
  *       404:
