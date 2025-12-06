@@ -13,7 +13,7 @@ exports.transactionProcessed = async (req, res) => {
     const amountCents = Number(parsedBody.obj?.order?.amount_cents) || 0;
 
     const updated = await Payment.updateOne(
-      { "payment_history.invoice_number": orderId },
+      { payment_history: { $elemMatch: { invoice_number: orderId } } },
       {
         $set: {
           "payment_history.$.payment_status": success ? "paid" : "failed",
