@@ -8,9 +8,9 @@ exports.transactionProcessed = async (req, res) => {
 
     console.log("Webhook received:", parsedBody);
 
-    const orderId = Number(parsedBody.obj?.order?.data?.order_info);
-    const success = parsedBody.obj?.order?.success;
-    const amountCents = Number(parsedBody.obj?.order?.amount_cents) || 0;
+    const orderId = Number(parsedBody.obj?.data?.order_info);
+    const success = parsedBody.obj?.success;
+    const amountCents = Number(parsedBody.obj?.amount_cents) || 0;
 
     const updated = await Payment.updateOne(
       { payment_history: { $elemMatch: { invoice_number: orderId } } },
