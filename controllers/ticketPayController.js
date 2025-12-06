@@ -126,7 +126,8 @@ exports.createPayment = catchAsync(async (req, res, next) => {
 exports.handleWebhook=catchAsync(async(req,res)=>{
   try{
     const secret=process.env.PAYMOB_HMAC_SECRET;
-    const receivedHmac=req.query.hmac;//from paymob
+    const receivedHmac=req.headers['hmac'] || req.headers['paymob-hmac'];//from paymob
+    if (!receivedHmac) return res.status(400).send('Missing HMAC header');
     const rawBody = req.body.toString();//raw json from webhook
     const calculated=crypto.createHmac("sha512",secret)
     .update(rawBody)
