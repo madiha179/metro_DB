@@ -1,5 +1,10 @@
 const Payment = require('./../models/paymentmodel');
-
+const crypto=require('crypto');
+const dotenv = require('dotenv');
+dotenv.config({ path: './config.env' });
+function getNested(obj,path){
+  return path.split('.').reduce((acc,key)=>acc?.[key],obj) ?? '';
+}
 exports.transactionProcessed = async (req, res) => {
   try {
     const parsedBody = Buffer.isBuffer(req.body)
@@ -7,7 +12,24 @@ exports.transactionProcessed = async (req, res) => {
       : req.body;
 
     console.log("Webhook received:", parsedBody);
-
+   
+    const hmac=req.query.hmac||parsedBody.hmac;
+    const secret=process.env.PAYMOB_HMAC_SECRET;
+    const paymobKeys=["amount_cents","created_at","currency","error_occured","has_parent_transaction","id",
+      "integration_id","is_3d_secure","is_auth","is_capture","is_refund","is_standalone_payment",
+      "is_void","order.id","owner","pending","source_data.pan","source_data.sub_type",
+      "source_data.type","success"
+];
+     let collected='';
+     for(let i=0;i<paymobKeys.length;i++){
+      collected+=getNested(parsedBody.obj,paymobKeys[i])|| '';
+     }
+    const calculatedHmac=crypto.createHmac("sha512",secret).update(collected).digest("hex");
+    if(calculatedHmac!==hmac){
+      return res.status(403).json({
+        message:"HMAC validation failed"
+      });
+    }
     const orderId = Number(parsedBody.obj?.data?.order_info);
     const success = parsedBody.obj?.success;
     const amountCents = Number(parsedBody.obj?.amount_cents) || 0;
