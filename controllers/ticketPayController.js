@@ -140,8 +140,7 @@ async function payWithPaymob(paymentKey, paymentMethod) {
   return response.data;
 }
 exports.fawryPay=catchAsync(async(req,res,next)=>{
- const  {paymentmethod} = req.body;
- const paymentkey =req.params.paymentkey;
+ const  {paymentmethod,paymentkey} = req.body;
   try{
   const result= await payWithPaymob(paymentkey,paymentmethod);
     if(paymentmethod ==='fawry'){
@@ -161,8 +160,7 @@ exports.fawryPay=catchAsync(async(req,res,next)=>{
 });
 
 exports.visaCardPay = catchAsync(async(req, res, next) => {
-  const {paymentmethod}  = req.body;
-  const paymentkey=req.params.paymentkey;
+  const {paymentmethod,paymentkey}  = req.body;
   const iframeUrl=`https://accept.paymobsolutions.com/api/acceptance/iframes/${PAYMOB_IFRAME_ID}?payment_token=${paymentkey}`;
   try {
     if(paymentmethod === 'visa card'){

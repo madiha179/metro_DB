@@ -42,19 +42,12 @@
 
 /**
  * @swagger
- * /api/v1/ticketpay/ticketfawrypayment/{paymentkey}:
+ * /api/v1/ticketpay/ticketfawrypayment:
  *   post:
  *     summary: Make a Fawry payment using the payment key
  *     tags: [Ticket Payment]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: paymentkey
- *         schema:
- *           type: string
- *         required: true
- *         description: Payment key generated from ticketpaymentkey
  *     requestBody:
  *       required: true
  *       content:
@@ -62,8 +55,12 @@
  *           schema:
  *             type: object
  *             required:
+ *               - paymentkey
  *               - paymentmethod
  *             properties:
+ *               paymentkey:
+ *                 type: string
+ *                 example: "1234567890abcdef"
  *               paymentmethod:
  *                 type: string
  *                 example: fawry
@@ -78,19 +75,12 @@
 
 /**
  * @swagger
- * /api/v1/ticketpay/ticketvisapayment/{paymentkey}:
+ * /api/v1/ticketpay/ticketvisapayment:
  *   post:
  *     summary: Make a Visa Card payment using the payment key
  *     tags: [Ticket Payment]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: paymentkey
- *         schema:
- *           type: string
- *         required: true
- *         description: Payment key generated from ticketpaymentkey
  *     requestBody:
  *       required: true
  *       content:
@@ -98,8 +88,12 @@
  *           schema:
  *             type: object
  *             required:
+ *               - paymentkey
  *               - paymentmethod
  *             properties:
+ *               paymentkey:
+ *                 type: string
+ *                 example: "1234567890abcdef"
  *               paymentmethod:
  *                 type: string
  *                 example: visa card

@@ -9,14 +9,14 @@ ticketPayRoute.post('/ticketpaymentkey',authController.protect,[body('ticketId')
   body('paymentmethod').notEmpty().withMessage('payment method is required').isIn(['fawry', 'visa card']).withMessage('Invalid payment method')
 ],validateRequest,ticketpaycontroller.createPayment);
 
-ticketPayRoute.post('/ticketfawrypayment/:paymentkey',authController.protect,[
-    param('paymentkey')
-      .notEmpty().withMessage('Payment key is required')
+ticketPayRoute.post('/ticketfawrypayment',authController.protect,[
+    body('paymentkey').notEmpty().withMessage('Payment key is required'),
+  body('paymentmethod').notEmpty().withMessage('Payment method is required')
   ],
   validateRequest,ticketpaycontroller.fawryPay);
-ticketPayRoute.post('/ticketvisapayment/:paymentkey',authController.protect, [
-    param('paymentkey')
-      .notEmpty().withMessage('Payment key is required')
+ticketPayRoute.post('/ticketvisapayment',authController.protect, [
+   body('paymentkey').notEmpty().withMessage('Payment key is required'),
+  body('paymentmethod').notEmpty().withMessage('Payment method is required')
   ],
   validateRequest,ticketpaycontroller.visaCardPay);
 module.exports=ticketPayRoute;
