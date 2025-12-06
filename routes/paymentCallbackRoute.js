@@ -1,7 +1,9 @@
 const express=require('express');
 const callbackRouter=express.Router();
 const paymentCallback = require('../controllers/paymentCallbackController');
-
-callbackRouter.post('/paymob-callback', paymentCallback.transactionProcessed);
-
+callbackRouter.post(
+  '/paymob-callback',
+  express.raw({ type: 'application/json' }),
+  paymentCallback.transactionProcessed
+);
 module.exports = callbackRouter;

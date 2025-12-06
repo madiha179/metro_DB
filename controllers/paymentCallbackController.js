@@ -9,7 +9,10 @@ function getNested(obj, path) {
 
 exports.transactionProcessed = async (req, res) => {
   try {
-    const hmac = req.query.hmac || req.body.hmac;
+    const rawBody = req.body.toString('utf8');
+    const parsedBody = JSON.parse(rawBody);
+
+    const hmac = req.query.hmac || parsedBody.hmac;
     const secret = process.env.PAYMOB_HMAC_SECRET;
 
     const relevantKeys = [
@@ -19,18 +22,18 @@ exports.transactionProcessed = async (req, res) => {
       "source_data.type","success"
     ];
 
-    const collected = relevantKeys.map(k => getNested(req.body, k)).join('');
+    const collected = relevantKeys.map(k => getNested(parsedBody, k)).join('');
     const calculated = crypto.createHmac("sha512", secret).update(collected).digest("hex");
 
     if (calculated !== hmac) {
       return res.status(403).json({ message: "HMAC validation failed" });
     }
 
-    console.log("PAYMOB CALLBACK:", req.body);
+    console.log("PAYMOB CALLBACK:", parsedBody);
 
-    const orderId = req.body.order?.id;
-    const success = req.body.success;
-    const amountCents = req.body.amount_cents;
+    const orderId = parsedBody.order?.id;
+    const success = parsedBody.success;
+    const amountCents = parsedBody.amount_cents;
 
     const updated = await Payment.updateOne(
       { "payment_history.invoice_number": orderId },
