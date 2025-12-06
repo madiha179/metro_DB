@@ -16,8 +16,8 @@ exports.transactionProcessed = async (req, res) => {
     const hmac=req.query.hmac||parsedBody.hmac;
     const secret=process.env.PAYMOB_HMAC_SECRET;
     const paymobKeys=["amount_cents","created_at","currency","error_occured","has_parent_transaction","id",
-      "integration_id","is_3d_secure","is_auth","is_capture","is_refund","is_standalone_payment",
-      "is_void","order.id","owner","pending","source_data.pan","source_data.sub_type",
+      "integration_id","is_3d_secure","is_auth","is_capture","is_refunded","is_standalone_payment",
+      "is_voided","order.id","owner","pending","source_data.pan","source_data.sub_type",
       "source_data.type","success"
 ];
      let collected='';
@@ -30,7 +30,7 @@ exports.transactionProcessed = async (req, res) => {
         message:"HMAC validation failed"
       });
     }
-    const orderId = Number(parsedBody.obj?.data?.order_info);
+    const orderId = Number(parsedBody.obj?.data?.order_info || parsedBody.obj?.order?.id);
     const success = parsedBody.obj?.success;
     const amountCents = Number(parsedBody.obj?.amount_cents) || 0;
 
@@ -44,7 +44,7 @@ exports.transactionProcessed = async (req, res) => {
         }
       }
     );
-
+     console.log({ orderId, success, amountCents });
     if (updated.modifiedCount === 0) {
       return res.status(404).json({ message: "Payment record not found" });
     }
