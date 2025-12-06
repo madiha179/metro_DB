@@ -9,8 +9,12 @@ function getNested(obj, path) {
 
 exports.transactionProcessed = async (req, res) => {
   try {
-    const rawBody = req.body.toString('utf8');
-    const parsedBody = JSON.parse(rawBody);
+    let parsedBody;
+    if (Buffer.isBuffer(req.body)) {
+      parsedBody = JSON.parse(req.body.toString('utf8'));
+    } else {
+      parsedBody = req.body;
+    }
 
     const hmac = req.query.hmac || parsedBody.hmac;
     const secret = process.env.PAYMOB_HMAC_SECRET;
@@ -49,6 +53,7 @@ exports.transactionProcessed = async (req, res) => {
     if (updated.modifiedCount === 0) {
       return res.status(404).json({ message: "Payment record not found" });
     }
+
     return res.status(200).json({ message: "Callback received and DB updated" });
   } catch (err) {
     console.error(err);
