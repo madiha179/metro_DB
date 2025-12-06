@@ -22,6 +22,7 @@ exports.transactionProcessed = async (req, res) => {
 ];
      let collected='';
      for(let i=0;i<paymobKeys.length;i++){
+      const key=paymobKeys[i];
       collected+=getNested(parsedBody.obj,paymobKeys[i])|| '';
       console.log(`${key}:`, value);
      }
@@ -31,6 +32,8 @@ exports.transactionProcessed = async (req, res) => {
   console.warn(" HMAC mismatch");
 }
     }
+    console.log("Calculated HMAC:", calculatedHmac);
+    console.log("Received HMAC:", hmac);
     const orderId = Number(parsedBody.obj?.data?.order_info || parsedBody.obj?.order?.id);
     const success = parsedBody.obj?.success;
     const amountCents = Number(parsedBody.obj?.amount_cents) || 0;
