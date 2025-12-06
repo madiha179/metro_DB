@@ -44,6 +44,7 @@ exports.transactionProcessed = async (req, res) => {
         }
       }
     );
+    console.log("Update result:", updated);
      console.log({ orderId, success, amountCents });
     if (updated.modifiedCount === 0) {
       return res.status(404).json({ message: "Payment record not found" });
