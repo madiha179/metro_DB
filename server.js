@@ -9,6 +9,7 @@ const userRouter=require('./routes/userRoute');
 const TripRouter = require('./routes/TripInfoRoute.js');
 const ticketRouter=require('./routes/ticketRoute.js');
 const ticketPayRouter=require('./routes/ticketPayRoute.js');
+const callbackRouter=require('./routes/paymentCallbackRoute.js');
 const { createDefaultAdmin } = require('./models/adminmodel.js');
 dotenv.config({path:'config.env'});
 const app=express();
@@ -30,6 +31,7 @@ app.use('/api/v1/users',userRouter);
 app.use('/api/v1/trips',TripRouter);
 app.use('/api/v1/tickets',ticketRouter);
 app.use('/api/v1/ticketpay',ticketPayRouter);
+app.use('/api/v1',callbackRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });

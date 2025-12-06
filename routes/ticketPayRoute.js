@@ -19,6 +19,4 @@ ticketPayRoute.post('/ticketvisapayment/:paymentkey',authController.protect, [
       .notEmpty().withMessage('Payment key is required')
   ],
   validateRequest,ticketpaycontroller.visaCardPay);
-// use express.raw bec => paymob send HMAC build in row body 
-ticketPayRoute.post('/paymob-webhook', express.raw({ type: 'application/json' }), ticketpaycontroller.handleWebhook);
 module.exports=ticketPayRoute;
