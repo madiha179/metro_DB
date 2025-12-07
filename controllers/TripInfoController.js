@@ -6,7 +6,10 @@ const DISTANCE = 2;
 const TIME =  3; 
 
 exports.getStation = catchAsync( async (req, res, next) => {
-    const stationList = await Station.distinct('name');
+    const stationList = await Station.aggregate([
+    { $group: { _id: "$name", doc: { $first: "$$ROOT" } } },
+    { $replaceRoot: { newRoot: "$doc" } }
+]);
     return res.status(200).json({
         data: stationList
     });
