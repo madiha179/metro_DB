@@ -6,7 +6,7 @@ const DISTANCE = 2;
 const TIME =  3; 
 
 exports.getStation = catchAsync( async (req, res, next) => {
-    const stationList = await Station.find().distinct('name');
+    const stationList = await Station.distinct('name');
     return res.status(200).json({
         data: stationList
     });
