@@ -6,7 +6,7 @@ const DISTANCE = 2;
 const TIME =  3; 
 
 exports.getStation = catchAsync( async (req, res, next) => {
-    const stationList = await Station.find();
+    const stationList = await Station.find().distinct('name');
     return res.status(200).json({
         data: stationList
     });
@@ -33,7 +33,7 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             line_number: start.line_number,
             position: {$gte: min, $lte: max}
         }).sort("position");
-        count = Math.abs(min - max);
+        count = Math.abs(min - max) + 1;
         stationList = [...listStation];
     }
     else {
@@ -67,7 +67,7 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         }).sort("position");
         count = 
         Math.abs(transfer.position - start.position) + 
-        Math.abs(end.position - transferTarget.position); 
+        Math.abs(end.position - transferTarget.position) + 1; 
         stationList = [...firstList, ...secondList];
     }
     
