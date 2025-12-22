@@ -75,8 +75,8 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         Math.abs(end.position - transferTarget.position) + 1; 
         const result = [...firstList, ...(secondList.reverse())];
         stationList = [... new Map(result.map(s => ([s.name, s])).values())];
-        
-        if (stationList[0].name !== start.name) {
+
+        if (String(stationList[0].name) !== String(start.name)) {
             stationList.reverse();
         }
     }
