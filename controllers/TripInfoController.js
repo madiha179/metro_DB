@@ -76,8 +76,9 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         const result = [...firstList, ...(secondList.reverse())];
         stationList = [... new Map(result.map(s => ([s.name, s])).values())];
         
-        if(stationList[0].name !== start.name)
+        if (stationList[0].name !== start.name) {
             stationList.reverse();
+        }
     }
     
     const ticket = await Ticket.findOne({ no_of_stations: { $gte: count } }).sort({ no_of_stations: 1 });
