@@ -73,7 +73,7 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         count = 
         Math.abs(transfer.position - start.position) + 
         Math.abs(end.position - transferTarget.position) + 1; 
-        stationList = [...firstList, ...secondList];
+        stationList = [...firstList, ...(secondList.reverse())];
         
         if(start.line_number > end.line_number)
             stationList.reverse();
