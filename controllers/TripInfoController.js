@@ -46,11 +46,13 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             is_transfer: true,
             line_number: start.line_number,
             transfer_to: {$elemMatch: {line: end.line_number}}
-        });
+        }).sort("position");
+
         if (!transfer) 
         return res.status(400).json({ 
             message: "No transfer station found between these lines"
         });
+
         const min1 = Math.min(start.position, transfer.position);
         const max1 = Math.max(start.position, transfer.position);
         const firstList = await Station.find({
@@ -60,6 +62,10 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
                 $lte: max1
             }
         }).sort("position");
+
+        if(start.position > transfer.position)
+            firstList.reverse();
+
         const transferTarget = transfer.transfer_to.find(obj => obj.line == end.line_number);
         const min2 = Math.min(end.position, transferTarget.position);
         const max2 = Math.max(end.position, transferTarget.position);
@@ -70,13 +76,19 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
                 $lte: max2
             }
         }).sort("position");
+
+        if(transferTarget.position < end.position)
+            secondList.reverse();
+
         count = 
         Math.abs(transfer.position - start.position) + 
         Math.abs(end.position - transferTarget.position) + 1; 
         const result = [...firstList, ...(secondList.reverse())];
-        stationList = [...new Map(result.map(s => ([s.name, s])).values())];
 
-        if (String(stationList[0].name) !== String(start.name)) {
+        const removeRep = new Map(result.map(s => ([s.name, s])));
+        stationList = [...removeRep.values()];
+
+        if (stationList[0].name !== start.name) {
             stationList.reverse();
         }
     }
