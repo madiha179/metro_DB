@@ -73,11 +73,8 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         count = 
         Math.abs(transfer.position - start.position) + 
         Math.abs(end.position - transferTarget.position) + 1; 
-        const StationWithRepetition = [...firstList, ...(secondList.reverse())];
-        stationList = StationWithRepetition.forEach(obj => {
-            if(!stationList.some((item) => item.name == obj.name))
-                stationList.push(obj);
-        });
+        const result = [...firstList, ...(secondList.reverse())];
+        stationList = [... new Map(result.map(s => ([s.name, s])).values())];
         
         if(start.line_number > end.line_number)
             stationList.reverse();
