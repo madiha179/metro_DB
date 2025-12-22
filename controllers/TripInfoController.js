@@ -38,6 +38,8 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         }).sort("position");
         count = Math.abs(min - max) + 1;
         stationList = [...listStation];
+        if(start.position > end.position)
+            stationList.reverse();
     }
     else {
         const transfer = await Station.findOne({
