@@ -313,23 +313,6 @@
  */
 /**
  * @swagger
- *   /api/v1/users/profile/verified:
- *   get:
- *     summary: return verified status
- *     tags: [Profile]
- *     security:
- *       - bearerAuth: []
- *     
- *     responses:
- *       200:
- *         description: return verified or not
- *       400:
- *         description: user not login 
- *       500:
- *         description: Server error
- */
-/**
- * @swagger
  *   /api/v1/users/profile/getpaymentmethod:
  *   get:
  *     summary: return last payment method 
@@ -365,7 +348,7 @@
 /**
  * @swagger
  *   /api/v1/users/profile/updateuserphoto:
- *   put:
+ *   patch:
  *     summary: update user profile photo
  *     tags: [Profile]
  *     security:
@@ -393,7 +376,7 @@
 /**
  * @swagger
  *   /api/v1/users/profile/updateusername:
- *   put:
+ *   patch:
  *     summary: update username
  *     tags: [Profile]
  *     security:

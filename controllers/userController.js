@@ -30,15 +30,6 @@ res.status(200).json({
   },
 })
 });
-exports.getUserVerified=catchAsync(async(req,res,next)=>{
-  const user=await User.findById(req.user.id).select('verified');
-  res.status(200).json({
-    status:'success',
-    data:{
-      verified:user.verified
-    }
-  })
-});
 exports.updateusername=catchAsync(async(req,res,next)=>{
   const filterBody=filterObject(
     req.body,
