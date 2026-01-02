@@ -31,16 +31,19 @@ const limiter=rateLimit({
   max:5000,
   windowMs:60*60*1000,
   message:"Too Many Requests from this IP , Please try again in an hour!",
-  statusCode:429
+  statusCode:429,
+  standardHeaders: true,
+   legacyHeaders: false
 });
 const paymentLimiter=rateLimit({
   max:100,
   windowMs:60*60*1000,
   message:"Too many payment requests, Please try again in an hour!",
-  statusCode:429
+  statusCode:429,
+  standardHeaders: true,
+   legacyHeaders: false
 });
 swaggerDocs(app);
-app.use('/api');
 app.use('/api/v1/users',userRouter);
 app.use('/api/v1/trips',limiter,TripRouter);
 app.use('/api/v1/tickets',limiter,ticketRouter);

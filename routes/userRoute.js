@@ -8,25 +8,33 @@ const signupLimiter=rateLimit({
   max:50,
   windowMs:60*60*1000,
   message:"Too Many Requests from this IP , Please try again in an hour!",
-  statusCode:429
+  statusCode:429,
+  standardHeaders: true,
+   legacyHeaders: false
 });
 const profileLimiter=rateLimit({
   max:100,
   windowMs:60*60*1000,
   message:"Too Many Requests from this IP , Please try again in an hour!",
-  statusCode:429
+  statusCode:429,
+  standardHeaders: true,
+   legacyHeaders: false
 });
 const resetPassLimiter=rateLimit({
   max:20,
   windowMs:60*60*1000,
   message:"Too Many attempts to reset password, Please try again in an hour!",
-  statusCode:429
+  statusCode:429,
+  standardHeaders: true,
+   legacyHeaders: false
 });
 const forgotPassLimiter=rateLimit({
   max:20,
   windowMs:60*60*1000,
   message:"Too many forgot password attempts,Please try again in an hour!",
-  statusCode:429
+  statusCode:429,
+  standardHeaders: true,
+   legacyHeaders: false
 })
 //authentication
 userRouter.post('/register',signupLimiter,authcontroller.SignUp);
