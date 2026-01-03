@@ -3,6 +3,9 @@ const dotenv=require('dotenv');
 const express=require('express');
 const cookieParser=require('cookie-parser');
 const rateLimit=require('express-rate-limit');
+const helmet=require('helmet');
+const mongoSanitize=require('express-mongo-sanitize');
+const {xss}=require('express-xss-sanitizer');
 const apperr = require('./utils/appError.js');
 const globalError=require('./controllers/errorController.js');
 const swaggerDocs=require('./swagger/swaggerDoc.js');
@@ -14,7 +17,14 @@ const callbackRouter=require('./routes/paymentCallbackRoute.js');
 const { createDefaultAdmin } = require('./models/adminmodel.js');
 dotenv.config({path:'config.env'});
 const app=express();
+//security http headers
+app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
+//for NO SQL injection
+app.use(mongoSanitize());
+//for prevent xss injection it`s clean request(body||params||headers||query)from malicous code 
+app.use(xss());
 const port = process.env.PORT|| 3000;
 const DB=process.env.DATABASE;
 mongoose.connect(DB,{
@@ -26,7 +36,6 @@ mongoose.connect(DB,{
   await createDefaultAdmin();
 })
 .catch(err => console.error("❌ DB connection error:", err));
-app.use(cookieParser());
 const limiter=rateLimit({
   max:5000,
   windowMs:60*60*1000,
