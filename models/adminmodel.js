@@ -48,9 +48,9 @@ AdminSchema.methods.correctpassword=async function (candidatepassword,password) 
     try {
         const adminData = {
             ssn: 28730125615274,
-            name: 'Joe',
+            name: 'Admin 1',
             password: 'Admin$123',
-            email: 'admin@gmail.com',
+            email: 'metromate534@gmail.com',
             request: 'pending'
         };
         const adminExists = await Admin.findOne({ email: adminData.email });
