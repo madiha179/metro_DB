@@ -1,7 +1,6 @@
 const catchAsync = require('../utils/catchAsyncError');
 const Station = require('./../models/stationModel');
 const Ticket = require('./../models/ticketmodel');
-const Graph = require("node-dijkstra");
 
 const DISTANCE = 2; 
 const TIME =  3; 
@@ -43,53 +42,39 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             stationList.reverse();
     }
     else {
-        const transfer = await Station.find({
+        const transfer = await Station.findOne({
             is_transfer: true,
             line_number: start.line_number,
             transfer_to: {$elemMatch: {line: end.line_number}}
         }).sort("position");
 
-        console.log(transfer);
+        if (!transfer) 
+        return res.status(400).json({ 
+            message: "No transfer station found between these lines"
+        });
 
-        if (transfer.length === 0) 
-            return res.status(400).json({ 
-                message: "No transfer station found between these lines"
-            });
-
-            ////////////////from here there are addNode is not a function////////////////////
-        const metroGraph  = new Graph();
-        for(let i = 0; i < transfer.length; i++){
-            t = transfer[i];
-            const min1 = Math.min(start.position, t.position);
-            const max1 = Math.max(start.position, t.position);
-
-            const firstList = await Station.find({
-                line_number: start.line_number, 
-                position: {$gte: min1, $lte: max1}
-            }).sort("position");
-            
-            if(start.position > transfer.position)
-                firstList.reverse();
-            
-            for(let j = 0; j < firstList.length; j++){
-                const current = firstList[j].name;
-                const neighbors = {};
-                if(j > 0) neighbors[firstList[j - 1].name] = 1;
-                if(j < firstList.length - 1) neighbors[firstList[j + 1].name] = 1;
-                metroGraph.addNode(current, neighbors);
+        const min1 = Math.min(start.position, transfer.position);
+        const max1 = Math.max(start.position, transfer.position);
+        const firstList = await Station.find({
+            line_number: start.line_number, 
+            position: {
+                $gte: min1,
+                $lte: max1
             }
-        console.log('current:', current, 'neighbors:', neighbors);
-        }
-        // const path = metroGraph.path(start.name, 'endStation');
-        // console.log(path);
-        ///////////////////end///////////////////
+        }).sort("position");
+
+        if(start.position > transfer.position)
+            firstList.reverse();
 
         const transferTarget = transfer.transfer_to.find(obj => obj.line == end.line_number);
         const min2 = Math.min(end.position, transferTarget.position);
         const max2 = Math.max(end.position, transferTarget.position);
         const secondList = await Station.find({
             line_number: end.line_number
-            ,position: {$gte: min2, $lte: max2}
+            ,position: {
+                $gte: min2,
+                $lte: max2
+            }
         }).sort("position");
 
         if(transferTarget.position < end.position)
