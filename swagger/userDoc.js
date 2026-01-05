@@ -91,6 +91,23 @@
  */
 /**
  * @swagger
+ * /api/v1/users/logout:
+ *   post:
+ *     summary: Logout current user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *       401:
+ *         description: Unauthorized (user not logged in)
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
  * /api/v1/users/forgotpassword:
  *   post:
  *     summary: Send a password reset OTP to user's email
@@ -177,7 +194,7 @@
  *               - password
  *               - confirm_password
  *             properties:
- *               cuurentpassword:
+ *               currentpassword:
  *                  type: string
  *                  example: Password123
  *               password:
@@ -390,7 +407,7 @@
 *             required:
 *               - name
 *             properties:
-*               photo:
+*               name:
 *                 type: string
 *                 
  *     responses:

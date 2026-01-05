@@ -139,6 +139,9 @@ exports.protect=CatchAsync(async(req,res,next)=>{
   if(!currentUser){
     return next(new AppError('user no longer exist',401));
   }
+  if(currentUser.lastLogOut && decoded.iat*1000<currentUser.lastLogOut){
+    return next(new AppError('Token Expired . Please Login again',401));
+  }
   //4 check if user changed password after token was create
   if(currentUser.changePasswordAfter(decoded.iat)){
     return next(new AppError('user recently change password! please login again',401));
@@ -248,3 +251,11 @@ exports.resendOTP = CatchAsync(async (req, res, next) => {
   sendOTPVerification(user, res, next);
 });
 
+exports.logOUT=CatchAsync(async(req,res,next)=>{
+  await User.findByIdAndUpdate(req.user.id,{lastLogOut:Date.now()});
+  res.cookie('jwt','loggedout',{
+    expires: new Date(Date.now()+10*1000),
+    httpOnly:true
+  });
+  res.status(200).json({status:'success'});
+});

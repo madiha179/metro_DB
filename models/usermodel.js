@@ -66,6 +66,10 @@ const UserSchema=new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  lastLogOut:{
+    type:Date,
+    default:null
+  }
 });
 //Hash password before saving 
 UserSchema.pre('save',async function (next){
