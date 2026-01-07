@@ -191,7 +191,7 @@ const sendOTPVerification = CatchAsync(async (user, res, next) => {
     userId: _id,
     otp: hashedOTP,
     createdAt: Date.now(),
-    expireAt: Date.now() + 3600000, // 1 hour
+    expireAt: Date.now() + 600000, //10 min
   });
 
   await new Email(user, otp).sendOTP();
