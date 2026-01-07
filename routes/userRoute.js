@@ -43,6 +43,7 @@ userRouter.patch('/resetpassword/:token',resetPassLimiter,authcontroller.resetPa
 
 //login section
 userRouter.post('/login',authcontroller.Login);
+userRouter.post('/logout',authcontroller.protect,authcontroller.logOUT)
 //otp section
 userRouter.post('/verifyOTP', authcontroller.verifyOTP);
 userRouter.post('/resendOTP', authcontroller.resendOTP);
