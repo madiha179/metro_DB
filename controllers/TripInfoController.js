@@ -17,16 +17,6 @@ function pushNode(graph, nodeName, newNeighbors) {
     }
 }
 
-function sortArray(arr, firstList, secondList, startState){
-    const temp = new Map(arr.map(obj => ([obj.name, obj])));
-    temp.sort()
-    temp.forEach((value, key) => {
-        if(value.line_number === startState.line_number)
-            firstList.push(value);
-        else
-            secondList.push(value);
-    });
-}
 
 exports.getStation = catchAsync( async (req, res, next) => {
     const stationList = await Station.aggregate([
