@@ -27,16 +27,13 @@ module.exports = class Email {
     try {
       if (process.env.NODE_ENV === 'production') {
         const apiInstance = new Brevo.TransactionalEmailsApi();
-        const sendSmtpEmail = {
+        apiInstance.sendTransacEmail({
           sender: { email: this.from, name: 'metro' },
           to: [{ email: this.to }],
           subject,
           htmlContent: html,
           textContent
-        };
-        await apiInstance.sendTransacEmail(sendSmtpEmail, undefined, {
-          apiKey: process.env.BREVO_API_KEY
-        });
+        }, { apiKey: process.env.BREVO_API_KEY });
       } else {
         const transporter = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
@@ -46,10 +43,8 @@ module.exports = class Email {
             pass: process.env.EMAIL_PASSWORD
           }
         });
-
         await transporter.sendMail(mailOptions);
       }
-
     } catch (err) {
       console.error('Email send error:', err.response ? err.response.body : err);
       throw new Error('There was an error sending the email. Try again later!');
