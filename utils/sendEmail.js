@@ -26,18 +26,18 @@ module.exports = class Email {
 
     try {
       if (process.env.NODE_ENV === 'production') {
-        const apiInstance = new Brevo.TransactionalEmailsApi();
-        apiInstance.apiKey = process.env.BREVO_API_KEY; 
+        const apiInstance = new Brevo.TransactionalEmailsApi({
+          apiKey: process.env.BREVO_API_KEY
+        });
+
         await apiInstance.sendTransacEmail({
-          sender: { email: this.from, name: 'metro' },
+          sender: { email: this.from, name: 'Metro App' },
           to: [{ email: this.to }],
           subject,
           htmlContent: html,
           textContent
         });
-
       } else {
-        // Local test with Nodemailer
         const transporter = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
           port: process.env.EMAIL_PORT,
@@ -46,10 +46,12 @@ module.exports = class Email {
             pass: process.env.EMAIL_PASSWORD
           }
         });
+
         await transporter.sendMail(mailOptions);
       }
+
     } catch (err) {
-      console.error('Email send error:', err);
+      console.error('Email send error:', err.response ? err.response.body : err);
       throw new Error('There was an error sending the email. Try again later!');
     }
   }
@@ -59,6 +61,6 @@ module.exports = class Email {
   }
 
   async sendOTP() {
-    await this.send('sendOTP', 'send OTP verification');
+    await this.send('sendOTP', 'Send OTP verification');
   }
 };
