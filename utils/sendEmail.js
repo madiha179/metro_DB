@@ -16,24 +16,19 @@ module.exports = class Email {
     html = html.replace('{{firstName}}', this.firstName).replace('{{otp}}', this.otp);
     const textContent = htmlToText.convert(html);
 
-    const mailOptions = {
-      to: this.to,
-      from: this.from,
-      subject,
-      html,
-      text: textContent
-    };
-
     try {
       if (process.env.NODE_ENV === 'production') {
         const apiInstance = new Brevo.TransactionalEmailsApi();
-        apiInstance.sendTransacEmail({
-          sender: { email: this.from, name: 'metro' },
+        apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+
+        await apiInstance.sendTransacEmail({
+          sender: { email: this.from, name: 'Metro App' },
           to: [{ email: this.to }],
           subject,
           htmlContent: html,
           textContent
-        }, { apiKey: process.env.BREVO_API_KEY });
+        });
+
       } else {
         const transporter = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
@@ -43,7 +38,14 @@ module.exports = class Email {
             pass: process.env.EMAIL_PASSWORD
           }
         });
-        await transporter.sendMail(mailOptions);
+
+        await transporter.sendMail({
+          to: this.to,
+          from: this.from,
+          subject,
+          html,
+          text: textContent
+        });
       }
     } catch (err) {
       console.error('Email send error:', err.response ? err.response.body : err);
