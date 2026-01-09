@@ -22,7 +22,7 @@ module.exports = class Email {
         apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
         await apiInstance.sendTransacEmail({
-          sender: { email: this.from, name: 'Metro App' },
+          sender: { email: this.from, name: 'metro' },
           to: [{ email: this.to }],
           subject,
           htmlContent: html,
@@ -48,7 +48,11 @@ module.exports = class Email {
         });
       }
     } catch (err) {
-      console.error('Email send error:', err.response ? err.response.body : err);
+      if (err.response && err.response.body) {
+        console.error('Email send error response body:', err.response.body);
+      } else {
+        console.error('Email send error:', err);
+      }
       throw new Error('There was an error sending the email. Try again later!');
     }
   }
