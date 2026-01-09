@@ -1,7 +1,8 @@
 const fs = require('fs');
 const htmlToText = require('html-to-text');
 const nodemailer = require('nodemailer');
-const brevo=require('@getbrevo/brevo');
+const brevo = require('@getbrevo/brevo');
+
 module.exports = class Email {
   constructor(user, otp) {
     this.to = user.email;
@@ -13,29 +14,34 @@ module.exports = class Email {
   async send(template, subject) {
     let html = fs.readFileSync(`${__dirname}/../views/emails/${template}.html`, 'utf-8');
     html = html.replace('{{firstName}}', this.firstName).replace('{{otp}}', this.otp);
+    const textContent = htmlToText.convert(html);
 
     const mailOptions = {
       to: this.to,
       from: this.from,
       subject,
       html,
-      text: htmlToText.convert(html)
+      text: textContent
     };
 
     try {
       if (process.env.NODE_ENV === 'production') {
-        //brevo email sender
-         const apiInstance = new brevo.TransactionalEmailsApi();
-         apiInstance.apiClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
-         await apiInstance.sendTransacEmail({
-         sender: { email: this.from, name: 'Metro App' },
-         to: [{ email: this.to }],
-         subject,
+        // Brevo email sender for production
+        const apiClient = new brevo.ApiClient();
+        apiClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+
+        const apiInstance = new brevo.TransactionalEmailsApi(apiClient);
+
+        await apiInstance.sendTransacEmail({
+          sender: { email: this.from, name: 'Metro App' },
+          to: [{ email: this.to }],
+          subject,
           htmlContent: html,
-          textContent: htmlToText.convert(html)
-  });
-}else {
-        // for local test NODE_ENV ===development
+          textContent
+        });
+
+      } else {
+        // Local test with Nodemailer
         const transporter = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
           port: process.env.EMAIL_PORT,
@@ -44,6 +50,7 @@ module.exports = class Email {
             pass: process.env.EMAIL_PASSWORD
           }
         });
+
         await transporter.sendMail(mailOptions);
       }
     } catch (err) {
@@ -51,9 +58,11 @@ module.exports = class Email {
       throw new Error('There was an error sending the email. Try again later!');
     }
   }
- async sendResetPassword() {
+
+  async sendResetPassword() {
     await this.send('resetPassEmail', 'Your Password reset OTP valid for only 10 minutes');
   }
+
   async sendOTP() {
     await this.send('sendOTP', 'send OTP verification');
   }
