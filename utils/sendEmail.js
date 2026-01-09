@@ -1,8 +1,7 @@
 const fs = require('fs');
 const htmlToText = require('html-to-text');
 const nodemailer = require('nodemailer');
-const sgMail = require('@sendgrid/mail');
-
+const brevo=require('@getbrevo/brevo');
 module.exports = class Email {
   constructor(user, otp) {
     this.to = user.email;
@@ -25,9 +24,16 @@ module.exports = class Email {
 
     try {
       if (process.env.NODE_ENV === 'production') {
-        // SendGrid Web API
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        await sgMail.send(mailOptions);
+        //brevo email sender
+        const apiInstance=new brevo.TransactionalEmailsApi();
+        apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey,process.env.BREVO_API_KEY);
+        await apiInstance.sendTransacEmail({
+          sender:{email:this.from},
+          to:[{email:this.to}],
+          subject,
+          htmlContent:html,
+          textContent:htmlToText.convert(html)
+        });
       } else {
         // for local test NODE_ENV ===development
         const transporter = nodemailer.createTransport({
