@@ -2,6 +2,7 @@ const fs = require('fs');
 const htmlToText = require('html-to-text');
 const nodemailer = require('nodemailer');
 const Brevo = require('@getbrevo/brevo');
+
 module.exports = class Email {
   constructor(user, otp) {
     this.to = user.email;
@@ -9,6 +10,7 @@ module.exports = class Email {
     this.otp = otp;
     this.from = process.env.EMAIL_FROM;
   }
+
   async send(template, subject) {
     let html = fs.readFileSync(`${__dirname}/../views/emails/${template}.html`, 'utf-8');
     html = html.replace('{{firstName}}', this.firstName).replace('{{otp}}', this.otp);
@@ -21,12 +23,13 @@ module.exports = class Email {
       html,
       text: textContent
     };
+
     try {
       if (process.env.NODE_ENV === 'production') {
         const apiInstance = new Brevo.TransactionalEmailsApi();
-        apiInstance.setApiKey = process.env.BREVO_API_KEY; 
+        apiInstance.apiKey = process.env.BREVO_API_KEY; 
         await apiInstance.sendTransacEmail({
-          sender: { email: this.from, name: 'Metro App' },
+          sender: { email: this.from, name: 'metro' },
           to: [{ email: this.to }],
           subject,
           htmlContent: html,
@@ -46,13 +49,15 @@ module.exports = class Email {
         await transporter.sendMail(mailOptions);
       }
     } catch (err) {
-      console.error('Email send error:', err.response ? err.response.body : err);
+      console.error('Email send error:', err);
       throw new Error('There was an error sending the email. Try again later!');
     }
   }
+
   async sendResetPassword() {
     await this.send('resetPassEmail', 'Your Password reset OTP valid for only 10 minutes');
   }
+
   async sendOTP() {
     await this.send('sendOTP', 'send OTP verification');
   }
