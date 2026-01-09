@@ -26,7 +26,8 @@ module.exports = class Email {
       if (process.env.NODE_ENV === 'production') {
         //brevo email sender
         const apiInstance=new brevo.TransactionalEmailsApi();
-        apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey,process.env.BREVO_API_KEY);
+        apiInstance.setApiKey(brevo.ApiClient.authentications['api-key'], process.env.BREVO_API_KEY);
+        console.log('Sending email:', mailOptions);
         await apiInstance.sendTransacEmail({
           sender:{email:this.from},
           to:[{email:this.to}],
@@ -52,7 +53,7 @@ module.exports = class Email {
     }
   }
  async sendResetPassword() {
-    await this.send('resetPassEmail', 'Your Password reset OTP valid for only 10 mintues');
+    await this.send('resetPassEmail', 'Your Password reset OTP valid for only 10 minutes');
   }
   async sendOTP() {
     await this.send('sendOTP', 'send OTP verification');
