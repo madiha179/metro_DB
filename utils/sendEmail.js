@@ -26,16 +26,16 @@ module.exports = class Email {
 
     try {
       if (process.env.NODE_ENV === 'production') {
-        const apiInstance = new Brevo.TransactionalEmailsApi({
-          apiKey: process.env.BREVO_API_KEY
-        });
-
-        await apiInstance.sendTransacEmail({
-          sender: { email: this.from, name: 'Metro App' },
+        const apiInstance = new Brevo.TransactionalEmailsApi();
+        const sendSmtpEmail = {
+          sender: { email: this.from, name: 'metro' },
           to: [{ email: this.to }],
           subject,
           htmlContent: html,
           textContent
+        };
+        await apiInstance.sendTransacEmail(sendSmtpEmail, undefined, {
+          apiKey: process.env.BREVO_API_KEY
         });
       } else {
         const transporter = nodemailer.createTransport({
