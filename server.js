@@ -17,6 +17,7 @@ const callbackRouter=require('./routes/paymentCallbackRoute.js');
 const { createDefaultAdmin } = require('./models/adminmodel.js');
 dotenv.config({path:'config.env'});
 const app=express();
+app.set('trust proxy', 1);
 //security http headers
 app.use(helmet());
 app.use(express.json());

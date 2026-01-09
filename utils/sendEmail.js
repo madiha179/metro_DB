@@ -25,17 +25,17 @@ module.exports = class Email {
     try {
       if (process.env.NODE_ENV === 'production') {
         //brevo email sender
-        const apiInstance=new brevo.TransactionalEmailsApi();
-        apiInstance.setApiKey(brevo.ApiClient.authentications['api-key'], process.env.BREVO_API_KEY);
-        console.log('Sending email:', mailOptions);
+        const apiClient = brevo.ApiClient.instance;
+        apiClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+        const apiInstance = new brevo.TransactionalEmailsApi();
         await apiInstance.sendTransacEmail({
-          sender:{email:this.from},
-          to:[{email:this.to}],
-          subject,
-          htmlContent:html,
-          textContent:htmlToText.convert(html)
-        });
-      } else {
+        sender: { email: this.from },
+         to: [{ email: this.to }],
+      subject,
+      htmlContent: html,
+      textContent: htmlToText.convert(html)
+     });
+}else {
         // for local test NODE_ENV ===development
         const transporter = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
