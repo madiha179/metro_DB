@@ -1,7 +1,7 @@
 const fs = require('fs');
 const htmlToText = require('html-to-text');
 const nodemailer = require('nodemailer');
-const brevo = require('@getbrevo/brevo');
+const Brevo = require('@getbrevo/brevo');
 module.exports = class Email {
   constructor(user, otp) {
     this.to = user.email;
@@ -23,10 +23,8 @@ module.exports = class Email {
     };
     try {
       if (process.env.NODE_ENV === 'production') {
-        // Brevo email sender
-        const apiInstance = new brevo.TransactionalEmailsApi();
-        apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.API_KEY, process.env.BREVO_API_KEY);
-
+        const apiInstance = new Brevo.TransactionalEmailsApi();
+        apiInstance.setApiKey = process.env.BREVO_API_KEY; 
         await apiInstance.sendTransacEmail({
           sender: { email: this.from, name: 'Metro App' },
           to: [{ email: this.to }],
@@ -34,6 +32,7 @@ module.exports = class Email {
           htmlContent: html,
           textContent
         });
+
       } else {
         // Local test with Nodemailer
         const transporter = nodemailer.createTransport({
