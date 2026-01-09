@@ -1,7 +1,7 @@
 const fs = require('fs');
 const htmlToText = require('html-to-text');
 const nodemailer = require('nodemailer');
-const sgMail = require('@sendgrid/mail');
+const Brevo = require('@getbrevo/brevo');
 
 module.exports = class Email {
   constructor(user, otp) {
@@ -14,22 +14,22 @@ module.exports = class Email {
   async send(template, subject) {
     let html = fs.readFileSync(`${__dirname}/../views/emails/${template}.html`, 'utf-8');
     html = html.replace('{{firstName}}', this.firstName).replace('{{otp}}', this.otp);
-
-    const mailOptions = {
-      to: this.to,
-      from: this.from,
-      subject,
-      html,
-      text: htmlToText.convert(html)
-    };
+    const textContent = htmlToText.convert(html);
 
     try {
       if (process.env.NODE_ENV === 'production') {
-        // SendGrid Web API
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        await sgMail.send(mailOptions);
+        const apiInstance = new Brevo.TransactionalEmailsApi();
+        apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+
+        await apiInstance.sendTransacEmail({
+          sender: { email: this.from, name: 'metro' },
+          to: [{ email: this.to }],
+          subject,
+          htmlContent: html,
+          textContent
+        });
+
       } else {
-        // for local test NODE_ENV ===development
         const transporter = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
           port: process.env.EMAIL_PORT,
@@ -38,17 +38,30 @@ module.exports = class Email {
             pass: process.env.EMAIL_PASSWORD
           }
         });
-        await transporter.sendMail(mailOptions);
+
+        await transporter.sendMail({
+          to: this.to,
+          from: this.from,
+          subject,
+          html,
+          text: textContent
+        });
       }
     } catch (err) {
-      console.error('Email send error:', err.response ? err.response.body : err);
+      if (err.response && err.response.body) {
+        console.error('Email send error response body:', err.response.body);
+      } else {
+        console.error('Email send error:', err);
+      }
       throw new Error('There was an error sending the email. Try again later!');
     }
   }
- async sendResetPassword() {
-    await this.send('resetPassEmail', 'Your Password reset OTP valid for only 10 mintues');
+
+  async sendResetPassword() {
+    await this.send('resetPassEmail', 'Your Password reset OTP valid for only 10 minutes');
   }
+
   async sendOTP() {
-    await this.send('sendOTP', 'send OTP verification');
+    await this.send('sendOTP', 'Send OTP verification');
   }
 };
