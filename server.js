@@ -23,6 +23,7 @@ app.set('trust proxy', 1);
 app.use(helmet());
 //app.use(express.json());
 app.use(cookieParser());
+app.use('/api/v1/paymob-callback', callbackRouter);
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
 //for NO SQL injection
@@ -61,7 +62,6 @@ app.use('/api/v1/users',userRouter);
 app.use('/api/v1/trips',limiter,TripRouter);
 app.use('/api/v1/tickets',limiter,ticketRouter);
 app.use('/api/v1/ticketpay',paymentLimiter,ticketPayRouter);
-app.use('/api/v1',callbackRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
