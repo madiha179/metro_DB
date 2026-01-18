@@ -5,7 +5,7 @@ const userController=require('./../controllers/userController')
 const userRouter=express.Router();
 //some limits for number of requests for some authenication operations
 const signupLimiter=rateLimit({
-  max:50,
+  max:20,
   windowMs:60*60*1000,
   message:"Too Many Requests from this IP , Please try again in an hour!",
   statusCode:429,
@@ -13,7 +13,7 @@ const signupLimiter=rateLimit({
    legacyHeaders: false
 });
 const profileLimiter=rateLimit({
-  max:100,
+  max:50,
   windowMs:60*60*1000,
   message:"Too Many Requests from this IP , Please try again in an hour!",
   statusCode:429,
@@ -35,14 +35,27 @@ const forgotPassLimiter=rateLimit({
   statusCode:429,
   standardHeaders: true,
    legacyHeaders: false
-})
+});
+const loginLimiter=rateLimit({
+  max:100,
+  windowMs:60*60*1000,
+  message:"Too many forgot password attempts,Please try again in an hour!",
+  statusCode:429,
+  standardHeaders: true,
+   legacyHeaders: false
+});
 //authentication
 userRouter.post('/register',signupLimiter,authcontroller.SignUp);
 userRouter.post('/forgotpassword',forgotPassLimiter,authcontroller.forgotPassword);
 userRouter.patch('/resetpassword/:token',resetPassLimiter,authcontroller.resetPassword);
 
 //login section
+<<<<<<< Updated upstream
 userRouter.post('/login',authcontroller.Login);
+=======
+userRouter.post('/login',loginLimiter,authcontroller.Login);
+userRouter.post('/logout',authcontroller.protect,authcontroller.logOUT)
+>>>>>>> Stashed changes
 //otp section
 userRouter.post('/verifyOTP', authcontroller.verifyOTP);
 userRouter.post('/resendOTP', authcontroller.resendOTP);
