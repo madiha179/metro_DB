@@ -50,11 +50,11 @@ userRouter.post('/forgotpassword',forgotPassLimiter,authcontroller.forgotPasswor
 userRouter.patch('/resetpassword/:token',resetPassLimiter,authcontroller.resetPassword);
 
 //login section
+userRouter.post('/login',loginLimiter,authcontroller.Login);
 <<<<<<< HEAD
-userRouter.post('/login',authcontroller.Login);
 userRouter.post('/logout',authcontroller.protect,authcontroller.logOUT)
 =======
-userRouter.post('/login',loginLimiter,authcontroller.Login);
+
 >>>>>>> sub-main
 //otp section
 userRouter.post('/verifyOTP', authcontroller.verifyOTP);
