@@ -50,12 +50,7 @@ userRouter.post('/forgotpassword',forgotPassLimiter,authcontroller.forgotPasswor
 userRouter.patch('/resetpassword/:token',resetPassLimiter,authcontroller.resetPassword);
 
 //login section
-<<<<<<< Updated upstream
-userRouter.post('/login',authcontroller.Login);
-=======
 userRouter.post('/login',loginLimiter,authcontroller.Login);
-userRouter.post('/logout',authcontroller.protect,authcontroller.logOUT)
->>>>>>> Stashed changes
 //otp section
 userRouter.post('/verifyOTP', authcontroller.verifyOTP);
 userRouter.post('/resendOTP', authcontroller.resendOTP);
