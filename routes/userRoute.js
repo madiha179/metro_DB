@@ -51,11 +51,7 @@ userRouter.patch('/resetpassword/:token',resetPassLimiter,authcontroller.resetPa
 
 //login section
 userRouter.post('/login',loginLimiter,authcontroller.Login);
-<<<<<<< HEAD
 userRouter.post('/logout',authcontroller.protect,authcontroller.logOUT)
-=======
-
->>>>>>> sub-main
 //otp section
 userRouter.post('/verifyOTP', authcontroller.verifyOTP);
 userRouter.post('/resendOTP', authcontroller.resendOTP);
