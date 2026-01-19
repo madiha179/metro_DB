@@ -6,7 +6,6 @@ const rateLimit=require('express-rate-limit');
 const helmet=require('helmet');
 const mongoSanitize=require('express-mongo-sanitize');
 const {xss}=require('express-xss-sanitizer');
-const bodyParser=require('body-parser')
 const apperr = require('./utils/appError.js');
 const globalError=require('./controllers/errorController.js');
 const swaggerDocs=require('./swagger/swaggerDoc.js');
@@ -23,9 +22,13 @@ app.set('trust proxy', 1);
 app.use(helmet());
 //app.use(express.json());
 app.use(cookieParser());
-app.use('/api/v1/paymob-callback', callbackRouter);
-app.use(bodyParser.json({ limit: '20mb' }));
-app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
+app.use(
+  '/api/v1/paymob-callback',
+  express.raw({ type: 'application/json' }),
+  callbackRouter
+);
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 //for NO SQL injection
 app.use(mongoSanitize());
 //for prevent xss injection it`s clean request(body||params||headers||query)from malicous code 
