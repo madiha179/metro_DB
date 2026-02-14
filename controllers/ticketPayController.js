@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Ticket = require('../models/ticketmodel');
 const User = require('../models/usermodel');
-const UserTrips=require('./../models/usersTripes')
+const UserTrips=require('../models/usersTripes');
 const PaymentHistory = require('../models/paymentmodel');
 const catchAsync = require('./../utils/catchAsyncError');
 const AppError = require('./../utils/appError');
@@ -108,7 +108,7 @@ exports.createPayment = catchAsync(async (req, res, next) => {
   try {
     const authToken = await getAuthToken();
     const orderId = await createOrder(authToken, totalPrice, ticket.no_of_stations);
-    const paymentKey = await createPaymentKey(authToken, orderId, user,totalPrice, paymentmethod);
+    const paymentKey = await createPaymentKey(authToken, orderId, user, totalPrice, paymentmethod);
     await createPaymentHistory(req.user.id, totalPrice, paymentmethod, orderId);
 
     res.status(200).json({
