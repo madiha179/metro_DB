@@ -18,7 +18,8 @@ exports.getTicketIdByPrice = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      ticketId: ticket._id
+      ticketId: ticket._id,
+      totalPrice
     }
   });
 });

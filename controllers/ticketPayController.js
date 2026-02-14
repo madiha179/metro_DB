@@ -6,7 +6,6 @@ const PaymentHistory = require('../models/paymentmodel');
 const catchAsync = require('./../utils/catchAsyncError');
 const AppError = require('./../utils/appError');
 const dotenv = require('dotenv');
-const userTrips = require('../models/usersTripes');
 dotenv.config({ path: './config.env' });
 
 const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY;
@@ -96,22 +95,13 @@ async function createPaymentHistory(userId, ticketPrice, paymentMethod, invoiceN
 
 // Create Payment Key Endpoint
 exports.createPayment = catchAsync(async (req, res, next) => {
-  const { ticketId, paymentmethod } = req.body;
+  const { ticketId, paymentmethod, totalPrice } = req.body; 
   
   const ticket = await Ticket.findById(ticketId);
   if (!ticket) return next(new AppError("Ticket not found", 404));
   
   const user = await User.findById(req.user.id);
   if (!user) return next(new AppError("User not found", 404));
-
-  const userTrip = await UserTrips.findOne({ 
-    userId: req.user.id, 
-    ticketId: ticketId 
-  }).sort({ createdAt: -1 }); 
-  
-  if (!userTrip) return next(new AppError("Trip not found", 404));
-  
-  const totalPrice = userTrip.totalPrice; 
   
   try {
     const authToken = await getAuthToken();
