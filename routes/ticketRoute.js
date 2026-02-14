@@ -1,5 +1,5 @@
 const express=require('express');
 const ticketController=require('./../controllers/ticketController');
 const ticketRoute=express.Router();
-ticketRoute.get('/getalltickets',ticketController.getAllTickets);
+ticketRoute.post('/getTicketIdByPrice',ticketController.getTicketIdByPrice);
 module.exports=ticketRoute;

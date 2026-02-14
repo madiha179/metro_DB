@@ -104,9 +104,9 @@ exports.createPayment = catchAsync(async (req, res, next) => {
 
   try {
     const authToken = await getAuthToken();
-    const orderId = await createOrder(authToken, ticket.price, ticket.no_of_stations);
-    const paymentKey = await createPaymentKey(authToken, orderId, user, ticket.price, paymentmethod);
-    await createPaymentHistory(req.user.id, ticket.price, paymentmethod, orderId);
+    const orderId = await createOrder(authToken, ticket.totalPrice, ticket.no_of_stations);
+    const paymentKey = await createPaymentKey(authToken, orderId, user, ticket.totalPrice, paymentmethod);
+    await createPaymentHistory(req.user.id, ticket.totalPrice, paymentmethod, orderId);
 
     res.status(200).json({
       success: true,

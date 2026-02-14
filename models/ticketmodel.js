@@ -8,7 +8,7 @@ ticketSchema = new mongoose.Schema({
         type: Number,
         require: [true, 'Please provided the number of station']
     },
-    
+    totalPrice:{type:Number}
 });
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
