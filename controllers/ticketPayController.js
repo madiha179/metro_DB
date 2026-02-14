@@ -95,18 +95,18 @@ async function createPaymentHistory(userId, ticketPrice, paymentMethod, invoiceN
 
 // Create Payment Key Endpoint
 exports.createPayment = catchAsync(async (req, res, next) => {
-  const { ticketId, paymentmethod } = req.body;
-
+  const { ticketId, paymentmethod, numberOfTickets } = req.body;
   const ticket = await Ticket.findById(ticketId);
   if (!ticket) return next(new AppError("Ticket not found", 404));
-
   const user = await User.findById(req.user.id);
   if (!user) return next(new AppError("User not found", 404));
+  const totalPrice = ticket.price * Number(numberOfTickets);
+  await UserTrips.create({
+    userId: req.user.id,
+    ticketId: ticket._id,
+    totalPrice
+  });
 
-  const userTrip = await UserTrips.findOne({ userId: req.user.id, ticketId: ticketId }).sort({ _id: -1 });
-  if (!userTrip) return next(new AppError("UserTrip not found", 404));
-
-  const totalPrice = userTrip.totalPrice; 
   try {
     const authToken = await getAuthToken();
     const orderId = await createOrder(authToken, totalPrice, ticket.no_of_stations);
