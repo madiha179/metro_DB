@@ -97,6 +97,12 @@ async function createPaymentHistory(userId, ticketPrice, paymentMethod, invoiceN
 exports.createPayment = catchAsync(async (req, res, next) => {
   const { ticketId, paymentmethod, totalPrice } = req.body; 
   
+  const finalPrice = Number(totalPrice);
+  
+  if (!finalPrice || finalPrice <= 0) {
+    return next(new AppError("Invalid total price", 400));
+  }
+  
   const ticket = await Ticket.findById(ticketId);
   if (!ticket) return next(new AppError("Ticket not found", 404));
   
@@ -105,9 +111,9 @@ exports.createPayment = catchAsync(async (req, res, next) => {
   
   try {
     const authToken = await getAuthToken();
-    const orderId = await createOrder(authToken, totalPrice, ticket.no_of_stations);
-    const paymentKey = await createPaymentKey(authToken, orderId, user, totalPrice, paymentmethod);
-    await createPaymentHistory(req.user.id, totalPrice, paymentmethod, orderId);
+    const orderId = await createOrder(authToken, finalPrice, ticket.no_of_stations);
+    const paymentKey = await createPaymentKey(authToken, orderId, user, finalPrice, paymentmethod);
+    await createPaymentHistory(req.user.id, finalPrice, paymentmethod, orderId);
 
     res.status(200).json({
       success: true,
