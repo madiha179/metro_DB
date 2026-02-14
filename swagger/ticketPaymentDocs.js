@@ -9,7 +9,7 @@
  * @swagger
  * /api/v1/ticketpay/ticketpaymentkey:
  *   post:
- *     summary: Generate a payment key for a ticket
+ *     summary: Generate payment key for ticket purchase
  *     tags: [Ticket Payment]
  *     security:
  *       - bearerAuth: []
@@ -21,21 +21,57 @@
  *             type: object
  *             required:
  *               - ticketId
+ *               - totalPrice
  *               - paymentmethod
  *             properties:
  *               ticketId:
  *                 type: string
- *                 example: 12458886
+ *                 description: ID of the ticket to purchase
+ *                 example: "696d85bd747772b5fe0409e5a"
+ *               totalPrice:
+ *                 type: string
+ *                 description: Total price for the ticket(s)
+ *                 example: "300"
  *               paymentmethod:
  *                 type: string
- *                 example: fawry
+ *                 description: Payment method (visa card or fawry)
+ *                 enum: [visa card, fawry]
+ *                 example: "visa card"
  *     responses:
  *       200:
- *         description: Payment key created successfully and send OrderId
+ *         description: Payment key generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 paymentKey:
+ *                   type: string
+ *                   description: Generated payment key token
+ *                 orderId:
+ *                   type: string
+ *                   description: Order ID for the transaction
+ *                   example: "470117636"
  *       400:
- *         description: Payment failed
+ *         description: Bad request - Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid ticket ID or payment method
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
  *       404:
- *         description: Ticket or user not found
+ *         description: Ticket not found
  *       500:
  *         description: Server error
  */
