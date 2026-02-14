@@ -96,17 +96,10 @@ async function createPaymentHistory(userId, ticketPrice, paymentMethod, invoiceN
 // Create Payment Key Endpoint
 exports.createPayment = catchAsync(async (req, res, next) => {
   const { ticketId, paymentmethod, totalPrice } = req.body; 
-  
-  console.log('📥 Received totalPrice:', totalPrice); 
-  
   const finalPrice = Number(totalPrice);
-  
-  console.log('💰 Final Price after Number():', finalPrice);
-  
   if (!finalPrice || finalPrice <= 0) {
     return next(new AppError("Invalid total price", 400));
   }
-  
   const ticket = await Ticket.findById(ticketId);
   if (!ticket) return next(new AppError("Ticket not found", 404));
   
@@ -115,16 +108,9 @@ exports.createPayment = catchAsync(async (req, res, next) => {
   
   try {
     const authToken = await getAuthToken();
-    
-    console.log(' Creating order with price:', finalPrice); 
     const orderId = await createOrder(authToken, finalPrice, ticket.no_of_stations);
-    
-    console.log(' Creating payment key with price:', finalPrice);
     const paymentKey = await createPaymentKey(authToken, orderId, user, finalPrice, paymentmethod);
-    
-    console.log('💳 Saving payment history with price:', finalPrice); 
     await createPaymentHistory(req.user.id, finalPrice, paymentmethod, orderId);
-
     res.status(200).json({
       success: true,
       paymentKey,
