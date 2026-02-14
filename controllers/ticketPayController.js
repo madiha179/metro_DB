@@ -102,9 +102,11 @@ exports.createPayment = catchAsync(async (req, res, next) => {
 
   const user = await User.findById(req.user.id);
   if (!user) return next(new AppError("User not found", 404));
+
   const userTrip = await UserTrips.findOne({ userId: req.user.id, ticketId: ticketId }).sort({ _id: -1 });
   if (!userTrip) return next(new AppError("UserTrip not found", 404));
-  const totalPrice = userTrip.totalPrice;
+
+  const totalPrice = userTrip.totalPrice; 
   try {
     const authToken = await getAuthToken();
     const orderId = await createOrder(authToken, totalPrice, ticket.no_of_stations);
