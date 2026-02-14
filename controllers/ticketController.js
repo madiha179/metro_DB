@@ -1,11 +1,25 @@
-const Ticket=require('./../models/ticketmodel');
-const catchAsync=require('./../utils/catchAsyncError');
-const AppError=require('./../utils/appError');
-exports.getAllTickets=catchAsync(async(req,res,next)=>{
-const ticket =await Ticket.find().select('price no_of_stations');
-if(!ticket) return next(new AppError('tickets not found'));
-res.status(200).json({
-  success:true,
-  data:ticket
-})
+const catchAsync = require('./../utils/catchAsyncError');
+ const Ticket = require('./../models/ticketmodel'); 
+ const UserTrips = require('./../models/usersTripes'); 
+ const AppError = require('./../utils/appError'); 
+exports.getTicketIdByPrice = catchAsync(async (req, res, next) => {
+  const ticketPrice = Number(req.body.ticketPrice);
+  const numberOfTickets = Number(req.body.numberOfTickets);
+  const ticket = await Ticket.findOne({ price: ticketPrice });
+  if (!ticket) {
+    return next(new AppError('Ticket Not Found', 400));
+  }
+  const totalPrice = ticketPrice * numberOfTickets;
+  const userTrip = await UserTrips.create({
+    userId: req.user.id,
+    ticketId: ticket._id,
+    totalPrice
+  });
+  res.status(200).json({
+    status: "success",
+    data: {
+      ticketId: ticket._id,
+      totalPrice
+    }
+  });
 });
