@@ -66,7 +66,7 @@ app.use('/api/v1/users',userRouter);
 app.use('/api/v1/trips',limiter,TripRouter);
 app.use('/api/v1/tickets',limiter,ticketRouter);
 app.use('/api/v1/ticketpay',paymentLimiter,ticketPayRouter);
-app.use('/api/v1/station',nearestStationRoute);
+app.use('/api/v1/neareststation',nearestStationRoute);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
