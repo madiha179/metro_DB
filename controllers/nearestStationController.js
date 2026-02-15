@@ -7,7 +7,9 @@ exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
   if (!lat || !lng || !distance) {
     return next(new AppError('Please provide latitude, longitude and distance', 400));
   }
-
+  if (unit !== 'km' && unit !== 'mi') {
+  return next(new AppError('Unit must be km or mi', 400));
+}
   const latNum = parseFloat(lat);
   const lngNum = parseFloat(lng);
   const distanceNum = parseFloat(distance);
