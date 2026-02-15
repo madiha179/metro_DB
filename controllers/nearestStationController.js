@@ -26,7 +26,6 @@ exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
           type: "Point",
           coordinates: [lngNum, latNum]
         },
-        $maxDistance: distanceInMeters
       }
     }
   });
