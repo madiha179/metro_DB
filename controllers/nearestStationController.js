@@ -1,27 +1,39 @@
-const stationLocation=require('../models/stationsLocation');
-const CatchAsync=require('../utils/catchAsyncError');
-const AppError=require('../utils/appError');
 exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
-  const { distance, latlng, unit } = req.params;
-  if (!latlng) {
-    return next(new AppError('Please Provide Latitude and Longitude', 400));
+  const { distance, lat, lng, unit } = req.query;
+
+  if (!lat || !lng || !distance) {
+    return next(new AppError('Please provide latitude, longitude and distance', 400));
   }
-  const [lat, lng] = latlng.split(',').map(el => parseFloat(el));
+
+  const latNum = parseFloat(lat);
+  const lngNum = parseFloat(lng);
   const distanceNum = parseFloat(distance);
-  if (isNaN(lat) || isNaN(lng) || isNaN(distanceNum)) {
+
+  if (isNaN(latNum) || isNaN(lngNum) || isNaN(distanceNum)) {
     return next(new AppError('Invalid latitude, longitude or distance', 400));
   }
-  const radius =unit === 'mi' ? distanceNum / 3963.2: distanceNum / 6378.1;
+
+  const radius = unit === 'mi'? distanceNum / 3963.2: distanceNum / 6378.1;
+
   const nearestStations = await stationLocation.find({
     location: {
       $geoWithin: {
-        $centerSphere: [[lng, lat], radius]
+        $centerSphere: [[lngNum, latNum], radius]
       }
     }
   });
+
   res.status(200).json({
-    status: 'success',
-    results: nearestStations.length,
-    data: { nearestStations }
-  });
+  status: 'success',
+  results: nearestStations.length,
+  data: {
+    nearestStations: nearestStations.map(station => ({
+      id: station._id,
+      name: station.name,
+      line: station.line,
+      lat: station.location.coordinates[1],
+      lng: station.location.coordinates[0]
+    }))
+  }
+});
 });

@@ -1,7 +1,16 @@
 const mongoose = require('mongoose');
 
 const stationLocationSchema = new mongoose.Schema({
-  name: String,
+  name:{
+    type:String,
+    required:true,
+    lowercase:true,
+    trim:true
+  } ,
+  line:{
+    type:Number,
+     required:true
+  },
   location: {
     type: {
       type: String,
