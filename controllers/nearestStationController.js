@@ -2,14 +2,14 @@ const CatchAsync = require('../utils/catchAsyncError')
 const AppError = require('../utils/appError');
 const stationLocation = require('../models/stationsLocation');
 exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
-  const { distance, lat, lng, unit } =  req.params;
-
+  const { distance, lat, lng, unit } = req.params;
   if (!lat || !lng || !distance) {
     return next(new AppError('Please provide latitude, longitude and distance', 400));
   }
+  
   if (unit !== 'km' && unit !== 'mi') {
-  return next(new AppError('Unit must be km or mi', 400));
-}
+    return next(new AppError('Unit must be km or mi', 400));
+  }
   const latNum = parseFloat(lat);
   const lngNum = parseFloat(lng);
   const distanceNum = parseFloat(distance);
@@ -17,32 +17,34 @@ exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
   if (isNaN(latNum) || isNaN(lngNum) || isNaN(distanceNum)) {
     return next(new AppError('Invalid latitude, longitude or distance', 400));
   }
+  const distanceInMeters = unit === 'mi' ? distanceNum * 1609.34 : distanceNum * 1000;
 
-  const radius =
-    unit === 'mi'
-      ? distanceNum / 3963.2
-      : distanceNum / 6378.1;
-
-  const nearestStations = await stationLocation.find({
+  const nearestStation = await stationLocation.findOne({
     location: {
-      $geoWithin: {
-        $centerSphere: [[lngNum, latNum], radius]
+      $nearSphere: {
+        $geometry: {
+          type: "Point",
+          coordinates: [lngNum, latNum]
+        },
+        $maxDistance: distanceInMeters
       }
     }
   });
 
- res.status(200).json({
-  status: 'success',
-  results: nearestStations.length,
-  data: {
-    nearestStations: nearestStations.map(station => ({
-      id: station._id,
-      name: station.name,
-      line: station.line,
-      lat: station.location.coordinates[1],
-      lng: station.location.coordinates[0]
-    }))
+  if (!nearestStation) {
+    return next(new AppError('No station found within the specified distance', 404));
   }
-});
 
+  res.status(200).json({
+    status: 'success',
+    data: {
+      nearestStation: {
+        id: nearestStation._id,
+        name: nearestStation.name,
+        line: nearestStation.line,
+        lat: nearestStation.location.coordinates[1],
+        lng: nearestStation.location.coordinates[0]
+      }
+    }
+  });
 });
