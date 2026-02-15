@@ -1,3 +1,6 @@
+const CatchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
+const stationLocation = require('../models/stationLocation');
 exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
   const { distance, lat, lng, unit } = req.query;
 
@@ -13,7 +16,10 @@ exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
     return next(new AppError('Invalid latitude, longitude or distance', 400));
   }
 
-  const radius = unit === 'mi'? distanceNum / 3963.2: distanceNum / 6378.1;
+  const radius =
+    unit === 'mi'
+      ? distanceNum / 3963.2
+      : distanceNum / 6378.1;
 
   const nearestStations = await stationLocation.find({
     location: {
@@ -23,7 +29,7 @@ exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
     }
   });
 
-  res.status(200).json({
+ res.status(200).json({
   status: 'success',
   results: nearestStations.length,
   data: {
@@ -36,4 +42,5 @@ exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
     }))
   }
 });
+
 });
