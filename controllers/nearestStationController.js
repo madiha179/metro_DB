@@ -1,6 +1,6 @@
-const CatchAsync = require('../utils/catchAsync');
+const CatchAsync = require('../utils/catchAsyncError')
 const AppError = require('../utils/appError');
-const stationLocation = require('../models/stationLocation');
+const stationLocation = require('../models/stationsLocation');
 exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
   const { distance, lat, lng, unit } = req.query;
 
