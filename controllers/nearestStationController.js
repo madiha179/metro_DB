@@ -2,7 +2,7 @@ const CatchAsync = require('../utils/catchAsyncError')
 const AppError = require('../utils/appError');
 const stationLocation = require('../models/stationsLocation');
 exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
-  const { distance, lat, lng, unit } = req.query;
+  const { distance, lat, lng, unit } =  req.params;
 
   if (!lat || !lng || !distance) {
     return next(new AppError('Please provide latitude, longitude and distance', 400));
