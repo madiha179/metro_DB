@@ -29,9 +29,9 @@
  *                 description: ID of the ticket to purchase
  *                 example: "696d85bd747772b5fe0409e5a"
  *               totalPrice:
- *                 type: string
+ *                 type: Number
  *                 description: Total price for the ticket(s)
- *                 example: "300"
+ *                 example: 300
  *               paymentmethod:
  *                 type: string
  *                 description: Payment method (visa card or fawry)
@@ -140,4 +140,53 @@
  *         description: Payment failed or invalid payment method
  *       500:
  *         description: Server error
+ */
+/**
+ * @swagger
+ * /api/v1/ticketpay/paymentconfirmation:
+ *   get:
+ *     summary: Get latest payment confirmation details
+ *     description: Retrieve the most recent payment information for the authenticated user
+ *     tags: [Ticket Payment]
+ *     security:
+ *       - bearerAuth: []
+ *     
+ *     responses:
+ *       200:
+ *         description: Payment data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     userName:
+ *                       type: string
+ *                       example: Ahmed Ali
+ *                     payment:
+ *                       type: object
+ *                       properties:
+ *                         invoice_number:
+ *                           type: number
+ *                           example: 123456
+ *                         payment_method:
+ *                           type: string
+ *                           example: visa card
+ *                         issuing_date:
+ *                           type: string
+ *                           example: 2026-02-16
+ *                         amount_paid:
+ *                           type: number
+ *                           example: 50
+ *       401:
+ *         description: Unauthorized - Token expired or user not logged in
+ *       404:
+ *         description: No payment history found
+ *       500:
+ *         description: Internal server error
  */
