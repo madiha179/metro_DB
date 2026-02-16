@@ -8,7 +8,7 @@ const ticketPayRoute=express.Router();
 ticketPayRoute.post('/ticketpaymentkey',authController.protect,[body('ticketId').notEmpty().withMessage('ticket is required').isMongoId().withMessage('Invalid ticketID'),
   body('paymentmethod').notEmpty().withMessage('payment method is required').isIn(['fawry', 'visa card']).withMessage('Invalid payment method')
 ],validateRequest,ticketpaycontroller.createPayment);
-
+ticketPayRoute.get('/paymentconfirmation',authController.protect,ticketpaycontroller.paymentConfirm);
 ticketPayRoute.post('/ticketfawrypayment',authController.protect,[
     body('paymentkey').notEmpty().withMessage('Payment key is required'),
   body('paymentmethod').notEmpty().withMessage('Payment method is required')

@@ -113,8 +113,7 @@ exports.createPayment = catchAsync(async (req, res, next) => {
     await createPaymentHistory(req.user.id, finalPrice, paymentmethod, orderId);
     res.status(200).json({
       success: true,
-      paymentKey,
-      orderId
+      paymentKey
     });
   } catch(error) {
     res.status(400).json({
@@ -181,4 +180,25 @@ exports.visaCardPay = catchAsync(async(req, res, next) => {
       error: err.response?.data || err.message
     });
   }
+});
+exports.paymentConfirm = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('name');
+  const userPayment = await Payment.findOne({ userid: req.user.id })
+    .select('payment_history')
+    .sort({ 'payment_history.issuing_date': -1 });
+  if (!userPayment || !userPayment.payment_history.length) {
+    return next(new AppError('No payment history found', 404));
+  }
+  const latestPayment = userPayment.payment_history[userPayment.payment_history.length - 1];
+  res.status(200).json({
+    status: 'success',
+    data: {
+      userName: user?.name,
+      payment: {
+        invoice_number: latestPayment.invoice_number,
+        payment_method: latestPayment.payment_method,
+        amount_paid: latestPayment.amount_paid
+      }
+    }
+  });
 });
