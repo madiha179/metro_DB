@@ -51,10 +51,6 @@
  *                 paymentKey:
  *                   type: string
  *                   description: Generated payment key token
- *                 orderId:
- *                   type: string
- *                   description: Order ID for the transaction
- *                   example: "470117636"
  *       400:
  *         description: Bad request - Invalid input data
  *         content:
