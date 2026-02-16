@@ -183,7 +183,7 @@ exports.visaCardPay = catchAsync(async(req, res, next) => {
 });
 exports.paymentConfirm = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id).select('name');
-  const userPayment = await Payment.findOne({ userid: req.user.id })
+  const userPayment = await PaymentHistory.findOne({ userid: req.user.id })
     .select('payment_history')
     .sort({ 'payment_history.issuing_date': -1 });
   if (!userPayment || !userPayment.payment_history.length) {
