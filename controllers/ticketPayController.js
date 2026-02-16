@@ -197,7 +197,7 @@ exports.paymentConfirm = catchAsync(async (req, res, next) => {
       payment: {
         invoice_number: latestPayment.invoice_number,
         payment_method: latestPayment.payment_method,
-        issuing_date:latestPayment.issuing_date,
+        issuing_date:latestPayment.issuing_date.toISOString().split('T')[0],
         amount_paid: latestPayment.amount_paid
       }
     }
