@@ -44,9 +44,8 @@ mongoose.connect(DB,{
 })
 .then(async () => {
   console.log("✅ DB connection successful");
-  await createDefaultAdmin();
-  await Admin.updateMany({}, { $unset: { request: "" } });
-console.log("request field removed");
+ await Admin.deleteMany({ email: "metromate534@gmail.com" });
+await createDefaultAdmin();
 })
 .catch(err => console.error("❌ DB connection error:", err));
 const limiter=rateLimit({
