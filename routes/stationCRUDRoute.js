@@ -1,0 +1,11 @@
+const express=require('express');
+const stationCRUDController=require('./../controllers/stationCRUDController');
+const adminAuthConroller=require('./../controllers/adminAuthConroller');
+const stationCRUDRouter=express.Router();
+stationCRUDRouter.use(adminAuthConroller.protect);
+stationCRUDRouter.get('/getallstations',stationCRUDController.getAllStations);
+stationCRUDRouter.get('/getstation/:id',stationCRUDController.getStation);
+stationCRUDRouter.post('/addstation',stationCRUDController.addStation);
+stationCRUDRouter.patch('/updatestation/:id',stationCRUDController.updateStation);
+stationCRUDRouter.delete('/deletestation/:id',stationCRUDController.deleteStation);
+module.exports=stationCRUDRouter;
