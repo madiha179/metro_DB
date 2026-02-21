@@ -17,7 +17,7 @@ const ticketPayRouter=require('./routes/ticketPayRoute.js');
 const callbackRouter=require('./routes/paymentCallbackRoute.js');
 const { createDefaultAdmin } = require('./models/adminmodel.js');
 const nearestStationRoute=require('./routes/nearestStationRoute.js');
-const adminRoute=require('./routes/adminAuthRoute.js');
+const { Admin, createDefaultAdmin } = require('./models/adminmodel.js');
 dotenv.config({path:'config.env'});
 const app=express();
 app.set('trust proxy', 1);
@@ -45,6 +45,8 @@ mongoose.connect(DB,{
 .then(async () => {
   console.log("✅ DB connection successful");
   await createDefaultAdmin();
+  await Admin.updateMany({}, { $unset: { request: "" } });
+console.log("request field removed");
 })
 .catch(err => console.error("❌ DB connection error:", err));
 const limiter=rateLimit({
