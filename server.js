@@ -15,7 +15,6 @@ const TripRouter = require('./routes/TripInfoRoute.js');
 const ticketRouter=require('./routes/ticketRoute.js');
 const ticketPayRouter=require('./routes/ticketPayRoute.js');
 const callbackRouter=require('./routes/paymentCallbackRoute.js');
-const { createDefaultAdmin } = require('./models/adminmodel.js');
 const nearestStationRoute=require('./routes/nearestStationRoute.js');
 const { Admin, createDefaultAdmin } = require('./models/adminmodel.js');
 dotenv.config({path:'config.env'});
