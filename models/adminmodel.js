@@ -4,7 +4,12 @@ const validator=require('validator');
 const AdminSchema=new mongoose.Schema({
     ssn:{
         type:Number,
+        validate: {
+    validator: function (value) {
+      return /^([1-9]{1})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})[0-9]{3}([0-9]{1})[0-9]{1}$/.test(value);
+    },
         required:[true,'please provied your ssn'],
+    },
     },
     name:{
         type:String,
