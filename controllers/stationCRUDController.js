@@ -15,6 +15,12 @@ const {stationName,lineNumber,position,isTransfer,transferTo}=req.body;
 });
 
 exports.getAllStations=catchAsyncError(async(req,res,next)=>{
+  if(!req.query.sort){
+    req.query.sort='line_number,position';
+  }
+  if(!req.query.limit){
+    req.query.limit='10';
+  }
   const data=new ApiFeatures(stataions.find(),req.query)
   .sort().paginate();
   if(!data){
