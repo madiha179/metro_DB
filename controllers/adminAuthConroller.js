@@ -1,4 +1,4 @@
-const Admin=require('./../models/adminmodel');
+const {Admin}=require('./../models/adminmodel');
 const appError=require('../utils/appError');
 const catchAsyncError=require('../utils/catchAsyncError');
 const jwt=require('jsonwebtoken');
