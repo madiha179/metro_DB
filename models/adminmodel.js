@@ -29,12 +29,6 @@ const AdminSchema=new mongoose.Schema({
     image:{
         type:String
     },
-    request:{
-        type:String,
-        enum:['approved','rejected','pending'],
-        default:'pending',
-        required:[true,'please approve or reject the request']
-    }
 });
 AdminSchema.pre("save",async function(next){
     if(!this.isModified('password')) return next();
@@ -50,8 +44,7 @@ AdminSchema.methods.correctpassword=async function (candidatepassword,password) 
             ssn: 28730125615274,
             name: 'Admin 1',
             password: 'Admin$123',
-            email: 'metromate534@gmail.com',
-            request: 'pending'
+            email: 'metromate534@gmail.com'
         };
         const adminExists = await Admin.findOne({ email: adminData.email });
         if (!adminExists) {
