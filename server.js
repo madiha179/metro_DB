@@ -17,6 +17,7 @@ const ticketPayRouter=require('./routes/ticketPayRoute.js');
 const callbackRouter=require('./routes/paymentCallbackRoute.js');
 const nearestStationRoute=require('./routes/nearestStationRoute.js');
 const { Admin, createDefaultAdmin } = require('./models/adminmodel.js');
+const adminRoute=require('./routes/adminAuthRoute.js');
 dotenv.config({path:'config.env'});
 const app=express();
 app.set('trust proxy', 1);
