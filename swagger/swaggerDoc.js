@@ -26,7 +26,7 @@ const options = {
     path.join(__dirname,"ticketDocs.js"),
     path.join(__dirname,"nearsetStationDoc.js"),
     path.join(__dirname, "../routes/*.js"),
-    path.join(__dirname,"adminDocs")
+    path.join(__dirname,"adminDocs.js")
   ],
 };
 const swaggerSpec = swaggerJSDoc(options);
