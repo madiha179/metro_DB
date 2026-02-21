@@ -9,6 +9,7 @@ const {xss}=require('express-xss-sanitizer');
 const apperr = require('./utils/appError.js');
 const globalError=require('./controllers/errorController.js');
 const swaggerDocs=require('./swagger/swaggerDoc.js');
+const adminSwaggerDocs=require('./swagger/adminSwaggerDocs.js');
 const userRouter=require('./routes/userRoute');
 const TripRouter = require('./routes/TripInfoRoute.js');
 const ticketRouter=require('./routes/ticketRoute.js');
@@ -63,6 +64,7 @@ const paymentLimiter=rateLimit({
    legacyHeaders: false
 });
 swaggerDocs(app);
+adminSwaggerDocs(app);
 app.use('/api/v1/users',userRouter);
 app.use('/api/v1/trips',limiter,TripRouter);
 app.use('/api/v1/tickets',limiter,ticketRouter);
