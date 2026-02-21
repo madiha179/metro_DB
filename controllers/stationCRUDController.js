@@ -49,8 +49,9 @@ exports.getStation=catchAsyncError(async(req,res,next)=>{
 });
 
 exports.updateStation=catchAsyncError(async(req,res,next)=>{
-  const station=await stataions.findByIdAndUpdate(req.params.id,req.body,{
-    new:true
+  const station=await stataions.findByIdAndUpdate(req.params.id, { $set: req.body },{
+    new:true,
+    runValidators: true
   });
     if(!station) 
     return next(new appError('Station Not Found To Update',404));
