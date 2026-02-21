@@ -133,7 +133,7 @@
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200:
+ *       204:
  *         description:station delete
  *       404:
  *         description:Station Not Found
