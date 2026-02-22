@@ -105,10 +105,10 @@
  *           schema:
  *             type: object
  *             properties:
- *               ticketPrice:
+ *               price:
  *                 type: number
  *                 example: 12
- *               noOfStations:
+ *               no_of_stations:
  *                 type: number
  *                 example: 6
  *     responses:
