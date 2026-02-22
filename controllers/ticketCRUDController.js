@@ -52,7 +52,7 @@ exports.deleteTicket=catchAsyncError(async(req,res,next)=>{
   const ticket=await Ticket.findByIdAndDelete(req.params.id);
   if(!ticket)
     return next(new appError('Ticket Not Found',404));
-  res.status(200).json({
+  res.status(204).json({
     status:'success'
   })
 });
