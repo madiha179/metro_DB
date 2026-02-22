@@ -35,7 +35,7 @@ exports.addTicket=catchAsyncError(async(req,res,next)=>{
 });
 
 exports.updateTicket=catchAsyncError(async(req,res,next)=>{
-  const ticket=await Ticket.findByIdAndUpdate(req.params.id,{
+  const ticket=await Ticket.findByIdAndUpdate(req.params.id,req.body,{
     new:true
   });
   if(!ticket)
