@@ -19,6 +19,7 @@ const nearestStationRoute=require('./routes/nearestStationRoute.js');
 const { Admin, createDefaultAdmin } = require('./models/adminmodel.js');
 const adminRoute=require('./routes/adminAuthRoute.js');
 const stationCRUDRouter=require('./routes/stationCRUDRoute.js');
+const ticketCRUDRouter=require('./routes/ticketCRUDRoutes.js');
 dotenv.config({path:'config.env'});
 const app=express();
 app.set('trust proxy', 1);
@@ -77,6 +78,7 @@ app.use('/api/v1/ticketpay',paymentLimiter,ticketPayRouter);
 app.use('/api/v1/neareststation',nearestStationRoute);
 app.use('/api/v1/admin',adminRoute);
 app.use('/api/v1/dashboard',stationCRUDRouter);
+app.use('/api/v1/dashboard',ticketCRUDRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });

@@ -1,0 +1,11 @@
+const express=require('express');
+const ticketCRUDController=require('./../controllers/ticketCRUDController');
+const admin=require('./../controllers/adminAuthConroller');
+const ticketCRUDRouter=express.Router();
+ticketCRUDRouter.use(admin.protect);
+ticketCRUDRouter.get('/getalltickets',ticketCRUDController.getAllTickets);
+ticketCRUDRouter.get('/getticket/:id',ticketCRUDController.getTicketById);
+ticketCRUDRouter.post('/addticket',ticketCRUDController.addTicket);
+ticketCRUDRouter.patch('/updateticket/:id',ticketCRUDController.updateTicket);
+ticketCRUDRouter.delete('/deleteticket/:id',ticketCRUDController.deleteTicket);
+module.exports=ticketCRUDRouter;
