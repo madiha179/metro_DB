@@ -6,6 +6,7 @@ const rateLimit=require('express-rate-limit');
 const helmet=require('helmet');
 const mongoSanitize=require('express-mongo-sanitize');
 const {xss}=require('express-xss-sanitizer');
+const cors=require('cors');
 const apperr = require('./utils/appError.js');
 const globalError=require('./controllers/errorController.js');
 const swaggerDocs=require('./swagger/swaggerDoc.js');
@@ -64,6 +65,10 @@ const paymentLimiter=rateLimit({
   standardHeaders: true,
    legacyHeaders: false
 });
+app.use(cors({
+  origin:true,
+  credentials:true
+}));
 swaggerDocs(app);
 app.use('/api/v1/users',userRouter);
 app.use('/api/v1/trips',limiter,TripRouter);
