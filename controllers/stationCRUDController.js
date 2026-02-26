@@ -21,6 +21,7 @@ exports.getAllStations=catchAsyncError(async(req,res,next)=>{
   if(!req.query.limit){
     req.query.limit='10';
   }
+  const numOfStations=await stataions.find();
   const data=new ApiFeatures(stataions.find(),req.query)
   .sort().paginate();
   if(!data){
@@ -29,6 +30,7 @@ exports.getAllStations=catchAsyncError(async(req,res,next)=>{
   const allStations=await data.query;
   res.status(200).json({
     status:'success',
+    stationsTotalLength:numOfStations.length,
     results:allStations.length,
     data:{
       allStations
