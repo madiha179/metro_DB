@@ -71,7 +71,7 @@ exports.updateStation=catchAsyncError(async(req,res,next)=>{
 exports.deleteStation=catchAsyncError(async(req,res,next)=>{
   const station=await stataions.findByIdAndDelete(req.params.id);
   if(!station)
-  return next(new appError('Station Not Found To Update',404));
+  return next(new appError('Station Not Found To Delete',404));
   res.status(204).json({
     status:'success',
     message:'Station deleted successfly'

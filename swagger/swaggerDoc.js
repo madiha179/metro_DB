@@ -29,6 +29,7 @@ const options = {
     path.join(__dirname,"stationsDashDocs.js"),
     path.join(__dirname,"ticketCRUDSwagger.js"),
     path.join(__dirname, "../routes/*.js"),
+    path.join(__dirname,"adminDocs.js")
   ],
 };
 const swaggerSpec = swaggerJSDoc(options);
