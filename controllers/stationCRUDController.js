@@ -24,10 +24,13 @@ exports.getAllStations=catchAsyncError(async(req,res,next)=>{
   const numOfStations=await stataions.find();
   const data=new ApiFeatures(stataions.find(),req.query)
   .sort().paginate();
-  if(!data){
-    return next(new appError('No Stations To Show',404));
-  }
   const allStations=await data.query;
+  if (allStations.length === 0 && numOfStations.length > 0) {
+    return next(new appError('No more stations, you have exceeded the available pages', 404));
+  }
+  if (numOfStations.length === 0) {
+    return next(new appError('No Stations To Show', 404));
+  }
   res.status(200).json({
     status:'success',
     stationsTotalLength:numOfStations.length,
