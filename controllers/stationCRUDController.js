@@ -77,3 +77,19 @@ exports.deleteStation=catchAsyncError(async(req,res,next)=>{
     message:'Station deleted successfly'
   })
 });
+
+exports.searchStation=catchAsyncError(async(req,res,next)=>{
+  const station=await stataions.find({
+    "$or":[
+      {name:{$regex:req.params.key}}
+    ]
+  });
+  if(!station)
+    return next(new appError('Station Not Found',404));
+  res.status(200).json({
+    status:'success',
+    data:{
+      station
+    }
+  })
+});
