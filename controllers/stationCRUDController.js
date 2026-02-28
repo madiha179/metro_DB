@@ -81,7 +81,7 @@ exports.deleteStation=catchAsyncError(async(req,res,next)=>{
 exports.searchStation=catchAsyncError(async(req,res,next)=>{
   const station=await stataions.find({
     "$or":[
-      {name:{$regex:req.params.key,$options:' i '}}
+      {name:{$regex:req.params.key,$options:'i'}}
     ]
   });
   if(!station || station.length === 0)
