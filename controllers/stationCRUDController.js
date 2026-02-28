@@ -79,11 +79,15 @@ exports.deleteStation=catchAsyncError(async(req,res,next)=>{
 });
 
 exports.searchStation=catchAsyncError(async(req,res,next)=>{
-  const station=await stataions.find({
+   if(!req.query.sort){
+    req.query.sort='line_number,position';
+  }
+  const data=new ApiFeatures( stataions.find({
     "$or":[
       {name:{$regex:req.params.key,$options:'i'}}
     ]
-  });
+  }),req.query).sort();
+  const station=await data.query;
   if(!station || station.length === 0)
     return next(new appError('Station Not Found',404));
   res.status(200).json({
