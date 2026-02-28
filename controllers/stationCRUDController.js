@@ -81,10 +81,10 @@ exports.deleteStation=catchAsyncError(async(req,res,next)=>{
 exports.searchStation=catchAsyncError(async(req,res,next)=>{
   const station=await stataions.find({
     "$or":[
-      {name:{$regex:req.params.key}}
+      {name:{$regex:req.params.key,$options:' i '}}
     ]
   });
-  if(!station)
+  if(!station || station.length === 0)
     return next(new appError('Station Not Found',404));
   res.status(200).json({
     status:'success',
