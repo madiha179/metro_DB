@@ -184,3 +184,28 @@
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /api/v1/dashboard/search/{key}:
+ *   get:
+ *     summary: Search for stations by name
+ *     tags: [Stations DashBoard]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: key
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Return matched stations
+ *       404:
+ *         description: Station Not Found
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *       500:
+ *         description: Server error
+ */

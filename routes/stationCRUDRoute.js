@@ -5,6 +5,7 @@ const stationCRUDRouter=express.Router();
 stationCRUDRouter.use(adminAuthConroller.protect);
 stationCRUDRouter.get('/getallstations',stationCRUDController.getAllStations);
 stationCRUDRouter.get('/getstation/:id',stationCRUDController.getStation);
+stationCRUDRouter.get('/search/:key',stationCRUDController.searchStation);
 stationCRUDRouter.post('/addstation',stationCRUDController.addStation);
 stationCRUDRouter.patch('/updatestation/:id',stationCRUDController.updateStation);
 stationCRUDRouter.delete('/deletestation/:id',stationCRUDController.deleteStation);
