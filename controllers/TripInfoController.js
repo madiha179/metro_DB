@@ -37,7 +37,7 @@ exports.getStation = catchAsync(async (req, res, next) => {
 
 exports.tripInfo = catchAsync(async (req, res, next) => {
     const { startStation, endStation } = req.body;
-    const lang = req.query.lang === 'ar' ? 'ar' : 'en';
+    const lang = (req.query.lang || req.body.lang) === 'ar' ? 'ar' : 'en';
 
     const start = await Station.findOne({
         $or: [{ 'name.en': startStation.toLowerCase() }, { 'name.ar': startStation }]
@@ -124,6 +124,13 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         }
 
         const path = metroGraph.path(start.name.en, end.name.en, { cost: true });
+
+        if (!path || !path.path) {
+            return res.status(400).json({
+                message: "No route found between these stations"
+            });
+        }
+
         const ArrayList = [...list.values()];
         const result = ArrayList.filter((obj) => path.path.includes(obj.name.en));
 
