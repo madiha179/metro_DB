@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const stationLocationSchema = new mongoose.Schema({
   name: {
     en: { type: String, required: true, lowercase: true, trim: true },
-    ar: { type: String, required: true, trim: true },
+    ar: { type: String, trim: true },
 },
   line:{
     type:Number,
