@@ -98,6 +98,19 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
                 if (j < testStation.length - 1) neighbors[testStation[j + 1].name.en] = 1;
                 pushNode(metroGraph, current.name.en, neighbors);
             }
+
+            const transferInfo = t.transfer_to.find(obj => obj.line == end.line_number);
+            if (transferInfo) {
+                const transferStationOnLine2 = await Station.findOne({
+                    line_number: end.line_number,
+                    position: transferInfo.position
+                });
+                if (transferStationOnLine2) {
+                    pushNode(metroGraph, t.name.en, { [transferStationOnLine2.name.en]: 1 });
+                    pushNode(metroGraph, transferStationOnLine2.name.en, { [t.name.en]: 1 });
+                    list.set(transferStationOnLine2.name.en, transferStationOnLine2);
+                }
+            }
         }
 
         const secondTransfer = firstTransfer
@@ -142,6 +155,12 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             else
                 secondList.push(obj);
         });
+
+        if (firstList.length === 0 || secondList.length === 0) {
+            return res.status(400).json({
+                message: "No route found between these stations"
+            });
+        }
 
         firstList.sort((a, b) => a.position - b.position);
         secondList.sort((a, b) => a.position - b.position);
