@@ -3,6 +3,7 @@ const AppError = require('../utils/appError');
 const stationLocation = require('../models/stationsLocation');
 exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
   const { lat, lng } = req.params;
+  const lang=req.query.lang||'en';
   if (!lat || !lng) {
     return next(new AppError('Please provide latitude and longitude', 400));
   }
@@ -26,13 +27,12 @@ exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
   if (!nearestStation) {
     return next(new AppError('No station found', 404));
   }
-
   res.status(200).json({
     status: 'success',
     data: {
       nearestStation: {
         id: nearestStation._id,
-        name: nearestStation.name,
+        name: lang==='ar'?nearestStation.name.ar:nearestStation.name.en,
         line: nearestStation.line,
         lat: nearestStation.location.coordinates[1],
         lng: nearestStation.location.coordinates[0]
