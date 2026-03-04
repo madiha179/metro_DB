@@ -2,10 +2,11 @@ const stataions=require('./../models/stationModel');
 const catchAsyncError=require('./../utils/catchAsyncError');
 const appError=require('./../utils/appError');
 const ApiFeatures=require('./../utils/ApiFeatures');
+
 exports.addStation=catchAsyncError(async(req,res,next)=>{
 const {stationName,lineNumber,position,isTransfer,transferTo}=req.body;
  const newStation=await stataions.create(
-  {name:stationName,line_number:lineNumber,position:position,is_transfer:isTransfer,transfer_to:transferTo});
+  {name:{en:stationName},line_number:lineNumber,position:position,is_transfer:isTransfer,transfer_to:transferTo});
   res.status(201).json({
     status:'succes',
     data:{
@@ -84,7 +85,7 @@ exports.searchStation=catchAsyncError(async(req,res,next)=>{
   }
   const data=new ApiFeatures( stataions.find({
     "$or":[
-      {name:{$regex:req.params.key,$options:'i'}}
+      {"name.en":{$regex:req.params.key,$options:'i'}}
     ]
   }),req.query).sort();
   const station=await data.query;

@@ -4,7 +4,7 @@ const Ticket = require('./../models/ticketmodel');
 const Graph = require("node-dijkstra");
 
 const DISTANCE = 2; 
-const TIME =  3; 
+const TIME = 3; 
 
 function pushNode(graph, nodeName, newNeighbors) {
     const existingNode = graph.graph.get(nodeName);
@@ -17,12 +17,11 @@ function pushNode(graph, nodeName, newNeighbors) {
     }
 }
 
-
-exports.getStation = catchAsync( async (req, res, next) => {
+exports.getStation = catchAsync(async (req, res, next) => {
     const stationList = await Station.aggregate([
-    { $group: { _id: "$name", doc: { $first: "$$ROOT" } } },
-    { $replaceRoot: { newRoot: "$doc" } }
-]);
+        { $group: { _id: "$name", doc: { $first: "$$ROOT" } } },
+        { $replaceRoot: { newRoot: "$doc" } }
+    ]);
     return res.status(200).json({
         data: stationList
     });
@@ -30,8 +29,10 @@ exports.getStation = catchAsync( async (req, res, next) => {
 
 exports.tripInfo = catchAsync(async (req, res, next) => {
     const {startStation, endStation} = req.body;
-    const start = await Station.findOne({name: startStation.toLowerCase()});
-    const end = await Station.findOne({name: endStation.toLowerCase()});
+    const lang = req.query.lang || 'en';
+
+    const start = await Station.findOne({$or: [{'name.en': startStation.toLowerCase()}, {'name.ar': startStation}]});
+    const end = await Station.findOne({$or: [{'name.en': endStation.toLowerCase()}, {'name.ar': endStation}]});
     
     if(!start || !end){
         return res.status(400).json({
@@ -67,7 +68,8 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             });
 
         const list = new Map();
-        const metroGraph  = new Graph();
+        const metroGraph = new Graph();
+
         for(let t of firstTransfer){
             const min1 = Math.min(start.position, t.position);
             const max1 = Math.max(start.position, t.position);
@@ -79,40 +81,40 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             
             for(let j = 0; j < testStation.length; j++){
                 const current = testStation[j];
-                list.set(current.name, current);
+                list.set(current.name.en, current);
                 const neighbors = {};
-                if(j > 0) neighbors[testStation[j - 1].name] = 1;
-                if(j < testStation.length - 1) neighbors[testStation[j + 1].name] = 1;
-                pushNode(metroGraph, current.name, neighbors);
+                if(j > 0) neighbors[testStation[j - 1].name.en] = 1;
+                if(j < testStation.length - 1) neighbors[testStation[j + 1].name.en] = 1;
+                pushNode(metroGraph, current.name.en, neighbors);
             }
         }
 
         const secondTransfer = firstTransfer
-        .map(t => t.transfer_to.find(obj => obj.line == end.line_number))
-        .filter(Boolean);
+            .map(t => t.transfer_to.find(obj => obj.line == end.line_number))
+            .filter(Boolean);
 
         for(let t of secondTransfer){
             const min2 = Math.min(end.position, t.position);
             const max2 = Math.max(end.position, t.position);
 
             const secondList = await Station.find({
-                line_number: end.line_number
-                ,position: {$gte: min2, $lte: max2}
+                line_number: end.line_number,
+                position: {$gte: min2, $lte: max2}
             }).sort("position");
 
             for(let j = 0; j < secondList.length; j++){
                 const current = secondList[j];
-                list.set(current.name, current);
+                list.set(current.name.en, current);
                 const neighbors = {};
-                if(j > 0) neighbors[secondList[j - 1].name] = 1;
-                if(j < secondList.length - 1) neighbors[secondList[j + 1].name] = 1;
-                pushNode(metroGraph, current.name, neighbors);
+                if(j > 0) neighbors[secondList[j - 1].name.en] = 1;
+                if(j < secondList.length - 1) neighbors[secondList[j + 1].name.en] = 1;
+                pushNode(metroGraph, current.name.en, neighbors);
             }
         }
-        const path = metroGraph.path(start.name, end.name, {cost: true});
+
+        const path = metroGraph.path(start.name.en, end.name.en, {cost: true});
         const ArrayList = [...list.values()];
-        const result =ArrayList.filter((obj) => path.path.includes(obj.name));
-        console.log("result 2: ", result);
+        const result = ArrayList.filter((obj) => path.path.includes(obj.name.en));
 
         const firstList = [];
         const secondList = [];
@@ -122,18 +124,17 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             else
                 secondList.push(obj);
         });
+
         firstList.sort((a, b) => a.position - b.position);
         secondList.sort((a, b) => a.position - b.position);
 
-        if(firstList[0].name !== start.name)
+        if(firstList[0].name.en !== start.name.en)
             firstList.reverse();
         
-        if(secondList.at(-1).name !== end.name)
+        if(secondList.at(-1).name.en !== end.name.en)
             secondList.reverse();
         
         stationList = [...firstList, ...secondList];
-        console.log("stationList: ", stationList);
-        
         count = path.cost + 1; 
     }
     
@@ -141,8 +142,14 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
     const ticketPrice = ticket ? ticket.price : 0;
     const distance = count * DISTANCE;
     const time = count * TIME;
+
+    const formatStations = (stations) => stations.map(s => ({
+        ...s._doc,
+        name: lang === 'ar' ? s.name.ar : s.name.en
+    }));
+
     res.status(200).json({
-        stations: stationList,
+        stations: formatStations(stationList),
         count,
         distance,
         time,

@@ -2,11 +2,9 @@ const mongoose = require('mongoose');
 
 const stationSchema = new mongoose.Schema({
     name: {
-        type: String,
-        require: [true, 'The station name is required'],
-        lowercase: true,
-        trim: true,
-    },
+    en: { type: String, required: true, lowercase: true, trim: true },
+    ar: { type: String, trim: true },
+},
     line_number:{
         type: Number,
         required: [true, 'Each station must belong to a line number'],
