@@ -2,6 +2,7 @@ const catchAsync = require('../utils/catchAsyncError');
 const Station = require('./../models/stationModel');
 const Ticket = require('./../models/ticketmodel');
 const Graph = require("node-dijkstra");
+const getLang = require('../utils/getLang');
 
 const DISTANCE = 2; 
 const TIME = 3; 
@@ -18,7 +19,7 @@ function pushNode(graph, nodeName, newNeighbors) {
 }
 
 exports.getStation = catchAsync(async (req, res, next) => {
-    const lang = req.query.lang === 'ar' ? 'ar' : 'en';
+    const lang = getLang(req);
 
     const stationList = await Station.aggregate([
         { $group: { _id: "$name.en", doc: { $first: "$$ROOT" } } },
@@ -37,7 +38,7 @@ exports.getStation = catchAsync(async (req, res, next) => {
 
 exports.tripInfo = catchAsync(async (req, res, next) => {
     const { startStation, endStation } = req.body;
-    const lang = req.query.lang === 'ar' ? 'ar' : 'en';
+    const lang = getLang(req);
 
     const start = await Station.findOne({
         $or: [{ 'name.en': startStation.toLowerCase() }, { 'name.ar': startStation }]
