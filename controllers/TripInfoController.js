@@ -40,17 +40,36 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
     const { startStation, endStation } = req.body;
     const lang = getLang(req);
 
-    const start = await Station.findOne({
+    const startCandidates = await Station.find({
         $or: [{ 'name.en': startStation.toLowerCase() }, { 'name.ar': startStation }]
     });
-    const end = await Station.findOne({
+    const endCandidates = await Station.find({
         $or: [{ 'name.en': endStation.toLowerCase() }, { 'name.ar': endStation }]
     });
 
-    if (!start || !end) {
-        return res.status(400).json({
-            message: "Invalid station name"
-        });
+    if (startCandidates.length === 0 || endCandidates.length === 0) {
+        return res.status(400).json({ message: "Invalid station name" });
+    }
+
+    let start, end;
+
+    // find all same-line pairs and pick the one with greatest distance
+    const sameLinePairs = [];
+    for (const s of startCandidates) {
+        for (const e of endCandidates) {
+            if (s.line_number === e.line_number) {
+                sameLinePairs.push({ s, e, dist: Math.abs(s.position - e.position) });
+            }
+        }
+    }
+
+    if (sameLinePairs.length > 0) {
+        sameLinePairs.sort((a, b) => b.dist - a.dist);
+        start = sameLinePairs[0].s;
+        end = sameLinePairs[0].e;
+    } else {
+        start = startCandidates[0];
+        end = endCandidates[0];
     }
 
     let stationList = [];
@@ -99,6 +118,19 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
                 if (j < testStation.length - 1) neighbors[testStation[j + 1].name.en] = 1;
                 pushNode(metroGraph, current.name.en, neighbors);
             }
+
+            const transferInfo = t.transfer_to.find(obj => obj.line == end.line_number);
+            if (transferInfo) {
+                const transferStationOnLine2 = await Station.findOne({
+                    line_number: end.line_number,
+                    position: transferInfo.position
+                });
+                if (transferStationOnLine2) {
+                    pushNode(metroGraph, t.name.en, { [transferStationOnLine2.name.en]: 1 });
+                    pushNode(metroGraph, transferStationOnLine2.name.en, { [t.name.en]: 1 });
+                    list.set(transferStationOnLine2.name.en, transferStationOnLine2);
+                }
+            }
         }
 
         const secondTransfer = firstTransfer
@@ -125,6 +157,13 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
         }
 
         const path = metroGraph.path(start.name.en, end.name.en, { cost: true });
+
+        if (!path || !path.path) {
+            return res.status(400).json({
+                message: "No route found between these stations"
+            });
+        }
+
         const ArrayList = [...list.values()];
         const result = ArrayList.filter((obj) => path.path.includes(obj.name.en));
 
@@ -136,6 +175,12 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             else
                 secondList.push(obj);
         });
+
+        if (firstList.length === 0 || secondList.length === 0) {
+            return res.status(400).json({
+                message: "No route found between these stations"
+            });
+        }
 
         firstList.sort((a, b) => a.position - b.position);
         secondList.sort((a, b) => a.position - b.position);
