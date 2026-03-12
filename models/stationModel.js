@@ -15,12 +15,12 @@ const stationSchema = new mongoose.Schema({
         min: 1,
     },
     is_transfer: {
-        _id: false,
         type: Boolean,
         default: false
     },
     transfer_to:[
         {
+            _id: false,
             line:{type: Number},
             position: {type: Number}
         }
