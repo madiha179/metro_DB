@@ -20,6 +20,7 @@ const stationSchema = new mongoose.Schema({
     },
     transfer_to:[
         {
+            _id: false,
             line:{type: Number},
             position: {type: Number}
         }

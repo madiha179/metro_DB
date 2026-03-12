@@ -2,6 +2,7 @@ const stataions = require('./../models/stationModel');
 const catchAsyncError = require('./../utils/catchAsyncError');
 const appError = require('./../utils/appError');
 const ApiFeatures = require('./../utils/ApiFeatures');
+const AppError = require('./../utils/appError');
 
 const formatStation = (station) => ({
     _id: station._id,
@@ -15,6 +16,10 @@ const formatStation = (station) => ({
 
 exports.addStation = catchAsyncError(async (req, res, next) => {
     const { stationName, lineNumber, position, isTransfer, transferTo } = req.body;
+    const exists=await stataions.findOne({line_number:lineNumber,position:position});
+    if(exists){
+        return next(new AppError('A station already exists at this position on this line',400));
+    }
     const newStation = await stataions.create({
         name: { en: stationName },
         line_number: lineNumber,
@@ -22,6 +27,26 @@ exports.addStation = catchAsyncError(async (req, res, next) => {
         is_transfer: isTransfer,
         transfer_to: transferTo
     });
+    if(isTransfer&&transferTo&&transferTo.length>0){
+        for(const transfer of transferTo){
+            await stataions.findOneAndUpdate({
+                line_number:transfer.line,
+                position:transfer.position
+            },
+            {
+                $push:{
+                    transfer_to:{
+                        line:lineNumber,
+                        position:position
+                    }
+                },
+                $set:{
+                    is_transfer:true
+                }
+            }
+        )
+        }
+    }
     res.status(201).json({
         status: 'success',
         data: {
