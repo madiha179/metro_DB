@@ -1,7 +1,7 @@
 const fs = require('fs');
 const htmlToText = require('html-to-text');
 const nodemailer = require('nodemailer');
-const Brevo = require('@getbrevo/brevo');
+const https = require('https');
 
 module.exports = class Email {
   constructor(user, otp) {
@@ -18,10 +18,8 @@ module.exports = class Email {
 
     try {
       if (process.env.NODE_ENV === 'production') {
-        const apiInstance = new Brevo.TransactionalEmailsApi();
-        apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-        await apiInstance.sendTransacEmail({
+        const payload = JSON.stringify({
           sender: { email: this.from, name: 'metro' },
           to: [{ email: this.to }],
           subject,
@@ -29,7 +27,37 @@ module.exports = class Email {
           textContent
         });
 
+        await new Promise((resolve, reject) => {
+          const options = {
+            hostname: 'api.brevo.com',
+            path: '/v3/smtp/email',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'api-key': process.env.BREVO_API_KEY,
+              'Content-Length': Buffer.byteLength(payload)
+            }
+          };
+
+          const req = https.request(options, (res) => {
+            let data = '';
+            res.on('data', (chunk) => { data += chunk; });
+            res.on('end', () => {
+              if (res.statusCode >= 200 && res.statusCode < 300) {
+                resolve(data);
+              } else {
+                reject(new Error(`Brevo API error: ${res.statusCode} - ${data}`));
+              }
+            });
+          });
+
+          req.on('error', reject);
+          req.write(payload);
+          req.end();
+        });
+
       } else {
+
         const transporter = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
           port: process.env.EMAIL_PORT,
@@ -46,6 +74,7 @@ module.exports = class Email {
           html,
           text: textContent
         });
+
       }
     } catch (err) {
       if (err.response && err.response.body) {
