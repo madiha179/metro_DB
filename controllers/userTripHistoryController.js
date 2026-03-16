@@ -19,7 +19,7 @@ const formattedHistory=userTrip_docs.flatMap(doc=>
 );
 const totalPrices=formattedHistory.reduce((sum,trip)=>{
   return sum+(trip.totalPrice||0);
-})
+},0)
  res.status(200).json({
   status:'success',
   result:formattedHistory.length,
