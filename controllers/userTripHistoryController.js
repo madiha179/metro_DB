@@ -19,6 +19,7 @@ const formattedHistory=userTrip_docs.flatMap(doc=>
 );
  res.status(200).json({
   status:'success',
+  result:formattedHistory.length,
   data:formattedHistory
  });
 });
