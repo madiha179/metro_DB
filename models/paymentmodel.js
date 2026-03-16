@@ -23,8 +23,8 @@ const PaymentSchema=new mongoose.Schema({
     },
     payment_method:{
         type:String,
-        enum:['visa code','aman'],
-        default:'visa code',
+        enum:['visa card','aman'],
+        default:'visa card',
         required: true
     },
     invoice_number:{
