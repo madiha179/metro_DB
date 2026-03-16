@@ -221,7 +221,6 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
             trip_date: new Date()
         }]
     });
-    console.log('userTrip created:', userTrip._id);
     res.status(200).json({
         tripId: userTrip._id,
         stations: formattedStations,
