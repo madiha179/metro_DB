@@ -3,6 +3,7 @@ const Station = require('./../models/stationModel');
 const Ticket = require('./../models/ticketmodel');
 const Graph = require("node-dijkstra");
 const getLang = require('../utils/getLang');
+const userTrips=require('../models/usersTripes');
 
 const DISTANCE = 2; 
 const TIME = 3; 
@@ -37,7 +38,7 @@ exports.getStation = catchAsync(async (req, res, next) => {
 });
 
 exports.tripInfo = catchAsync(async (req, res, next) => {
-    const { startStation, endStation } = req.body;
+    const { startStation, endStation,tripId } = req.body;
     const lang = getLang(req);
 
     const startCandidates = await Station.find({
@@ -204,8 +205,24 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
     const ticketPrice = ticket ? ticket.price : 0;
     const distance = count * DISTANCE;
     const time = count * TIME;
-
+    
+        const userTrip = await userTrips.create({
+        userId: req.user.id,
+        trip_history: [{
+            fromStation: {
+                en: stationList[0].name.en,
+                ar: stationList[0].name.ar
+            },
+            toStation: {
+                en: stationList[stationList.length - 1].name.en,
+                ar: stationList[stationList.length - 1].name.ar
+            },
+            ticketId:  ticket?._id,
+            trip_date: new Date()
+        }]
+    });
     res.status(200).json({
+        tripId: userTrip._id,
         stations: formattedStations,
         count,
         distance,
