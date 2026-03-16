@@ -13,7 +13,7 @@ const formattedHistory=userTrip_docs.flatMap(doc=>
     fromStation:trip.fromStation[lang]||trip.fromStation.en,
     toStation:trip.toStation[lang]||trip.toStation.en,
     totalPrice:trip.totalPrice,
-    trip_date:trip.trip_date.toISOString().split('T')[0],
+    trip_date:trip.trip_date.toISOString().split('T'),
     payment_method:trip.payment_method
   }))
 );
