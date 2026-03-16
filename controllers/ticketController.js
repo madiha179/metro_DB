@@ -10,7 +10,6 @@ exports.getTicketIdByPrice = catchAsync(async (req, res, next) => {
   const totalPrice = Number(ticketPrice) * Number(numberOfTickets);
   await UserTrips.findByIdAndUpdate(tripId, {
     $set: {
-      'trip_history.0.ticketId':   ticket._id,
       'trip_history.0.totalPrice': totalPrice
     }
   });
