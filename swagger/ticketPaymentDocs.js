@@ -29,7 +29,7 @@
  *                 type: string
  *                 description: ID of the ticket to purchase
  *                 example: "696d85bd747772b5fe0409e5a"
- * *               tripId:
+ *               tripId:
  *                 type: string
  *                 description: ID of the ticket to purchase
  *                 example: "696d85bd747772b5fe0409e5a"

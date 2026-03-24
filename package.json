@@ -39,7 +39,8 @@
     "resend": "^6.4.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "validator": "^13.15.15"
+    "validator": "^13.15.15",
+    "yaml": "1.10.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

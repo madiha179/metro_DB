@@ -1,12 +1,6 @@
 /**
  * @swagger
- * tags:
- *   - name: Trips History
- *     description: Trips History API
- */
-/**
- * @swagger
- * /api/v1/trips/usertriphistory
+ * /api/v1/trips/usertriphistory:
  *   get:
  *     summary: Get all user's trip history 
  *     tags: [Trips History]

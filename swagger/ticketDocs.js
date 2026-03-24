@@ -33,7 +33,7 @@
  *                 description: Number of tickets to purchase
  *                 example: 3
  *               tripId:
- *                 type: String
+ *                 type: string
  *     responses:
  *       200:
  *         description: Ticket found and trip created successfully
