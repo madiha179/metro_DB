@@ -1,6 +1,7 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const path = require("path");
+const { default: _default } = require("validator");
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -29,7 +30,8 @@ const options = {
     path.join(__dirname,"stationsDashDocs.js"),
     path.join(__dirname,"ticketCRUDSwagger.js"),
     path.join(__dirname, "../routes/*.js"),
-    path.join(__dirname,"adminDocs.js")
+    path.join(__dirname,"adminDocs.js"),
+    path.join(__dirname,"homeDashDoc.js")
   ],
 };
 const swaggerSpec = swaggerJSDoc(options);
