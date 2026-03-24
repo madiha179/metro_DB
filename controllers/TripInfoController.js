@@ -38,7 +38,7 @@ exports.getStation = catchAsync(async (req, res, next) => {
 });
 
 exports.tripInfo = catchAsync(async (req, res, next) => {
-    const { startStation, endStation,tripId } = req.body;
+    const { startStation, endStation } = req.body;
     const lang = getLang(req);
 
     const startCandidates = await Station.find({
@@ -54,7 +54,6 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
 
     let start, end;
 
-    // find all same-line pairs and pick the one with greatest distance
     const sameLinePairs = [];
     for (const s of startCandidates) {
         for (const e of endCandidates) {

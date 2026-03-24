@@ -20,11 +20,16 @@
  *           schema:
  *             type: object
  *             required:
+ *               - tripId
  *               - ticketId
  *               - totalPrice
  *               - paymentmethod
  *             properties:
  *               ticketId:
+ *                 type: string
+ *                 description: ID of the ticket to purchase
+ *                 example: "696d85bd747772b5fe0409e5a"
+ * *               tripId:
  *                 type: string
  *                 description: ID of the ticket to purchase
  *                 example: "696d85bd747772b5fe0409e5a"
@@ -34,8 +39,8 @@
  *                 example: 300
  *               paymentmethod:
  *                 type: string
- *                 description: Payment method (visa card or fawry)
- *                 enum: [visa card, fawry]
+ *                 description: Payment method (visa card or aman)
+ *                 enum: [visa card, aman]
  *                 example: "visa card"
  *     responses:
  *       200:
@@ -76,7 +81,7 @@
  * @swagger
  * /api/v1/ticketpay/ticketfawrypayment:
  *   post:
- *     summary: Make a Fawry payment using the payment key
+ *     summary: Make a aman/masary payment using the payment key
  *     tags: [Ticket Payment]
  *     security:
  *       - bearerAuth: []
@@ -95,12 +100,14 @@
  *                 example: "1234567890abcdef"
  *               paymentmethod:
  *                 type: string
- *                 example: fawry
+ *                 example: aman
  *     responses:
  *       200:
- *         description: Fawry bill reference returned successfully
+ *         description: Aman bill reference returned successfully
  *       400:
  *         description: Payment failed or invalid payment method
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
  *       500:
  *         description: Server error
  */
@@ -134,6 +141,8 @@
  *         description: Visa card iframe URL returned successfully
  *       400:
  *         description: Payment failed or invalid payment method
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
  *       500:
  *         description: Server error
  */
