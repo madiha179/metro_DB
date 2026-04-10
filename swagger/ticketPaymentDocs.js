@@ -28,11 +28,9 @@
  *               ticketId:
  *                 type: string
  *                 description: ID of the ticket to purchase
- *                 example: "696d85bd747772b5fe0409e5a"
  *               tripId:
  *                 type: string
  *                 description: ID of the ticket to purchase
- *                 example: "696d85bd747772b5fe0409e5a"
  *               totalPrice:
  *                 type: Number
  *                 description: Total price for the ticket(s)
