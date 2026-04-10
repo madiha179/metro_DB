@@ -19,6 +19,8 @@
  *   post:
  *     summary: Return station list, number of stations, distance, time, and ticket price
  *     tags: [Stations]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -40,6 +42,8 @@
  *         description: Successful operation
  *       400:
  *         description: No transfer station found OR invalid station name
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
  *       500:
  *         description: Server error
  */
