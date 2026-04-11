@@ -14,15 +14,19 @@ const LineSchema=new mongoose.Schema({
     },
     stations:[
         {
-            station: mongoose.Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'Station',
         }
     ],
     station_description: {
         type: String,
         required:[true,'The station description is required'],
-    }
+    }  
 });
-
+LineSchema.virtual('station_count').get(function(){
+    return this.stations.length
+});
+LineSchema.set('toJSON',{virtuals:true});
+LineSchema.set('toObject',{virtuals:true})
 const Line = mongoose.model('Line', LineSchema);
 module.exports = Line;

@@ -4,6 +4,7 @@ const adminAuthConroller=require('./../controllers/adminAuthConroller');
 const stationCRUDRouter=express.Router();
 stationCRUDRouter.use(adminAuthConroller.protect);
 stationCRUDRouter.get('/getallstations',stationCRUDController.getAllStations);
+stationCRUDRouter.get('/lines/stations-count',stationCRUDController.getStationsNumberPerLine);   
 stationCRUDRouter.get('/getstation/:id',stationCRUDController.getStation);
 stationCRUDRouter.get('/search/:key',stationCRUDController.searchStation);
 stationCRUDRouter.post('/addstation',stationCRUDController.addStation);

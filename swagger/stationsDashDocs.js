@@ -209,3 +209,27 @@
  *       500:
  *         description: Server error
  */
+/**
+ * @swagger
+ * /api/v1/dashboard/lines/stations-count:
+ *   get:
+ *     summary: Get total number of stations in each line
+ *     tags: [Stations DashBoard]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: key
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Return total number of stations in each line
+ *       404:
+ *         description: Line Not Found
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *       500:
+ *         description: Server error
+ */

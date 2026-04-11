@@ -1,4 +1,5 @@
 const stataions = require('./../models/stationModel');
+const linesModel=require('./../models/linemodel');
 const catchAsyncError = require('./../utils/catchAsyncError');
 const appError = require('./../utils/appError');
 const ApiFeatures = require('./../utils/ApiFeatures');
@@ -143,4 +144,21 @@ exports.searchStation = catchAsyncError(async (req, res, next) => {
             station: station.map(formatStation)
         }
     });
+});
+
+exports.getStationsNumberPerLine=catchAsyncError(async(req,res,next)=>{
+    const lines=await linesModel.find();
+    if(!lines||lines.length===0){
+        return next (new appError("NO line found",404));
+    }
+    const result=lines.map(line=>({
+        name:line.name,
+        line_number:line.line_number,
+        station_count:line.station_count
+    }));
+    res.status(200).json({
+        status:'success',
+        results:result.length,
+        data:{result}
+    })
 });

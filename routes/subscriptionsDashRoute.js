@@ -1,0 +1,10 @@
+const express=require('express');
+const subscriptionCRUDController=require('./../controllers/subscriptionsCRUDController');
+const adminAuthConroller=require('./../controllers/adminAuthConroller');
+const subscriptionDashRoute=express.Router();
+subscriptionDashRoute.use(adminAuthConroller.protect);
+subscriptionDashRoute.get('/allsubscriptionstypes',subscriptionCRUDController.getAllSubscriptionsTypes);
+subscriptionDashRoute.post('/createnewsubscriptionstype',subscriptionCRUDController.createSubscriptionType);
+subscriptionDashRoute.patch('/updatesubscriptionstype/:id',subscriptionCRUDController.updateSubscriptionTypes);
+subscriptionDashRoute.delete('/deletesubscriptionstype/:id',subscriptionCRUDController.deleteSubscriptionType);
+module.exports=subscriptionDashRoute;
