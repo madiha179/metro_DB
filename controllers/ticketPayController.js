@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Ticket = require('../models/ticketmodel');
 const User = require('../models/usermodel');
-const UserTrips=require('../models/usersTripes');
+const UserTrips=require('./../models/usersTripes');
 const PaymentHistory = require('../models/paymentmodel');
 const catchAsync = require('./../utils/catchAsyncError');
 const AppError = require('./../utils/appError');
@@ -43,7 +43,7 @@ async function createOrder(authToken, ticketPrice, ticketStations) {
 async function createPaymentKey(authToken, orderId, user, ticketPrice, paymentMethod) {
   let integrationId;
 
-  if(paymentMethod === 'fawry') {
+  if(paymentMethod === 'aman') {
     integrationId = process.env.PAYMOB_KIOSK_INTEGRATION_ID;
   } else if(paymentMethod === 'visa card') {
     integrationId = process.env.PAYMOB_CARD_INTEGRATION_ID;
@@ -95,7 +95,7 @@ async function createPaymentHistory(userId, ticketPrice, paymentMethod, invoiceN
 
 // Create Payment Key Endpoint
 exports.createPayment = catchAsync(async (req, res, next) => {
-  const { ticketId, paymentmethod, totalPrice } = req.body; 
+  const { ticketId, paymentmethod, totalPrice,tripId } = req.body; 
   const finalPrice = Number(totalPrice);
   if (!finalPrice || finalPrice <= 0) {
     return next(new AppError("Invalid total price", 400));
@@ -111,6 +111,11 @@ exports.createPayment = catchAsync(async (req, res, next) => {
     const orderId = await createOrder(authToken, finalPrice, ticket.no_of_stations);
     const paymentKey = await createPaymentKey(authToken, orderId, user, finalPrice, paymentmethod);
     await createPaymentHistory(req.user.id, finalPrice, paymentmethod, orderId);
+    if(tripId){
+      await UserTrips.findByIdAndUpdate(tripId, {
+        $set: { 'trip_history.0.payment_method': paymentmethod }
+      });
+    }
     res.status(200).json({
       success: true,
       paymentKey
@@ -129,7 +134,7 @@ async function payWithPaymob(paymentKey, paymentMethod) {
 
   if(paymentMethod === 'visa card'){
     source = { identifier: "token", subtype: "CARD" };
-  } else if(paymentMethod === 'fawry'){
+  } else if(paymentMethod === 'aman'){
     source = { identifier: "AGGREGATOR", subtype: "AGGREGATOR" };
   } else {
     throw new Error("Invalid payment method");
@@ -146,7 +151,7 @@ exports.fawryPay=catchAsync(async(req,res,next)=>{
  const  {paymentmethod,paymentkey} = req.body;
   try{
   const result= await payWithPaymob(paymentkey,paymentmethod);
-    if(paymentmethod ==='fawry'){
+    if(paymentmethod ==='aman'){
       return res.status(200).json({
         success:true,
         bill_reference:result.data.bill_reference

@@ -22,6 +22,7 @@
  *             required:
  *               - ticketPrice
  *               - numberOfTickets
+ *               - tripId
  *             properties:
  *               ticketPrice:
  *                 type: number
@@ -31,6 +32,8 @@
  *                 type: number
  *                 description: Number of tickets to purchase
  *                 example: 3
+ *               tripId:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Ticket found and trip created successfully

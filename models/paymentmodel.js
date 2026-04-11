@@ -23,8 +23,8 @@ const PaymentSchema=new mongoose.Schema({
     },
     payment_method:{
         type:String,
-        enum:['visa card','fawry','metro mate wallet'],
-        default:'metro mate wallet',
+        enum:['visa card','aman'],
+        default:'visa card',
         required: true
     },
     invoice_number:{
