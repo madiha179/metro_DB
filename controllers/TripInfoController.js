@@ -29,7 +29,8 @@ exports.getStation = catchAsync(async (req, res, next) => {
             $addFields: {
                 name: { $ifNull: [`$name.${lang}`, "$name.en"] }
             }
-        }
+        },
+        {$sort:{line_number:1,position:1}}
     ]);
 
     return res.status(200).json({
