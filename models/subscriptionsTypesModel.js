@@ -1,8 +1,10 @@
 const mongoose=require('mongoose');
 const subscriptionTypeSchema=new mongoose.Schema({
   zones:{
-    type:Number,
-    required:true
+    type:Number
+  },
+  numOfLines:{
+    type:Number
   },
   category:{
     en:{
@@ -18,12 +20,12 @@ const subscriptionTypeSchema=new mongoose.Schema({
   duration:{
     en:{
     type:String,
-    enum:["monthly","quarterly","yearly"],
+    enum:["monthly","quarterly","half yearly","yearly"],
     required:true
     },
     ar:{
       type:String,
-      enum:["شهري","ربع سنوي","سنوي"]
+      enum:["شهري","ربع سنوي","نصف سنوي","سنوي"]
     }
   },
   prices:{
