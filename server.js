@@ -23,6 +23,7 @@ const ticketCRUDRouter=require('./routes/ticketCRUDRoutes.js');
 const userTripsHistoryRouter=require('./routes/userTripsHistoryRoute.js');
 const homeDashRouter=require('./routes/homeDashRoute.js');
 const subscriptionDashRoute=require('./routes/subscriptionsDashRoute.js');
+const SubscriptionRouter = require('./routes/subscriptionRoutes.js');
 dotenv.config({path:'config.env'});
 const app=express();
 app.set('trust proxy', 1);
@@ -85,6 +86,7 @@ app.use('/api/v1/dashboard',stationCRUDRouter);
 app.use('/api/v1/dashboard',ticketCRUDRouter);
 app.use('/api/v1/dashboard',homeDashRouter);
 app.use('/api/v1/dashboard/subscriptions',subscriptionDashRoute);
+app.use('/api/v1/subscriptions', SubscriptionRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
