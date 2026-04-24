@@ -8,11 +8,13 @@ const subscriptionTypeSchema=new mongoose.Schema({
     en:{
     type:String,
     enum:["public","students","military","Elderly","special","special needs"],
-    required:true
+    required:true,
+    trim: true
     },
     ar:{
       type:String,
-      enum:["عام","طلاب","الجيش و الشرطه","كبار السن","حالات خاصه(ابناء الشهداء)","ذوي الاحتياجات الخاصه"]
+      enum:["عام","طلاب","الجيش و الشرطه","كبار السن","حالات خاصه(ابناء الشهداء)","ذوي الاحتياجات الخاصه"],
+      trim: true
     }
   },
   duration:{
