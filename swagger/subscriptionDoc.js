@@ -59,15 +59,15 @@
  *
  *               office:
  *                 type: string
- *                 enum: ["helwan", "حلوان"]
+ *                 enum: ["el-zahraa", "الزهراء"]
  *
  *               start_station:
  *                 type: string
- *                 example: "hesham barakat"
+ *                 example: "adly mansour"
  *
  *               end_station:
  *                 type: string
- *                 example: "nasser"
+ *                 example: "abbassiya"
  *
  *               nationalId_front:
  *                 type: string

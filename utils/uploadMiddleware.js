@@ -1,23 +1,28 @@
-const { file } = require('googleapis/build/src/apis/file');
+const path = require('path');
 const multer = require('multer');
 const AppError = require('./appError')
+const fs = require('fs');
 
+const UPLOAD_DIR  = path.join(__dirname, '../uploads');
 const MAX_SIZE_MB  = 5;
 const NO_OF_FILES = 3;
 const ALLOWED_MIME = ['image/jpeg', 'image/jpg', 'application/pdf'];
 const ALLOWED_EXT  = ['.jpg', '.jpeg', '.pdf'];
 
+if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
 const multerStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, '../images');
+        cb(null, UPLOAD_DIR);
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname).toLowerCase();
-        cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+        console.log('user ID: ', req.user?.id);
+        cb(null, `user-${req.user?.id}-${Date.now()}${ext}`);
     }
 });
 
-const multerFilter = (req, res, cb) => {
+const multerFilter = (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     
     if(ALLOWED_MIME.includes(file.mimetype) && ALLOWED_EXT.includes(ext))
@@ -60,7 +65,7 @@ const handleUploadErrors = (req, res, next) => {
         // Unknown error
         return res.status(500).json({ 
             success: false, 
-            message: 'File upload failed.' 
+            message: err.message || 'File upload failed.' 
         });
     });
 };

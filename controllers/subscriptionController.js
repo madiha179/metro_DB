@@ -1,8 +1,10 @@
+const path = require('path');
+const fs = require('fs');
 const Station = require("../models/stationModel");
 const Subscription = require("../models/subscriptionModel");
 const subscriptionType = require("../models/subscriptionsTypesModel");
 const AppError = require("../utils/appError");
-const path = require('path');
+const subscriptionOffices = require('../models/subscriptionOfficesModel');
 
 const DURATION_MONTHS = {
     monthly:     1,
@@ -29,10 +31,9 @@ function safeRegex(str) {
 }
 
 exports.createSubscription = async (req, res) => {
-    const {category, duration, type, office, start_station, end_station } = req.body;
-    const { zones } = req.body || null, { numOfLines } = req.body || null; 
+    const { category, duration, zones, numOfLines, office, start_station, end_station } = req.body;
     const files = req.files || {};
-    const subType, subOffice, startStation, endStation;
+    let subType, subOffice, startStation, endStation;
     
     try {
         if (!files.nationalId_front || !files.nationalId_back) {
@@ -43,7 +44,8 @@ exports.createSubscription = async (req, res) => {
             });
         }
 
-        if (!category || !duration || (!zones || !numOfLines) || !office || !start_station || !end_station) {
+        // console.log('file req: ', req.body);
+        if (!category || !duration || (!zones && !numOfLines) || !office || !start_station || !end_station) {
             cleanupFiles(files);
             return res.status(400).json({
                 success: false,
@@ -80,7 +82,7 @@ exports.createSubscription = async (req, res) => {
         }
 
         // 4. Validate that the chosen office supports this duration
-        subOffice = await SubscriptionOffice.findOne({
+        subOffice = await subscriptionOffices.findOne({
             $or: [
             { 'officeName.en': safeRegex(office.trim()) },
             { 'officeName.ar': safeRegex(office.trim()) },
@@ -96,8 +98,8 @@ exports.createSubscription = async (req, res) => {
 
         startStation = await Station.findOne({
             $or: [
-            { name_en: safeRegex(start_station.trim()) },
-            { name_ar: safeRegex(start_station.trim()) },
+            { 'name.en': safeRegex(start_station.trim()) },
+            { 'name.ar': safeRegex(start_station.trim()) },
         ],
         });
         if (!startStation) {
@@ -110,8 +112,8 @@ exports.createSubscription = async (req, res) => {
 
         endStation = await Station.findOne({
             $or: [
-            { name_en: safeRegex(end_station.trim()) },
-            { name_ar: safeRegex(end_station.trim()) },
+            { 'name.en': safeRegex(end_station.trim()) },
+            { 'name.ar': safeRegex(end_station.trim()) },
         ],
         });
         if (!endStation) {
@@ -136,9 +138,9 @@ exports.createSubscription = async (req, res) => {
         }
 
         //Compute dates
-        const start_data = new Date();
+        const start_date = new Date();
         const months = DURATION_MONTHS[subType.category.en] || 1;
-        const end_data = addMonth(start_data, months);
+        const end_date = addMonth(start_date, months);
         const uploadsDir = 'uploads';
         const documents ={
             nationalId_front: path.join(uploadsDir, path.basename(files.nationalId_front[0].path)),
@@ -147,9 +149,11 @@ exports.createSubscription = async (req, res) => {
             ? path.join(uploadsDir, path.basename(files.universityId[0].path))
             : null,
         };
+
+        console.log('user id: ', req.user.id);
         
         const sub = await Subscription.create({
-            user: req.user_id,
+            user: req.user.id,
             type: subType._id,
             office: subOffice._id, 
             start_station: startStation._id,
@@ -163,8 +167,8 @@ exports.createSubscription = async (req, res) => {
         await sub.populate([
             { path: 'type',          select: 'category duration zones prices' },
             { path: 'office',        select: 'officeName workingHours address' },
-            { path: 'start_station', select: 'name_en name_ar' },
-            { path: 'end_station',   select: 'name_en name_ar' },
+            { path: 'start_station', select: 'name line_number position' },
+            { path: 'end_station',   select: 'name line_number position' },
             ]);
         
         return res.status(201).json({
