@@ -130,6 +130,11 @@
  *                 type: string
  *                 format: binary
  *                 description: Required for student subscriptions (jpg/jpeg/pdf, max 5MB)
+ * 
+ *               militaryId:
+ *                 type: string
+ *                 format: binary
+ *                 description: Required for military subscriptions (jpg/jpeg/pdf, max 5MB)
  *
  *             oneOf:
  *               - required: [zones]
