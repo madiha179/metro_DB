@@ -9,12 +9,14 @@
  * @swagger
  * /api/v1/subscription/plans:
  *   get:
- *     summary: Get all subscription plans
+ *     summary: Get all unique subscription categories
  *     tags: [Subscriptions (User)]
- *     description: Retrieve all available subscription types (plans) including category, duration, zones, and price.
+ *     description: |
+ *       Returns a list of all unique subscription categories (English + Arabic structure).
+ *       Used to display available subscription groups before selecting a plan.
  *     responses:
  *       200:
- *         description: Subscription plans retrieved successfully
+ *         description: Categories retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -31,23 +33,79 @@
  *                   items:
  *                     type: object
  *                     properties:
- *                       _id:
- *                         type: string
- *                         example: "64f1a2b3c1234567890abcd"
- *                       category:
+ *                       en:
  *                         type: string
  *                         example: students
- *                       duration:
+ *                       ar:
  *                         type: string
- *                         example: monthly
- *                       zones:
- *                         type: number
- *                         example: 3
- *                       price:
- *                         type: number
- *                         example: 150
+ *                         example: طلاب
  *       404:
- *         description: No subscription plans found
+ *         description: No categories found
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/v1/subscription/plans/{category}:
+ *   get:
+ *     summary: Get subscription plans by category
+ *     tags: [Subscriptions (User)]
+ *     description: |
+ *       Returns all subscription plans for a specific category (supports English and Arabic input).
+ *       Each response contains category info and available plans (duration, zones, price).
+ *     parameters:
+ *       - in: path
+ *         name: category
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Category name in English or Arabic
+ *         example: students
+ *     responses:
+ *       200:
+ *         description: Category plans retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 numOfRecords:
+ *                   type: number
+ *                   example: 2
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     category:
+ *                       type: object
+ *                       properties:
+ *                         en:
+ *                           type: string
+ *                           example: students
+ *                         ar:
+ *                           type: string
+ *                           example: طلاب
+ *                     plans:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           duration:
+ *                             type: string
+ *                             example: monthly
+ *                           zones:
+ *                             type: number
+ *                             example: 2
+ *                           price:
+ *                             type: number
+ *                             example: 100
+ *       404:
+ *         description: No plans found for this category
  *       500:
  *         description: Internal server error
  */

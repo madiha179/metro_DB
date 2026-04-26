@@ -31,14 +31,77 @@ function safeRegex(str) {
     return new RegExp(escaped, 'i');
 }
 
-exports.subscriptionPlans = catchAsyncError(async (req, res, next) => {
-    const plans = await subscriptionType.find();
-    if(!plans || plans.length === 0)
-        return next(new AppError('Not found subscription type for subscription plan.', 404));
+function buildDocumentPaths(files) {
+    const uploadsDir = 'uploads';
+    return {
+        nationalId_front: path.join(uploadsDir, path.basename(files.nationalId_front[0].path)),
+        nationalId_back:  path.join(uploadsDir, path.basename(files.nationalId_back[0].path)),
+        universityId: files.universityId
+            ? path.join(uploadsDir, path.basename(files.universityId[0].path))
+            : null,
+        militaryId: files.militaryId
+            ? path.join(uploadsDir, path.basename(files.militaryId[0].path))
+            : null,
+    };
+}
+
+exports.displaySubPlans = catchAsyncError(async (req, res, next) => {
+    const categories = await subscriptionType.distinct('category');
+
+    if (!categories || categories.length === 0)
+        return next(new AppError('No categories found.', 404));
+
     res.status(200).json({
         status: 'success',
-        numOfRecords: plans.length,
-        data: plans
+        numOfRecords: categories.length,
+        data: categories
+    });
+});
+
+exports.displaySubCategory = catchAsyncError(async (req, res, next) => {
+    const type = req.params.category;
+    
+    const plans = await subscriptionType.aggregate([
+        {
+            $match: {
+                $or: [
+                    { 'category.en': type.trim().toLowerCase() },
+                    { 'category.ar': type.trim() }
+                ]
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    en: "$category.en",
+                    ar: "$category.ar"
+                },
+                category: { $first: "$category" },
+                plans: {
+                    $push: {
+                        _id: "$_id",
+                        duration: "$duration",
+                        zones: "$zones",
+                        price: "$price"
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                category: 1,
+                plans: 1
+            }
+        }
+    ]);
+    if(!plans || plans.length === 0)
+        return next(new AppError('No plans found for this category.', 404));
+    
+    res.status(200).json({
+        status: 'success',
+        numOfRecords: plans[0].plans.length,
+        data: plans[0]
     });
 });
 
@@ -123,20 +186,17 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
     }
 
     // 8. Compute dates 
-    const start_date = new Date();
-    const months = DURATION_MONTHS[subType.duration.en] || 1;
-    const end_date = addMonth(start_date, months);
+    // const start_date = new Date();
+    // const months = DURATION_MONTHS[subType.duration.en] || 1;
+    // const end_date = addMonth(start_date, months);
 
-    // 9. Create the subscription
+    // 8. Create the subscription
     const sub = await Subscription.create({
         user:           req.user.id,
         type:           subType._id,
         office:         subOffice._id,
         start_station:  startStation._id,
         end_station:    endStation._id,
-        priceSnapshot:  subType.prices,
-        start_date,
-        end_date,
         status:         'pending',
         documents:      buildDocumentPaths(files),
     });
@@ -154,32 +214,25 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
     });
 });
 
-exports.getMySubscription = async (req, res) => {
-    try{
-        const sub = await Subscription.findOne({
-            user: req.user.id
-        }).sort({ createdAt: -1 })
-        .populate('type', 'category duration zones prices')
-        .populate('office', 'officeName workingHours address')
-        .populate('start_station', 'name')
-        .populate('end_station', 'name');
+exports.getMySubscription = catchAsyncError( async (req, res) => {
+    const sub = await Subscription.findOne({
+        user: req.user.id
+    }).sort({ createdAt: -1 })
+    .populate('type', 'category duration zones prices')
+    .populate('office', 'officeName workingHours address')
+    .populate('start_station', 'name')
+    .populate('end_station', 'name');
 
-        if(!sub)
-            return res.status(404).json({
-                success: false,
-                message: 'No subscription found.',
-            });
-            const safe = sub.toObject();
-            delete safe.documents;
-            return res.status(200).json({
-                success: true,
-                data: safe,
-            });
-    }catch(err){
-        console.error('getMySubscription error:', err);
-        return res.status(500).json({
-            success: false,
-            message: 'Internal server error.'
-        });
-    }
-}
+    if(!sub)
+        return next(new AppError('No subscription found.', 404)); 
+
+    const safe = sub.toObject();
+    delete safe.documents;
+    
+    return res.status(200).json({
+        success: true,
+        data: safe,
+    });
+});
+
+exports.confirmSubscription = catchAsyncError(async (req, res, next) => {});
