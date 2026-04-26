@@ -5,8 +5,6 @@ const { createSubscription, getMySubscription } = require('../controllers/subscr
 const SubscriptionRouter = express.Router();
 
 SubscriptionRouter.post('/create', authcontroller.protect, handleUploadErrors, createSubscription);
-
-// SubscriptionRouter.post('/create', authcontroller.protect, handleUploadErrors, createSubscription);
-SubscriptionRouter.get('/me', getMySubscription);
+SubscriptionRouter.get('/me', authcontroller.protect, getMySubscription);
 
 module.exports = SubscriptionRouter;

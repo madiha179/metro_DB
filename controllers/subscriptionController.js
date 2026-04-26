@@ -126,8 +126,8 @@ exports.createSubscription = async (req, res) => {
 
         // 5. Prevent duplicate active subscriptions for the same user
         const existingActive = await Subscription.findOne({
-            user: req.user._id,
-            status: 'active',
+            user: req.user.id,
+            status: { $in: ['active', 'pending'] },
         });
         if(existingActive) {
             cleanupFiles(files);
@@ -188,19 +188,18 @@ exports.createSubscription = async (req, res) => {
 exports.getMySubscription = async (req, res) => {
     try{
         const sub = await Subscription.findOne({
-            user: req.user._id
+            user: req.user.id
         }).sort({ createdAt: -1 })
         .populate('type', 'category duration zones prices')
         .populate('office', 'officeName workingHours address')
-        .populate('start_station', 'name_en name_ar')
-        .populate('end_station', 'name_en name_ar');
+        .populate('start_station', 'name')
+        .populate('end_station', 'name');
 
         if(!sub)
             return res.status(404).json({
                 success: false,
                 message: 'No subscription found.',
             });
-
             const safe = sub.toObject();
             delete safe.documents;
             return res.status(200).json({
