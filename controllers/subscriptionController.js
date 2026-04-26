@@ -32,13 +32,13 @@ function safeRegex(str) {
 }
 
 exports.subscriptionPlans = catchAsyncError(async (req, res, next) => {
-    const result = await subscriptionType.find();
-    if(!result || result.length === 0)
+    const plans = await subscriptionType.find();
+    if(!plans || plans.length === 0)
         return next(new AppError('Not found subscription type for subscription plan.', 404));
     res.status(200).json({
         status: 'success',
-        numOfRecords: result.length,
-        data: result
+        numOfRecords: plans.length,
+        data: plans
     });
 });
 
@@ -94,6 +94,8 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
         cleanupFiles(files);
         return next(new AppError(`No office found matching "${office}".`, 404));
     }
+
+    //////////////////Check if office suport this duration or not//////////////////////
 
     // 6. Find stations
     const [startStation, endStation] = await Promise.all([
