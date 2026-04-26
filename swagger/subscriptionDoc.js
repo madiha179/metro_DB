@@ -7,6 +7,53 @@
 
 /**
  * @swagger
+ * /api/v1/subscription/plans:
+ *   get:
+ *     summary: Get all subscription plans
+ *     tags: [Subscriptions (User)]
+ *     description: Retrieve all available subscription types (plans) including category, duration, zones, and price.
+ *     responses:
+ *       200:
+ *         description: Subscription plans retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 numOfRecords:
+ *                   type: number
+ *                   example: 3
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: "64f1a2b3c1234567890abcd"
+ *                       category:
+ *                         type: string
+ *                         example: students
+ *                       duration:
+ *                         type: string
+ *                         example: monthly
+ *                       zones:
+ *                         type: number
+ *                         example: 3
+ *                       price:
+ *                         type: number
+ *                         example: 150
+ *       404:
+ *         description: No subscription plans found
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
  * /api/v1/subscription/create:
  *   post:
  *     summary: Submit a new subscription application
@@ -126,3 +173,4 @@
  *       500:
  *         description: Internal server error
  */
+

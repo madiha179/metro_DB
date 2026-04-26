@@ -5,6 +5,7 @@ const Subscription = require("../models/subscriptionModel");
 const subscriptionType = require("../models/subscriptionsTypesModel");
 const AppError = require("../utils/appError");
 const subscriptionOffices = require('../models/subscriptionOfficesModel');
+const catchAsyncError = require('../utils/catchAsyncError');
 
 const DURATION_MONTHS = {
     monthly:     1,
@@ -29,6 +30,17 @@ function safeRegex(str) {
     const escaped = str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return new RegExp(escaped, 'i');
 }
+
+exports.subscriptionPlans = catchAsyncError(async (req, res, next) => {
+    const result = await subscriptionType.find();
+    if(!result || result.length === 0)
+        return next(new AppError('Not found subscription type for subscription plan.', 404));
+    res.status(200).json({
+        status: 'success',
+        numOfRecords: result.length,
+        data: result
+    });
+});
 
 exports.createSubscription = async (req, res) => {
     const { category, duration, zones, numOfLines, office, start_station, end_station } = req.body;
@@ -95,7 +107,7 @@ exports.createSubscription = async (req, res) => {
                 message: `No office found matching "${office}".`, 
             });
         }
-
+        /////////////////// Check if office suport this duration or not //////////////////
         startStation = await Station.findOne({
             $or: [
             { 'name.en': safeRegex(start_station.trim()) },
