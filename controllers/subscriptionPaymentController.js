@@ -41,6 +41,7 @@ async function createPaymentKey(authToken,orderId,user,subscriptionPrice) {
     amount_cents:subscriptionPrice*100,
     expiration: 3600,
     order_id: orderId,
+    save_token: true, 
     billing_data: {
       first_name: firstName,
       last_name: lastName,

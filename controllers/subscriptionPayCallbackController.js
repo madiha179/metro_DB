@@ -20,27 +20,72 @@ function addMonths(date,months){
 function getNested(obj, path) {
   return path.split('.').reduce((acc, key) => acc?.[key], obj) ?? '';
 }
-async function handleTokenWebkook(obj) {
-  const {token,masked_pan,card_subtype,order_id}=obj;
-  const updated=await subscriptionPayment.findOneAndUpdate(
-    {"payment_history.invoice_number":order_id},
-    {
-      $set:{
-        card_token:token,
-        masked_pan:masked_pan,
-        card_subtype:card_subtype,
-      }
-    },
-    {new:true}
+async function handleTokenWebhook(obj) {
+  const { token, masked_pan, card_subtype, order_id } = obj;
+
+  console.log('🔍 TOKEN order_id:', order_id, typeof order_id);
+
+  const updated = await subscriptionPayment.findOneAndUpdate(
+    { "payment_history.invoice_number": { $in: [order_id, Number(order_id), String(order_id)] } },
+    { $set: { card_token: token, masked_pan, card_subtype } },
+    { new: true }
   );
-  if(!updated){
-    console.log(`TOKEN webhook: no payment record found for order_id ${order_id}`);
-    return;
-  }
-  console.log(`Card token saved for order ${order_id}`);
+
+  console.log('🔍 TOKEN update:', updated ? `✅ token saved` : '❌ NOT FOUND');
 }
 async function handleTransactionWebhook(obj) {
-  const orderId=obj?.order?.id;
+  const orderId     = obj?.order?.id;
+  const success     = obj?.success;
+  const amountCents = Number(obj?.amount_cents) || 0;
+
+  console.log('🔍 orderId:', orderId, '| type:', typeof orderId);
+  console.log('🔍 success:', success);
+
+  const updated = await subscriptionPayment.findOneAndUpdate(
+    { "payment_history.invoice_number": { $in: [orderId, Number(orderId), String(orderId)] } },
+    {
+      $set: {
+        "payment_history.$.payment_status": success ? "paid" : "failed",
+        "payment_history.$.amount_paid":    success ? amountCents / 100 : 0,
+        "payment_history.$.paying_date":    success ? new Date() : null,
+      }
+    },
+    { new: true }
+  );
+
+  console.log('🔍 updated payment record:', updated ? '✅ found' : '❌ NOT FOUND');
+
+  if (!updated) return;
+
+  console.log('🔍 subscriptionId:', updated.subscriptionId);
+
+  if (success) {
+    const subscription = await subscriptionModel
+      .findById(updated.subscriptionId)
+      .populate('type', 'duration');
+
+    console.log('🔍 subscription found:', subscription ? '✅' : '❌ NOT FOUND');
+    console.log('🔍 subscription status:', subscription?.status);
+    console.log('🔍 duration:', subscription?.type?.duration?.en);
+
+    if (!subscription) return;
+
+    const durationEn = subscription.type?.duration?.en?.toLowerCase();
+    const months     = Duration_Months[durationEn] || 1;
+    const start_date = new Date();
+    const end_date   = addMonths(start_date, months);
+
+    console.log('🔍 months:', months, '| end_date:', end_date);
+
+    const subUpdated = await subscriptionModel.findByIdAndUpdate(
+      updated.subscriptionId,
+      { $set: { status: 'active', start_date, end_date } },
+      { new: true }  
+    );
+
+    console.log('🔍 subscription after update:', subUpdated?.status, subUpdated?.end_date);
+  }
+}  const orderId=obj?.order?.id;
   const success=obj?.success;
   const amountCents=Number(obj?.amount_cents)||0;
   console.log('orderId from webhook:', orderId, typeof orderId);
@@ -75,7 +120,6 @@ async function handleTransactionWebhook(obj) {
       });
       console.log(`Subscription ${updated.subscriptionId} activated until ${end_date}`);
   }
-}
 exports.transactionProcessed = async (req, res) => {
   try {
     const parsedBody = Buffer.isBuffer(req.body)
