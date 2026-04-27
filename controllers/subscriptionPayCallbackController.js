@@ -23,7 +23,7 @@ function getNested(obj, path) {
 async function handleTokenWebkook(obj) {
   const {token,masked_pan,card_subtype,order_id}=obj;
   const updated=await subscriptionPayment.findOneAndUpdate(
-    {"payment_history.invoice_number":Number(order_id)},
+    {"payment_history.invoice_number":order_id},
     {
       $set:{
         card_token:token,
