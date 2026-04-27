@@ -64,16 +64,15 @@ async function handleTransactionWebhook(obj) {
 
 exports.transactionProcessed = async (req, res) => {
   try {
-    const parsedBody = Buffer.isBuffer(req.body)
-      ? JSON.parse(req.body.toString('utf8'))
-      : req.body;
+    const body = Buffer.isBuffer(req.body) ? JSON.parse(req.body.toString('utf8')) : req.body;
+    const obj = body.obj;
 
-    if (parsedBody.type === 'TOKEN') {
-      await handleTokenWebhook(parsedBody.obj);
+    if (body.type === 'TOKEN') {
+      await handleTokenWebhook(obj);
       return res.status(200).json({ message: "Token saved" });
     }
 
-    if (parsedBody.type === 'TRANSACTION') {
+    if (body.type === 'TRANSACTION') {
       const hmac = req.query.hmac;
       const secret = process.env.PAYMOB_HMAC_SECRET;
 
@@ -87,14 +86,21 @@ exports.transactionProcessed = async (req, res) => {
       let collected = "";
       paymobKeys.forEach((key) => {
         let value;
-        if (key === "order.id") value = parsedBody.obj.order?.id;
-        else if (key === "source_data.pan") value = parsedBody.obj.source_data?.pan;
-        else if (key === "source_data.sub_type") value = parsedBody.obj.source_data?.sub_type;
-        else if (key === "source_data.type") value = parsedBody.obj.source_data?.type;
-        else value = parsedBody.obj[key];
+        if (key === "order.id") {
+          value = obj.order?.id;
+        } else if (key.startsWith("source_data.")) {
+          const subKey = key.split(".")[1];
+          value = obj.source_data?.[subKey];
+        } else {
+          value = obj[key];
+        }
 
-        if (value === null || value === undefined) value = "";
-        collected += String(value);
+        if (value === null || value === undefined) {
+          value = "";
+        } else {
+          value = String(value);
+        }
+        collected += value;
       });
 
       const calculatedHmac = crypto.createHmac("sha512", secret).update(collected).digest("hex");
@@ -103,7 +109,7 @@ exports.transactionProcessed = async (req, res) => {
         return res.status(403).json({ message: "HMAC validation failed" });
       }
 
-      await handleTransactionWebhook(parsedBody.obj);
+      await handleTransactionWebhook(obj);
       return res.status(200).send("<h1>Payment Successful</h1>");
     }
 
