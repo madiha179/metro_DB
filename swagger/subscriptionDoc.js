@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/v1/subscription/plans:
+ * /api/v1/subscriptions/plans:
  *   get:
  *     summary: Get all unique subscription categories
  *     tags: [Subscriptions (User)]
@@ -47,7 +47,7 @@
 
 /**
  * @swagger
- * /api/v1/subscription/plans/{category}:
+ * /api/v1/subscriptions/plans/{category}:
  *   get:
  *     summary: Get subscription plans by category
  *     tags: [Subscriptions (User)]
@@ -112,7 +112,7 @@
 
 /**
  * @swagger
- * /api/v1/subscription/create:
+ * /api/v1/subscriptions/create:
  *   post:
  *     summary: Submit a new subscription application
  *     tags: [Subscriptions (User)]
@@ -216,7 +216,7 @@
 
 /**
  * @swagger
- * /api/v1/subscription/me:
+ * /api/v1/subscriptions/me:
  *   get:
  *     summary: Get my latest subscription
  *     tags: [Subscriptions (User)]

@@ -11,15 +11,10 @@ const subSchema = new mongoose.Schema({
         ref: 'subscriptionType',
         required: true,
     }, 
-    status: {
-    type: String,
-    enum: ['active', 'expired', 'rejected', 'pending'],
-    default: 'pending',
-    },
-    //it may change
-    priceSnapshot: {
-        type: Number,
-        required: true,
+    office: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'subscriptionOffices',
+        required: true
     },
     start_station: {
         type: mongoose.Schema.Types.ObjectId,
@@ -31,19 +26,7 @@ const subSchema = new mongoose.Schema({
         ref: 'Station',
         required:[true,'The end station is required'],
     },
-    office: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'subscriptionOffices',
-        required: true
-    },
-    start_date: {
-        type: Date,
-        required: true,
-    },
-    end_date: {
-        type: Date,
-        required: true,
-    },
+
     documents: {
         nationalId_front: {
             type: String,
@@ -58,6 +41,25 @@ const subSchema = new mongoose.Schema({
             type: String,
             default: null,
         },
+        militaryId: {
+            // Only required for military category — enforced at the controller level
+            type: String,
+            default: null,
+        },
+    },
+
+    rejectionReason: String,
+    
+    status: {
+    type: String,
+    enum: ['active', 'expired', 'rejected', 'pending'],
+    default: 'pending',
+    },
+    start_date: {
+        type: Date,
+    },
+    end_date: {
+        type: Date,
     },
 }, { timestamps: true });
 

@@ -214,7 +214,7 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
     });
 });
 
-exports.getMySubscription = catchAsyncError( async (req, res) => {
+exports.getMySubscription = catchAsyncError( async (req, res, next) => {
     const sub = await Subscription.findOne({
         user: req.user.id
     }).sort({ createdAt: -1 })
@@ -234,5 +234,3 @@ exports.getMySubscription = catchAsyncError( async (req, res) => {
         data: safe,
     });
 });
-
-exports.confirmSubscription = catchAsyncError(async (req, res, next) => {});

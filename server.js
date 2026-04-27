@@ -86,7 +86,7 @@ app.use('/api/v1/dashboard',stationCRUDRouter);
 app.use('/api/v1/dashboard',ticketCRUDRouter);
 app.use('/api/v1/dashboard',homeDashRouter);
 app.use('/api/v1/dashboard/subscriptions',subscriptionDashRoute);
-app.use('/api/v1/subscription', SubscriptionRouter);
+app.use('/api/v1/subscriptions', SubscriptionRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
