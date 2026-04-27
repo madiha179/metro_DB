@@ -75,8 +75,9 @@ async function createPaymentHistory(userId,subscriptionId,subscriptionPrice,paym
   });
 }
 async function payWithPaymob(paymentKey, paymentMethod) {
+  let source;
   if(paymentMethod === 'visa card'){
-   const source = { identifier: "token", subtype: "CARD" };
+   source = { identifier: "token", subtype: "CARD" };
   }
   else{
     throw new Error("Invalid payment method");
