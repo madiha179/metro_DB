@@ -6,10 +6,10 @@ const catchAsyncError=require('../utils/catchAsyncError');
 const subscriptionPayment=require('../models/subscriptionPaymentModel');
 const dotenv=require('dotenv');
 dotenv.config({path:'./config.env'});
-const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY;
+const PAYMOB_API_KEY = process.env.PAYMOB_SUB_API_KEY;        
 const PAYMOB_API_URL = process.env.PAYMOB_API_URL;
-const PAYMOB_IFRAME_ID=process.env.PAYMOB_IFRAME_ID;
-const integrationId = process.env.PAYMOB_CARD_INTEGRATION_ID;
+const PAYMOB_IFRAME_ID = process.env.PAYMOB_SUB_IFRAME_ID;    
+const integrationId = process.env.PAYMOB_CARD_SUB_INTEGRATION_ID; 
 
 //helper functions
 async function getAuthToken() {
