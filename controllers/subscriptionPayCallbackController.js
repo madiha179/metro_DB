@@ -1,7 +1,5 @@
 const subscriptionPayment = require('./../models/subscriptionPaymentModel');
 const subscriptionModel=require('./../models/subscriptionModel');
-const subscriptionType=require('./../models/subscriptionsTypesModel');
-const appError=require('./../utils/appError');
 const crypto = require('crypto');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
@@ -22,15 +20,73 @@ function addMonths(date,months){
 function getNested(obj, path) {
   return path.split('.').reduce((acc, key) => acc?.[key], obj) ?? '';
 }
-
+async function handleTokenWebkook(obj) {
+  const {token,masked_pan,card_subtype,order_id}=obj;
+  const updated=await subscriptionPayment.findOneAndUpdate(
+    {"payment_history.invoice_number":Number(order_id)},
+    {
+      $set:{
+        card_token:token,
+        masked_pan:masked_pan,
+        card_subtype:card_subtype,
+      }
+    },
+    {new:true}
+  );
+  if(!updated){
+    console.log(`TOKEN webhook: no payment record found for order_id ${order_id}`);
+    return;
+  }
+  console.log(`Card token saved for order ${order_id}`);
+}
+async function handleTransactionWebhook(obj) {
+  const orderId=obj?.order?.id;
+  const success=obj?.success;
+  const amountCents=Number(obj?.amount_cents)||0;
+  const updated=await subscriptionPayment.findOneAndUpdate(
+    {"payment_history.invoice_number":orderId},{
+      $set:{
+        "payment_history.$.payment_status":success ? "paid" : "failed",
+        "payment_history.$.amount_paid":success? amountCents/100:0,
+        "payment_history.$.paying_date":success? new Date():null,
+      }
+    },
+    {new:true}
+  );
+  if(!updated){
+    console.log(`TRANSACTION webhook: no payment record found for order ${orderId}`);
+    return;
+  }
+  console.log(`Payment history updated for order ${orderId} — success: ${success}`);
+  if(success){
+    const subscription=await subscriptionModel.findById(updated.subscriptionId)
+    .populate('type','duration');
+    if(!subscription){
+      console.log(` Subscription not found for payment record ${updated._id}`);
+      return ;
+    }
+    const durationEn=subscription.type?.duration?.en?.toLowerCase();
+      const months=Duration_Months[durationEn]||1;
+      const start_date=new Date();
+      const end_date=addMonths(start_date,months);
+      await subscriptionModel.findByIdAndUpdate(updated.subscriptionId,{
+        $set:{status:'active',start_date,end_date}
+      });
+      console.log(`Subscription ${updated.subscriptionId} activated until ${end_date}`);
+  }
+}
 exports.transactionProcessed = async (req, res) => {
   try {
     const parsedBody = Buffer.isBuffer(req.body)
       ? JSON.parse(req.body.toString('utf8'))
       : req.body;
 
-    console.log("Webhook received:", parsedBody);
-
+    console.log("Webhook received, type:", parsedBody.type);
+    if(parsedBody.type==='TOKEN'){
+      await handleTokenWebkook(parsedBody.obj);
+      return res.status(200).json({message:"Token saved"});
+    }
+    if(parsedBody.type==='TRANSACTION'){
     const hmac = req.query.hmac || parsedBody.hmac;
     const secret = process.env.PAYMOB_HMAC_SECRET;
 
@@ -60,47 +116,13 @@ exports.transactionProcessed = async (req, res) => {
       return res.status(403).json({ message: "HMAC validation failed" });
     }
 
-    const orderId = Number(parsedBody.obj?.data?.order_info || parsedBody.obj?.order?.id);
-    const success = parsedBody.obj?.success;
-    const amountCents = Number(parsedBody.obj?.amount_cents) || 0;
+  await handleTransactionWebhook(parsedBody.obj);
+      return res.status(200).json({ message: "Transaction processed" });
+    }
+    return res.status(200).json({ message: "Webhook type ignored" });
 
-    const updated = await subscriptionPayment.findOneAndUpdate(
-      { "payment_history.invoice_number": orderId },
-      {
-        $set: {
-          "payment_history.$.payment_status": success ? "paid" : "failed",
-          "payment_history.$.amount_paid": success ? amountCents / 100 : 0,
-          "payment_history.$.paying_date": success ? new Date() : null
-        }
-      },
-      {new:true}
-    );
-    if(!updated){
-      return next(new appError('Payment record not found',404));
-    }
-    if(success){
-      const subscription=await subscriptionModel
-      .findById(updated.subscriptionId)
-      .populate('type','duration');
-      if(!subscription){
-        return next(new appError('Subscription not found',404));
-      }
-      const durationEn=subscription.type?.duration?.en?.toLowerCase();
-      const months=Duration_Months[durationEn]||1;
-      const start_date=new Date();
-      const end_date=addMonths(start_date,months);
-      await subscriptionModel.findByIdAndUpdate(updated.subscriptionId,{
-        $set:{
-          status:'active',
-          start_date,
-          end_date
-        }
-      });
-      console.log(`Subscription ${updated.subscriptionId} activated until ${end_date}`);
-    }
-    return res.status(200).json({ message: "Callback received and DB updated" });
   } catch (err) {
     console.error("Webhook error:", err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };

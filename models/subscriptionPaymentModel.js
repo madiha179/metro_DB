@@ -9,6 +9,18 @@ subscriptionId:{
   type:mongoose.Schema.Types.ObjectId,
   ref:'Subscription'
 },
+card_token:{
+  type:String,
+  default:null
+},
+masked_pan:{
+type:String,
+  default:null
+},
+card_subtype:{
+  type:String,
+  default:null
+},
    payment_history:[{
         issuing_date:{
         type:Date,
