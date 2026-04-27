@@ -17,6 +17,60 @@ function addMonths(date, months) {
   return d;
 }
 
+function generateHmac(data, secret) {
+  const fields = [
+    "amount_cents",
+    "created_at",
+    "currency",
+    "error_occured",
+    "has_parent_transaction",
+    "id",
+    "integration_id",
+    "is_3d_secure",
+    "is_auth",
+    "is_capture",
+    "is_refunded",
+    "is_standalone_payment",
+    "is_voided",
+    "order.id",
+    "owner",
+    "pending",
+    "source_data.pan",
+    "source_data.sub_type",
+    "source_data.type",
+    "success"
+  ];
+
+  let collected = "";
+
+  fields.forEach((field) => {
+    let value;
+
+    if (field === "order.id") {
+      value = data.order?.id;
+    } else if (field.startsWith("source_data.")) {
+      const subKey = field.split(".")[1];
+      value = data.source_data?.[subKey];
+    } else {
+      value = data[field];
+    }
+
+    if (value === null || value === undefined) {
+      value = "";
+    } else if (typeof value === "boolean") {
+      value = value ? "true" : "false";
+    } else if (typeof value === "object") {
+      value = "";
+    } else {
+      value = String(value);
+    }
+
+    collected += value;
+  });
+
+  return crypto.createHmac("sha512", secret).update(collected).digest("hex");
+}
+
 async function handleTokenWebhook(obj) {
   const { token, masked_pan, card_subtype, order_id } = obj;
   await subscriptionPayment.findOneAndUpdate(
@@ -65,7 +119,7 @@ async function handleTransactionWebhook(obj) {
 exports.transactionProcessed = async (req, res) => {
   try {
     const body = Buffer.isBuffer(req.body) ? JSON.parse(req.body.toString('utf8')) : req.body;
-    
+
     if (body.type === 'TOKEN') {
       await handleTokenWebhook(body.obj);
       return res.status(200).json({ message: "Token saved" });
@@ -76,38 +130,7 @@ exports.transactionProcessed = async (req, res) => {
       const secret = process.env.PAYMOB_HMAC_SECRET;
       const data = body.obj;
 
-      const paymobKeys = [
-        "amount_cents", "created_at", "currency", "error_occured", "has_parent_transaction", "id",
-        "integration_id", "is_3d_secure", "is_auth", "is_capture", "is_refunded", "is_standalone_payment",
-        "is_voided", "order.id", "owner", "pending", "source_data.pan", "source_data.sub_type",
-        "source_data.type", "success"
-      ];
-
-      let collected = "";
-      paymobKeys.forEach((key) => {
-        let value;
-        
-        if (key === "order.id") {
-          value = data.order?.id || data.order; 
-        } else if (key.startsWith("source_data.")) {
-          const subKey = key.split(".")[1];
-          value = data.source_data?.[subKey];
-        } else {
-          value = data[key];
-        }
-
-        if (value === null || value === undefined) {
-          value = "";
-        } else if (typeof value === 'boolean') {
-          value = value.toString();
-        } else {
-          value = String(value);
-        }
-        
-        collected += value;
-      });
-
-      const calculatedHmac = crypto.createHmac("sha512", secret).update(collected).digest("hex");
+      const calculatedHmac = generateHmac(data, secret);
 
       if (calculatedHmac !== hmac) {
         return res.status(403).json({ message: "HMAC validation failed" });
