@@ -32,8 +32,7 @@ subscriptionId:{
         required: true
     },
     invoice_number:{
-        type:Number,
-        required:true
+        type:Number
     },
     payment_status:{
          type: String,
