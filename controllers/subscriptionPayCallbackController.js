@@ -23,7 +23,7 @@ function getNested(obj, path) {
 async function handleTokenWebkook(obj) {
   const {token,masked_pan,card_subtype,order_id}=obj;
   const updated=await subscriptionPayment.findOneAndUpdate(
-    {"payment_history.invoice_number":Number(order_id)},
+    {"payment_history.invoice_number":order_id},
     {
       $set:{
         card_token:token,
@@ -43,8 +43,9 @@ async function handleTransactionWebhook(obj) {
   const orderId=obj?.order?.id;
   const success=obj?.success;
   const amountCents=Number(obj?.amount_cents)||0;
+  console.log('orderId from webhook:', orderId, typeof orderId);
   const updated=await subscriptionPayment.findOneAndUpdate(
-    {"payment_history.invoice_number":orderId},{
+    {"payment_history.invoice_number":{ $in: [orderId, Number(orderId), String(orderId)] }},{
       $set:{
         "payment_history.$.payment_status":success ? "paid" : "failed",
         "payment_history.$.amount_paid":success? amountCents/100:0,
