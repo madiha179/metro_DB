@@ -75,7 +75,7 @@ async function createPaymentHistory(userId,subscriptionId,subscriptionPrice,paym
 }
 async function payWithPaymob(paymentKey, paymentMethod) {
   if(paymentMethod === 'visa card'){
-    source = { identifier: "token", subtype: "CARD" };
+   const source = { identifier: "token", subtype: "CARD" };
   }
   else{
     throw new Error("Invalid payment method");
@@ -142,8 +142,8 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
         const authToken=await getAuthToken();
         const orderId=await createOrder(authToken,subscription);
         const paymentKey=await createPaymentKey(authToken,orderId,user,subscriptionPrice);
-        await createPaymentHistory(user.id,subscriptionId,subscriptionPrice,paymentMethod,issuingDate);
-        res.status(200).json({
+        await createPaymentHistory(user.id,subscriptionId,subscriptionPrice,paymentMethod,orderId);
+       return res.status(200).json({
           status:'success',
           paymentKey
         });
@@ -163,7 +163,7 @@ exports.visaPayController=(req,res,next)=>{
   try{
     if(paymentMethod==='visa card')
     {
-      res.status(200).json({
+     return res.status(200).json({
         status:'success',
         iframeUrl:iframeUrl
       });
