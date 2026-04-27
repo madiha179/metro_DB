@@ -65,16 +65,16 @@ async function handleTransactionWebhook(obj) {
 exports.transactionProcessed = async (req, res) => {
   try {
     const body = Buffer.isBuffer(req.body) ? JSON.parse(req.body.toString('utf8')) : req.body;
-    const obj = body.obj;
-
+    
     if (body.type === 'TOKEN') {
-      await handleTokenWebhook(obj);
+      await handleTokenWebhook(body.obj);
       return res.status(200).json({ message: "Token saved" });
     }
 
     if (body.type === 'TRANSACTION') {
       const hmac = req.query.hmac;
       const secret = process.env.PAYMOB_HMAC_SECRET;
+      const data = body.obj;
 
       const paymobKeys = [
         "amount_cents", "created_at", "currency", "error_occured", "has_parent_transaction", "id",
@@ -86,20 +86,24 @@ exports.transactionProcessed = async (req, res) => {
       let collected = "";
       paymobKeys.forEach((key) => {
         let value;
+        
         if (key === "order.id") {
-          value = obj.order?.id;
+          value = data.order?.id || data.order; 
         } else if (key.startsWith("source_data.")) {
           const subKey = key.split(".")[1];
-          value = obj.source_data?.[subKey];
+          value = data.source_data?.[subKey];
         } else {
-          value = obj[key];
+          value = data[key];
         }
 
         if (value === null || value === undefined) {
           value = "";
+        } else if (typeof value === 'boolean') {
+          value = value.toString();
         } else {
           value = String(value);
         }
+        
         collected += value;
       });
 
@@ -109,7 +113,7 @@ exports.transactionProcessed = async (req, res) => {
         return res.status(403).json({ message: "HMAC validation failed" });
       }
 
-      await handleTransactionWebhook(obj);
+      await handleTransactionWebhook(data);
       return res.status(200).send("<h1>Payment Successful</h1>");
     }
 
