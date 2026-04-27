@@ -52,7 +52,7 @@ const subSchema = new mongoose.Schema({
     
     status: {
     type: String,
-    enum: ['active', 'expired', 'rejected', 'pending'],
+    enum: ['active', 'accepted','expired', 'rejected', 'pending'],
     default: 'pending',
     },
     start_date: {

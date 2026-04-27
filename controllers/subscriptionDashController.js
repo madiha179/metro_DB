@@ -4,7 +4,7 @@ const Subscription = require("../models/subscriptionModel");
 const AppError = require("../utils/appError");
 const catchAsyncError = require("../utils/catchAsyncError");
 
-VALID_STATUSES = ['active', 'expired', 'canceled', 'pending'];
+VALID_STATUSES = ['active','accepted','expired', 'canceled', 'pending'];
 const VALID_DOC_TYPES = ['nationalId_front', 'nationalId_back', 'universityId', 'militaryId'];
 
 exports.getAllSubscriptions = catchAsyncError(async (req, res, next) => {
