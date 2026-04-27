@@ -82,7 +82,7 @@ exports.displaySubCategory = catchAsyncError(async (req, res, next) => {
                         _id: "$_id",
                         duration: "$duration",
                         zones: "$zones",
-                        price: "$price"
+                        prices: "$prices"
                     }
                 }
             }
