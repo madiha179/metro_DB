@@ -118,7 +118,9 @@ async function handleTransactionWebhook(obj) {
 
 exports.transactionProcessed = async (req, res) => {
   try {
-    const body = Buffer.isBuffer(req.body) ? JSON.parse(req.body.toString('utf8')) : req.body;
+    const body = Buffer.isBuffer(req.body)
+      ? JSON.parse(req.body.toString('utf8'))
+      : req.body;
 
     if (body.type === 'TOKEN') {
       await handleTokenWebhook(body.obj);
