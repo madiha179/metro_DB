@@ -17,7 +17,7 @@ async function getAuthToken() {
   return response.data.token;
 }
 async function createOrder(authToken,subscription) {
-  const amountCents=subscription.type.price*100;
+  const amountCents=subscription.type.prices*100;
   const response=await axios.post(`${PAYMOB_API_URL}/ecommerce/orders`,{
     auth_token:authToken,
     amount_cents:amountCents,
@@ -25,6 +25,9 @@ async function createOrder(authToken,subscription) {
     currency:"EGP",
     items:[{
       name:"metro subscription",
+      amount_cents: amountCents,  
+      description: "Metro Subscription",  
+      quantity: 1 
     }
     ]
   });
@@ -62,7 +65,7 @@ async function createPaymentHistory(userId,subscriptionId,subscriptionPrice,paym
     subscriptionId:subscriptionId,
     payment_history:[{
       issuing_date: new Date(),
-       expire_date:new Date(Date.now()+60*60+1000),
+       expire_date:new Date(Date.now()+60*60*1000),
       amount_paid:subscriptionPrice,
       payment_method: paymentMethod,
       invoice_number: invoiceNumber,
@@ -70,14 +73,108 @@ async function createPaymentHistory(userId,subscriptionId,subscriptionPrice,paym
     }]
   });
 }
+async function payWithPaymob(paymentKey, paymentMethod) {
+  if(paymentMethod === 'visa card'){
+    source = { identifier: "token", subtype: "CARD" };
+  }
+  else{
+    throw new Error("Invalid payment method");
+  }
+  const response = await axios.post(`${PAYMOB_API_URL}/acceptance/payments/pay`, {
+      source,
+      payment_token: paymentKey
+    });
+  
+    return response.data;
+}
+//controllers 
 exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
   const {paymentMethod,subscriptionId}=req.body;
   if(!paymentMethod||!subscriptionId)
     return next(new appError("Please provide payment method and subscriptionId",400));
   const user=await Users.findById(req.user.id);
   if (!user) return next(new appError("User not found", 404));
-  const subscription=await subscriptionModel.findById(subscriptionId);
+  const subscription=await subscriptions.findById(subscriptionId)
+  .populate('type','prices category duration')
+  .populate('office','officeName workingHours address');
   if(!subscription) return next(new appError("subscription not found",404));
-  
-    
-})
+  if(subscription.user.toString()!==req.user.id)
+    return next(new appError("This subscription does not belong to you",403));
+  if (subscription.status !== 'accepted')
+    return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
+  const subscriptionPrice=await subscription.type.prices;
+  if(paymentMethod==='cash'){
+    const issuingDate =Date.now();
+    const cashPayment=await subscriptionPayment.create({
+      userId:user.id,
+      subscriptionId:subscriptionId,
+      payment_history:[{
+        issuing_date:issuingDate,
+        amount_paid:subscriptionPrice,
+        payment_method:'cash',
+        payment_status: 'pending'
+      }]
+    });
+    res.status(200).json({
+      status:'success',
+      data:{
+       payment:{
+        issuingDate,
+        amount:subscriptionPrice,
+        currency:'EGP',
+        paymentMethod:'cash',
+       },
+       office:{
+        name:subscription.office.officeName,
+        workingHours:subscription.office.workingHours
+       },
+       subscription:{
+        category:subscription.type.category.en,
+        duration:subscription.type.duration.en,
+        status:subscription.status,
+       }
+      }
+    });
+  }
+    if(paymentMethod==='visa card'){
+          const issuingDate=Date.now();
+      try{
+        const authToken=await getAuthToken();
+        const orderId=await createOrder(authToken,subscription);
+        const paymentKey=await createPaymentKey(authToken,orderId,user,subscriptionPrice);
+        await createPaymentHistory(user.id,subscriptionId,subscriptionPrice,paymentMethod,issuingDate);
+        res.status(200).json({
+          status:'success',
+          paymentKey
+        });
+      }
+      catch(err){
+        res.status(400).json({
+          status:'false',
+          message: "Payment failed. Please try again.",
+          details:err.response?.data || err.message
+        });
+      }
+    }
+});
+exports.visaPayController=(req,res,next)=>{
+  const {paymentKey,paymentMethod}=req.body;
+  const iframeUrl=`https://accept.paymobsolutions.com/api/acceptance/iframes/${PAYMOB_IFRAME_ID}?payment_token=${paymentKey}`;
+  try{
+    if(paymentMethod==='visa card')
+    {
+      res.status(200).json({
+        status:'success',
+        iframeUrl:iframeUrl
+      });
+    }
+    return next(new appError("Invalid payment method", 400));
+  }
+  catch(err){
+    return res.status(400).json({
+      success: false,
+      message: "Payment failed",
+      error: err.response?.data || err.message
+    });
+  }
+}
