@@ -1,7 +1,32 @@
 const subscriptionPayment = require('./../models/subscriptionPaymentModel');
 const subscriptionModel = require('./../models/subscriptionModel');
+const crypto=require('crypto');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
+
+const PAYMOB_SUB_HMAC_SECRET=process.env.PAYMOB_SUB_HMAC_SECRET;
+
+function getNested(obj,path){
+  return path.split('.').reduce((acc,key)=>
+  acc?.[key],obj) ?? '';
+}
+function validateHMAC(data,receiveHmac){
+  const fields=[
+    "amount_cents","created_at","currency","error_occured","has_parent_transaction",
+    "id","integration_id","is_3d_secure","is_auth","is_capture","is_refunded","is_standalone_payment",
+    "is_voided","order.id","owner","pending","source_data.pan","source_data.sub_type",
+    "source_data.type","success"
+  ];
+  let collected="";
+  for(const field of fields){
+    collected+=String(getNested(data,field) ?? "");
+  }
+  const calculated=crypto
+  .createHmac("sha512",PAYMOB_SUB_HMAC_SECRET)
+  .update(collected)
+  .digest("hex");
+  return calculated === receiveHmac;
+}
 
 const Duration_Months = {
   monthly: 1,
@@ -39,12 +64,19 @@ exports.transactionProcessed = async (req, res) => {
         { new: true }
       );
 
-      console.log('TOKEN saved:', result ? `✅ order ${order_id}` : '❌ no record found');
+      console.log('TOKEN saved:', result ? ` order ${order_id}` : ' no record found');
       return res.status(200).json({ message: "Token saved" });
     }
 
     if (body.type === 'TRANSACTION') {
       const data = body.obj;
+      const hmac=req.query.hmac||body.hmac;
+      if(!validateHMAC(data,hmac)){
+        console.log('HMAC validation failed');
+        return res.status(403).json({message: "HMAC validation failed" });
+      }
+      console.log('HMAC vaild');
+
       const orderId = data?.order?.id;
       const success = data?.success;
       const amountCents = Number(data?.amount_cents) || 0;
@@ -68,14 +100,14 @@ exports.transactionProcessed = async (req, res) => {
         { new: true }
       );
 
-      console.log('Payment record updated:', updated ? '✅' : '❌ not found');
+      console.log('Payment record updated:', updated ? 'found' : ' not found');
 
       if (success && updated) {
         const subscription = await subscriptionModel
           .findById(updated.subscriptionId)
           .populate('type', 'duration');
 
-        console.log('Subscription found:', subscription ? '✅' : '❌');
+        console.log('Subscription found:', subscription ? 'found' : 'not found');
         console.log('Duration:', subscription?.type?.duration?.en);
 
         if (subscription) {
@@ -90,7 +122,7 @@ exports.transactionProcessed = async (req, res) => {
             { new: true }
           );
 
-          console.log('✅ Subscription activated:', activated?.status, 'until:', activated?.end_date);
+          console.log(' Subscription activated:', activated?.status, 'until:', activated?.end_date);
         }
       }
 
