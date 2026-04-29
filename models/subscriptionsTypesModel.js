@@ -1,29 +1,33 @@
 const mongoose=require('mongoose');
 const subscriptionTypeSchema=new mongoose.Schema({
   zones:{
-    type:Number,
-    required:true
+    type:Number
+  },
+  numOfLines:{
+    type:Number
   },
   category:{
     en:{
     type:String,
     enum:["public","students","military","Elderly","special","special needs"],
-    required:true
+    required:true,
+    trim: true
     },
     ar:{
       type:String,
-      enum:["عام","طلاب","الجيش و الشرطه","كبار السن","حالات خاصه(ابناء الشهداء)","ذوي الاحتياجات الخاصه"]
+      enum:["عام","طلاب","الجيش و الشرطه","كبار السن","حالات خاصه(ابناء الشهداء)","ذوي الاحتياجات الخاصه"],
+      trim: true
     }
   },
   duration:{
     en:{
     type:String,
-    enum:["monthly","quarterly","yearly"],
+    enum:["monthly","quarterly","half yearly","yearly"],
     required:true
     },
     ar:{
       type:String,
-      enum:["شهري","ربع سنوي","سنوي"]
+      enum:["شهري","ربع سنوي","نصف سنوي","سنوي"]
     }
   },
   prices:{

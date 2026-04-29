@@ -12,6 +12,7 @@ exports.getAllSubscriptionsTypes=catchAsyncError(async(req,res,next)=>{
       'category.en':1,
       'duration.en':1,
       zones:1,
+      numOfLines:1,
       prices:1
     }),
     req.query
@@ -48,24 +49,33 @@ exports.getSubscriptionsType=catchAsyncError(async(req,res,next)=>{
   });
 });
 exports.createSubscriptionType=catchAsyncError(async(req,res,next)=>{
-  const {zones,category,duration,prices}=req.body;
-  if(!zones||!category||!duration||!prices){
-    return next(new AppError('Please Provide zones, category, duration, prices',400));
+  const {zones,numOfLines,category,duration,prices}=req.body;
+  if(!category||!duration||!prices){
+    return next(new AppError('Please Provide category, duration, prices',400));
   }
-  const categoryEn=typeof category==='string'?category:category.en;
+   const categoryEn=typeof category==='string'?category:category.en;
   const categoryAr=typeof category==='object'?category.ar:undefined;
   const durationEn=typeof duration==='string'?duration:duration.en;
   const durationAr=typeof duration==='object'?duration.ar:undefined;
-  const exisitng=await subscriptionsTypesModel.findOne({
-    zones,
-    'category.en':categoryEn,
-    'duration.en':durationEn
-  });
+const isYearly = durationEn === 'yearly';
+  if (isYearly && !numOfLines) {
+    return next(new AppError('Yearly subscriptions require numOfLines', 400));
+  }
+  if (!isYearly && !zones) {
+    return next(new AppError('Non-yearly subscriptions require zones', 400));
+  }
+ 
+  const existingQuery = {
+    'category.en': categoryEn,
+    'duration.en': durationEn,
+    ...(isYearly ? { numOfLines } : { zones }),
+  };
+  const exisitng=await subscriptionsTypesModel.findOne(existingQuery);
   if(exisitng){
     return next(new AppError('This subscription type already exists',400));
   }
   const newSubscriptionType=await subscriptionsTypesModel.create({
-    zones,
+    ...(isYearly ? { numOfLines } : { zones }),
     category:{en:categoryEn,ar:categoryAr},
     duration:{en:durationEn,ar:durationAr},
     prices
@@ -76,10 +86,11 @@ exports.createSubscriptionType=catchAsyncError(async(req,res,next)=>{
   });
 });
 exports.updateSubscriptionTypes=catchAsyncError(async(req,res,next)=>{
-  const{zones,category,duration,prices}=req.body;
+  const{zones,numOfLines,category,duration,prices}=req.body;
   const updateData={};
   if(zones) updateData.zones=zones;
   if(prices) updateData.prices=prices;
+  if(numOfLines) updateData.numOfLines=numOfLines;
   if (category) {
     updateData['category.en'] = typeof category === 'string' ? category : category.en;
     if (typeof category === 'object' && category.ar)

@@ -1,0 +1,168 @@
+[
+  {
+    "id": "faq_001",
+    "question": "What are the subscription zone plans?",
+    "answer": "There are 4 zones based on trip length: Zone 1 covers short trips (1–9 stations), Zone 2 covers medium trips (10–16 stations), Zone 3 covers longer trips (17–23 stations), and Zone 4 covers full line or cross-line trips (24+ stations).",
+    "tags": ["zones", "subscription", "pricing"]
+  },
+  {
+    "id": "faq_002",
+    "question": "How can I buy a ticket from the app?",
+    "answer": "Open the app and go to the Home screen. Tap 'Plan Your Route', select your departure and destination stations, then tap 'Buy Ticket'. You can pay using Visa, Aman, or Masary.",
+    "tags": ["ticket", "app", "payment"]
+  },
+  {
+    "id": "faq_003",
+    "question": "How do I find the nearest metro station to me?",
+    "answer": "On the Home screen, enable your location. The nearest metro station will automatically appear in the 'Nearest Metro Station' section.",
+    "tags": ["location", "nearest station", "map", "app"]
+  },
+  {
+    "id":"faq_004",
+    "question":"How can I make a subscription from the app?",
+    "answer":"Open the app and go to the Home screen. Tap 'Get Subscription', select a subscription plan, fill in the application form, then complete payment using Visa",
+    "tags":[ "subscription", "pricing", "app"]
+  },
+  {
+    "id":"faq_005",
+    "question":"How can I get my subscription card?",
+    "answer":"After completing payment, enable your location. The nearest subscription office will automatically appear on the screen so you can go pick up your card.",
+    "tags":[ "subscription", "card", "location", "app"]
+  },
+  {
+  "id": "faq_006",
+  "question": "I am a student. What documents do I need to upload in the subscription form?",
+  "answer": "If you are a student, you need to upload the following documents: your university ID card,or a university tuition payment receipt for the current or previous academic year, and a proof of residence only if your current address is different from the one on your national ID card. Make sure all uploaded documents are clear and valid.",
+  "tags": ["subscription", "student", "documents", "form", "app"]
+},
+{
+  "id": "faq_007",
+  "question": "I am a member of the Military or Police. What documents do I need to upload in the subscription form?",
+  "answer": "If you are a member of the Military or Police, you need to upload a clear copy of your valid military or police ID card.Ensure all uploaded documents are legible and currently valid.",
+  "tags": ["subscription", "military", "police", "documents", "form", "app"]
+},
+  {
+    "id": "faq_008",
+    "question": "I am a senior citizen. What documents do I need to upload in the subscription form?",
+    "answer": "If you are applying for an Elderly subscription, you need to upload a clear copy of your National ID card to verify your age. Additionally, please upload a proof of residence only if your current address is different from the one listed on your ID.",
+    "tags": ["subscription", "elderly", "documents", "form", "app"]
+  },
+  {
+    "id": "faq_009",
+    "question": "I have special needs. What documents do I need to upload in the subscription form?",
+    "answer": "For a Special Needs subscription, you must upload your Integrated Services Card or a valid medical certificate issued by a government hospital. You also need to provide a proof of residence if your current address differs from your National ID card.",
+    "tags": ["subscription", "special needs", "documents", "form", "app"]
+  },
+  {
+    "id": "faq_010",
+    "question": "I am applying for a public subscription. What documents do I need to upload?",
+    "answer": "For the Public subscription category, you only need to upload a clear, valid copy of your National ID card. If your current residence address is not the same as the one on your ID, please include a recent utility bill as proof of residence.",
+    "tags": ["subscription", "public", "documents", "form", "app"]
+  },
+  {
+    "id": "faq_011",
+    "question": "I am applying as a child of a martyr. What documents do I need to upload?",
+    "answer": "You need to upload an official identification card or a certified document from the relevant authorities proving your status. Additionally, include a copy of your National ID and a proof of residence if your current address is different from the one on your ID.",
+    "tags": ["subscription", "special", "martyrs", "documents", "form", "app"]
+  },
+  {
+    "id": "faq_012",
+    "question": "Can I transfer my balance from one card to another?",
+    "answer": "Currently, balance transfers between cards are not supported for security reasons. Each card's balance is tied to its unique ID.",
+    "tags": ["transfer", "balance", "policy"]
+  },
+  {
+  "id": "faq_013",
+  "question": "Can I lend my subscription card to a friend or family member?",
+  "answer": "No, the subscription card is strictly for personal use by the cardholder only. Lending your card to someone else is a violation of metro policies and will subject both of you to a financial fine. Please ensure you are the only one using your card to avoid legal or financial penalties.",
+  "tags": ["subscription", "policy", "fine", "usage"]
+},
+{
+    "id": "faq_014",
+    "question": "What is the Metro Hotline for emergencies or complaints?",
+    "answer": "For immediate assistance, emergencies, or to file a complaint, you can call the Cairo Metro Hotline at 16048. It is available 24/7 to serve passengers.",
+    "tags": ["contact", "hotline", "support", "emergency"]
+  },
+  {
+    "id": "faq_015",
+    "question": "Where is the lost and found office located?",
+    "answer": "The main lost and found offices are located at Rod El Farag station (Line 2) and Sadat station. You should visit these offices to report or claim any items lost within the metro premises.",
+    "tags": ["lost and found", "services", "station"]
+  },
+  {
+  "id": "faq_016",
+  "question": "What are the metro fines, their values, and when are they collected?",
+  "answer": "Fines are divided into four categories based on the violation: \n1. 50 EGP Fine (Collected by Metro supervisors): For exceeding the number of stations allowed by your ticket. \n2. 100 EGP Fine (Collected by Metro supervisors): For traveling without a ticket. \n3. 250 EGP Fine (Collected by Metro police): For smoking, begging, selling or advertising without a permit, crossing the tracks, obstructing doors, or tampering with metro equipment. \n4. Delay Fines: If a passenger causes a train delay, they are fined 300 EGP per minute of delay. \nPlease follow these rules to avoid immediate penalties and help maintain the metro as a civilized project.",
+  "tags": ["fines", "penalties", "regulations", "police", "delay"]
+},
+[
+  {
+    "id": "faq_017",
+    "question": "What are the prices for student subscriptions?",
+    "answer": "Student subscriptions are quarterly (3 months) and priced by zones: Zone 1 costs 150 EGP, Zone 2 costs 200 EGP, Zone 3 costs 250 EGP, and Zone 4 costs 300 EGP.",
+    "tags": ["students", "subscription", "prices"]
+  },
+  {
+    "id": "faq_018",
+    "question": "How much does a monthly public subscription cost?",
+    "answer": "For the public category, monthly subscriptions are: Zone 1 (390 EGP), Zone 2 (440 EGP), Zone 3 (510 EGP), and Zone 4 (600 EGP).",
+    "tags": ["public", "subscription", "prices", "monthly"]
+  },
+  {
+    "id": "faq_019",
+    "question": "What are the subscription prices for senior citizens (Elderly)?",
+    "answer": "Senior citizens (Elderly) have two plans: Monthly (Zone 1: 275 EGP to Zone 4: 470 EGP) and Quarterly (Zone 1: 825 EGP to Zone 4: 1270 EGP).",
+    "tags": ["elderly", "subscription", "prices"]
+  },
+  {
+    "id": "faq_020",
+    "question": "Are there yearly subscription plans available?",
+    "answer": "Yes, yearly subscriptions are available for Public and Military/Police categories. For Public, it costs 5100 EGP for 2 lines and 6400 EGP for 3 lines. For Military/Police, it costs 7300 EGP for 2 or 3 lines.",
+    "tags": ["yearly", "subscription", "prices"]
+  },
+  {
+    "id": "faq_021",
+    "question": "What is the cost of a special needs subscription?",
+    "answer": "Special needs subscriptions are quarterly (3 months): Zone 1 costs 150 EGP, Zone 2 costs 200 EGP, Zone 3 costs 250 EGP, and Zone 4 costs 300 EGP.",
+    "tags": ["special needs", "subscription", "prices"]
+  },
+  {
+    "id": "faq_022",
+    "question": "How much do military and police personnel pay for quarterly subscriptions?",
+    "answer": "For Military and Police, quarterly plans are: Zone 1 (900 EGP), Zone 2 (1080 EGP), Zone 3 (1350 EGP), and Zone 4 (1800 EGP).",
+    "tags": ["military", "police", "subscription", "prices", "quarterly"]
+  },
+  [
+  {
+    "id": "faq_023",
+    "question": "What are the metro ticket prices?",
+    "answer": "Metro ticket prices depend on the number of stations: 10 EGP for up to 9 stations, 12 EGP for up to 16 stations, 15 EGP for up to 23 stations, and 20 EGP for any trip up to 39 stations.",
+    "tags": ["tickets", "prices", "fare"]
+  },
+  {
+    "id": "faq_024",
+    "question": "How much is a ticket for 5 or 7 stations?",
+    "answer": "A trip consisting of 1 to 9 stations costs 10 EGP.",
+    "tags": ["tickets", "prices", "short trip"]
+  },
+  {
+    "id": "faq_025",
+    "question": "I am traveling 15 stations, which ticket should I buy?",
+    "answer": "For a trip between 10 and 16 stations, you need to buy a 12 EGP ticket.",
+    "tags": ["tickets", "prices", "medium trip"]
+  },
+  {
+    "id": "faq_026",
+    "question": "What is the price for a long trip (more than 23 stations)?",
+    "answer": "For long trips covering more than 23 stations (up to 39 stations), the ticket price is 20 EGP.",
+    "tags": ["tickets", "prices", "long trip"]
+  },
+  {
+    "id": "faq_027",
+    "question": "What is the ticket price for 20 stations?",
+    "answer": "A trip that covers 17 to 23 stations costs 15 EGP.",
+    "tags": ["tickets", "prices"]
+  }
+]
+]
+]

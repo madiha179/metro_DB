@@ -23,13 +23,14 @@ exports.getStation = catchAsync(async (req, res, next) => {
     const lang = getLang(req);
 
     const stationList = await Station.aggregate([
-        { $group: { _id: "$name.en", doc: { $first: "$$ROOT" } } },
+        { $group: { _id:{ name:"$name.en",line:"$line_number"}, doc: { $first: "$$ROOT" } } },
         { $replaceRoot: { newRoot: "$doc" } },
         {
             $addFields: {
                 name: { $ifNull: [`$name.${lang}`, "$name.en"] }
             }
-        }
+        },
+        {$sort:{line_number:1,position:1}}
     ]);
 
     return res.status(200).json({

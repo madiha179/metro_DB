@@ -187,18 +187,19 @@ exports.visaCardPay = catchAsync(async(req, res, next) => {
   }
 });
 exports.paymentConfirm = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id).select('name');
-  const userPayment = await PaymentHistory.findOne({ userid: req.user.id })
-    .select('payment_history')
-    .sort({ 'payment_history.issuing_date': -1 });
+  const user = await User.findById(req.user.id);
+  const userPayment = await PaymentHistory.findOne({ userid: req.user.id });
   if (!userPayment || !userPayment.payment_history.length) {
     return next(new AppError('No payment history found', 404));
   }
-  const latestPayment = userPayment.payment_history[userPayment.payment_history.length - 1];
+  const sortedHistory=userPayment.payment_history.sort(
+    (a,b)=>new Date(b.issuing_date) - new Date(a.issuing_date)
+    );
+  const latestPayment = sortedHistory[0];
   res.status(200).json({
     status: 'success',
     data: {
-      userName: user?.name,
+      userName: user?.name||User?.name,
       payment: {
         invoice_number: latestPayment.invoice_number,
         payment_method: latestPayment.payment_method,
