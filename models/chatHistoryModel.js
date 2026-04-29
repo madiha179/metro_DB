@@ -5,11 +5,8 @@ const messageSchema=new mongoose.Schema({
     ref:'User',
     required:true
   },
-  role:{
-    type:String,
-    enum:["user","assistant"]
-  },
-  text:String,
+  question:String,
+  answer:String,
   createdAt:{
     type:Date,
     default:Date.now
