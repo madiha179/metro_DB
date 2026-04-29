@@ -32,6 +32,9 @@ const signToken=id=>{
   if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
     token=req.headers.authorization.split(' ')[1];
   }
+  else if(req.cookies.jwt){
+    token=req.cookies.jwt;
+  }
   if(!token){
     return next (new appError('you are not logged in ! please login to get access',401));
   }
