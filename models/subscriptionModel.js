@@ -61,6 +61,13 @@ const subSchema = new mongoose.Schema({
     end_date: {
         type: Date,
     },
+    reminderSentAt:{
+        type:Date,
+        default:null
+    },
+    renewalInitiatedAt: { type: Date,
+         default: null
+         }
 }, { timestamps: true });
 
 subSchema.index({ user: 1, status: 1 });

@@ -52,6 +52,13 @@ card_subtype:{
           default: 'pending'
     }
     }]
-})
+},
+{
+  timestamps:true
+}
+);
+subscriptionPaymentSchema.index({subscriptionId:1});
+subscriptionPaymentSchema.index({card_token:1});
+subscriptionPaymentSchema.index({"payment_history.invoice_number":1});
 const subscriptionPayment=mongoose.model('subscriptionPayment',subscriptionPaymentSchema);
 module.exports=subscriptionPayment;

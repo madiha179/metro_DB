@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .container { background: #fff; border-radius: 10px; padding: 30px; max-width: 500px; margin: auto; }
+    .header { text-align: center; color: #01338D; }
+    .success { background: #f0fff4; border-left: 4px solid #00C814; padding: 15px; border-radius: 5px; margin: 20px 0; }
+    .details { background: #f8f9ff; border-radius: 10px; padding: 20px; margin: 20px 0; }
+    .details table { width: 100%; border-collapse: collapse; }
+    .details td { padding: 8px 0; color: #444; }
+    .details td:last-child { text-align: right; font-weight: bold; color: #01338D; }
+    .amount { font-size: 24px; font-weight: bold; color: #1782FB; text-align: center; margin: 10px 0; }
+    .footer { text-align: center; color: #7F98C5; font-size: 12px; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="header">🚇 Metro Mate</h2>
+    <p>Dear <strong>{{firstName}}</strong>,</p>
+    <div class="success">
+      <strong>✅ Subscription Successfully Renewed!</strong>
+      <p>Your Metro Mate subscription has been automatically renewed.</p>
+    </div>
+    <div class="details">
+      <table>
+        <tr>
+          <td>📅 Renewal Date</td>
+          <td>{{renewalDate}}</td>
+        </tr>
+        <tr>
+          <td>📅 New Expiry Date</td>
+          <td>{{expiryDate}}</td>
+        </tr>
+        <tr>
+          <td>💳 Payment Method</td>
+          <td>Visa Card ({{maskedPan}})</td>
+        </tr>
+        <tr>
+          <td>💰 Amount Paid</td>
+          <td>{{amount}} EGP</td>
+        </tr>
+      </table>
+    </div>
+    <p>Enjoy your Metro Mate subscription! 🚇</p>
+    <div class="footer">© 2026 Metro Mate. All rights reserved.</div>
+  </div>
+</body>
+</html>
