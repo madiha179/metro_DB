@@ -180,3 +180,42 @@ exports.visaPayController=(req,res,next)=>{
     });
   }
 }
+exports.confirmPayment = catchAsyncError(async (req, res, next) => {
+  const user = await Users.findById(req.user.id);
+  if (!user) return next(new appError("User not found", 404));
+
+  const userPayment = await subscriptionPayment.findOne({ userId: req.user.id }).sort({createdAt:-1});
+
+  if (!userPayment || !userPayment.payment_history.length) {
+    return next(new appError('No payment history found', 404));
+  }
+
+  const latestPayment = userPayment.payment_history.at(-1);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      userName: user.name,
+      payment: {
+        invoice_number: latestPayment.invoice_number,
+        payment_method: latestPayment.payment_method,
+        issuing_date: latestPayment.issuing_date.toISOString().split('T')[0],
+        amount_paid: latestPayment.amount_paid
+      }
+    }
+  });
+});
+exports.getStatus=catchAsyncError(async(req,res,next)=>{
+  const user=await Users.findById(req.user.id);
+  if(!user)
+return next(new appError("User not found", 404));
+  const SubscriptionStatus=await subscriptions.findOne({user:req.user.id}).select('status');
+  if(!SubscriptionStatus)
+    return next(new appError("Subscription not found", 404));
+  res.status(200).json({
+    status:'success',
+    data:{
+      status:SubscriptionStatus.status
+    }
+  });
+});

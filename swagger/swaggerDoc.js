@@ -36,6 +36,7 @@ const options = {
     path.join(__dirname,"tripHistoryDoc.js"),
     path.join(__dirname,"subscriptionDoc.js"),
     path.join(__dirname,"subDashDoc.js"),
+    path.join(__dirname,"subPaymentDoc.js")
   ],
 };
 const swaggerSpec = swaggerJSDoc(options);

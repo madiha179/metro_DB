@@ -5,4 +5,6 @@ const subPaymentRoute=express.Router();
 subPaymentRoute.use(authController.protect);
 subPaymentRoute.post('/subscription-pay',subPaymentController.subPaymentController);
 subPaymentRoute.post('/subscription-pay/visa',subPaymentController.visaPayController);
+subPaymentRoute.get('/subscription-pay/confirm',subPaymentController.confirmPayment);
+subPaymentRoute.get('/subscription-pay/status',subPaymentController.getStatus);
 module.exports=subPaymentRoute;
