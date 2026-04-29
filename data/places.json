@@ -1,0 +1,299 @@
+[
+  {
+    "place": "حديقة الحيوان",
+    "aliases": ["cairo zoo", "حديقة حيوان الجيزة", "zoo"],
+    "nearest_stations": [
+      { "name": "الجيزة", "line": 2, "color": "Red" }
+    ],
+    "notes": "مشي 10 دقائق من محطة الجيزة"
+  },
+  {
+    "place": "محكمة الأسرة المعادي وحلوان والتبين",
+    "aliases": ["family court maadi", "family court helwan", "محكمة اسرة", "محكمة حلوان", "محكمة المعادي", "التبين"],
+    "nearest_stations": [
+      { "name": "حدائق حلوان", "line": 1, "color": "Blue" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "كلية الفنون الجميلة جامعة حلوان",
+    "aliases": ["fine arts helwan", "فنون جميلة حلوان", "كلية فنون حلوان"],
+    "nearest_stations": [
+      { "name": "حدائق حلوان", "line": 1, "color": "Blue" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "كلية الفنون الجميلة الزمالك",
+    "aliases": ["fine arts zamalek", "فنون جميلة زمالك", "كلية فنون الزمالك"],
+    "nearest_stations": [
+      { "name": "صفاء حجازي", "line": 3, "color": "Green" },
+      { "name": "الأوبرا", "line": 2, "color": "Red" }
+    ],
+    "notes": "صفاء حجازي أقرب - مشي بسيط. الأوبرا تحتاج 15 دقيقة مشي"
+  },
+  {
+    "place": "جامعة عين شمس",
+    "aliases": ["ain shams university", "عين شمس", "كلية طب عين شمس"],
+    "nearest_stations": [
+      { "name": "العباسية", "line": 3, "color": "Green" },
+      { "name": "منشية الصدر", "line": 1, "color": "Blue" }
+    ],
+    "notes": "تعتمد على الكلية"
+  },
+  {
+    "place": "جامعة القاهرة",
+    "aliases": ["cairo university", "الجيزة جامعة"],
+    "nearest_stations": [
+      { "name": "جامعة القاهرة", "line": 2, "color": "Red" },
+      { "name": "جامعة القاهرة", "line": 3, "color": "Green" }
+    ],
+    "notes": "محطة تبادل بين الخط 2 و 3"
+  },
+  {
+    "place": "مطار القاهرة الدولي",
+    "aliases": ["cairo airport", "المطار", "airport"],
+    "nearest_stations": [
+      { "name": "النزهة", "line": 3, "color": "Green" }
+    ],
+    "notes": "ثم تاكسي أو أتوبيس للمطار"
+  },
+  {
+    "place": "ميدان التحرير",
+    "aliases": ["tahrir square", "التحرير", "المتحف المصري"],
+    "nearest_stations": [
+      { "name": "السادات", "line": 1, "color": "Blue" },
+      { "name": "السادات", "line": 2, "color": "Red" }
+    ],
+    "notes": "محطة تبادل بين الخط 1 و 2"
+  },
+  {
+    "place": "محطة رمسيس",
+    "aliases": ["ramses station", "رمسيس", "محطة القطار"],
+    "nearest_stations": [
+      { "name": "الشهداء", "line": 1, "color": "Blue" },
+      { "name": "الشهداء", "line": 2, "color": "Red" }
+    ],
+    "notes": "محطة تبادل بين الخط 1 و 2"
+  },
+  {
+    "place": "الأهرامات",
+    "aliases": ["pyramids", "أهرامات الجيزة", "giza pyramids"],
+    "nearest_stations": [
+      { "name": "الجيزة", "line": 2, "color": "Red" }
+    ],
+    "notes": "ثم ميكروباص أو تاكسي للأهرامات"
+  },
+  {
+    "place": "دار الأوبرا المصرية",
+    "aliases": ["opera house", "الأوبرا", "cairo opera"],
+    "nearest_stations": [
+      { "name": "الأوبرا", "line": 2, "color": "Red" },
+      { "name": "صفاء حجازي", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "معرض القاهرة الدولي للكتاب",
+    "aliases": ["cairo book fair", "معرض الكتاب", "book fair", "EISEC"],
+    "nearest_stations": [
+      { "name": "الاستاد", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "نادي الشمس",
+    "aliases": ["el shams club", "نادي شمس", "shams club"],
+    "nearest_stations": [
+      { "name": "نادي الشمس", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "مدينة نصر",
+    "aliases": ["nasr city", "مدينة نصر"],
+    "nearest_stations": [
+      { "name": "الاستاد", "line": 3, "color": "Green" },
+      { "name": "كلية البنات", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "هليوبوليس ومصر الجديدة",
+    "aliases": ["heliopolis", "مصر الجديدة", "heliopolois"],
+    "nearest_stations": [
+      { "name": "الأهرام", "line": 3, "color": "Green" },
+      { "name": "ميدان هليوبوليس", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "إمبابة",
+    "aliases": ["imbaba", "امبابة"],
+    "nearest_stations": [
+      { "name": "إمبابة", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "روض الفرج",
+    "aliases": ["rod el farag", "رود الفرج", "كوبري روض الفرج"],
+    "nearest_stations": [
+      { "name": "محور روض الفرج", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "المهندسين والدقي",
+    "aliases": ["mohandessin", "dokki", "المهندسين", "الدقي"],
+    "nearest_stations": [
+      { "name": "وادي النيل", "line": 3, "color": "Green" },
+      { "name": "جامعة الدول العربية", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "بولاق الدكرور",
+    "aliases": ["bulaq dakrour", "بولاق"],
+    "nearest_stations": [
+      { "name": "بولاق الدكرور", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "كيت كات والعجوزة",
+    "aliases": ["kit kat", "كيت كات", "agouza", "العجوزة"],
+    "nearest_stations": [
+      { "name": "كيت كات", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "ماسبيرو والكورنيش",
+    "aliases": ["maspero", "ماسبيرو", "corniche"],
+    "nearest_stations": [
+      { "name": "ماسبيرو", "line": 3, "color": "Green" }
+    ],
+    "notes": ""
+  },
+  {
+    "place": "عدلي منصور والمدينة الجديدة",
+    "aliases": ["adly mansour", "عدلي منصور", "el salam"],
+    "nearest_stations": [
+      { "name": "عدلي منصور", "line": 3, "color": "Green" }
+    ],
+    "notes": "نهاية الخط الثالث - تبادل مع القطار الكهربائي LRT"
+  },
+  {
+  "place": "قصر عائشة فهمي",
+  "aliases": ["aisha fahmy palace", "قصر عايشه فهمي", "zamalek palace"],
+  "nearest_stations": [
+    { "name": "صفاء حجازي", "line": 3, "color": "Green" },
+    { "name": "الأوبرا", "line": 2, "color": "Red" }
+  ],
+  "notes": "صفاء حجازي أقرب - مشي 10 دقائق عبر كوبري قصر النيل"
+},
+{
+  "place": "قصر عابدين",
+  "aliases": ["abdeen palace", "عابدين", "متحف عابدين"],
+  "nearest_stations": [
+    { "name": "محمد نجيب", "line": 2, "color": "Red" }
+  ],
+  "notes": "مشي 3 دقائق من المحطة"
+},
+{
+  "place": "المتحف المصري الكبير",
+  "aliases": ["grand egyptian museum", "GEM", "متحف الجيزة", "المتحف الكبير"],
+  "nearest_stations": [
+    { "name": "الجيزة", "line": 2, "color": "Red" }
+  ],
+  "notes": "ثم ميكروباص أو تاكسي لميدان الرماية - المتحف قريب من الأهرامات"
+},
+{
+  "place": "قلعة صلاح الدين",
+  "aliases": ["القلعة", "citadel", "salah el din citadel", "مسجد محمد علي"],
+  "nearest_stations": [
+    { "name": "الملك الصالح", "line": 1, "color": "Blue" }
+  ],
+  "notes": "تاكسي أو ميكروباص من المحطة لبوابة القلعة"
+},
+{
+  "place": "النادي الأهلي المقطم",
+  "aliases": ["ahly club mokattam", "نادي الأهلي المقطم", "al ahly mokattam"],
+  "nearest_stations": [
+    { "name": "الملك الصالح", "line": 1, "color": "Blue" }
+  ],
+  "notes": "لا توجد محطة مترو قريبة من المقطم — تاكسي أو أوبر من الملك الصالح هي الأقرب عملياً، المسافة حوالي 4 كم"
+},
+[
+  {
+    "place": "محطة السادات (تبادل خط 1 و 2)",
+    "aliases": ["التحرير", "sadat station", "تبادل السادات"],
+    "nearest_stations": [
+      { "name": "السادات", "line": 1, "color": "Blue" },
+      { "name": "السادات", "line": 2, "color": "Red" }
+    ],
+    "notes": "محطة تبادل رئيسية بين الخط الأول والخط الثاني تحت ميدان التحرير"
+  },
+  {
+    "place": "محطة الشهداء (تبادل خط 1 و 2)",
+    "aliases": ["رمسيس", "shohadaa station", "تبادل الشهداء"],
+    "nearest_stations": [
+      { "name": "الشهداء", "line": 1, "color": "Blue" },
+      { "name": "الشهداء", "line": 2, "color": "Red" }
+    ],
+    "notes": "محطة تبادل رئيسية بين الخط الأول والخط الثاني بجوار محطة قطار مصر"
+  },
+  {
+    "place": "محطة العتبة (تبادل خط 2 و 3)",
+    "aliases": ["attaba station", "تبادل العتبة"],
+    "nearest_stations": [
+      { "name": "العتبة", "line": 2, "color": "Red" },
+      { "name": "العتبة", "line": 3, "color": "Green" }
+    ],
+    "notes": "محطة تبادل بين الخط الثاني والخط الثالث"
+  },
+  {
+    "place": "محطة ناصر (تبادل خط 1 و 3)",
+    "aliases": ["nasser station", "تبادل ناصر", "الإسعاف"],
+    "nearest_stations": [
+      { "name": "ناصر", "line": 1, "color": "Blue" },
+      { "name": "ناصر", "line": 3, "color": "Green" }
+    ],
+    "notes": "محطة تبادل بين الخط الأول والخط الثالث بمنطقة الإسعاف"
+  },
+  {
+    "place": "محطة جامعة القاهرة (تبادل خط 2 و 3)",
+    "aliases": ["cairo university station", "تبادل الجامعة"],
+    "nearest_stations": [
+      { "name": "جامعة القاهرة", "line": 2, "color": "Red" },
+      { "name": "جامعة القاهرة", "line": 3, "color": "Green" }
+    ],
+    "notes": "محطة تبادل بين الخط الثاني والخط الثالث (تفريعة جامعة القاهرة)"
+  },
+  {
+    "place": "محطة عدلي منصور (تبادل مترو و BRT و LRT)",
+    "aliases": ["adly mansour hub", "تبادل عدلي منصور", "المحطة التبادلية"],
+    "nearest_stations": [
+      { "name": "عدلي منصور", "line": 3, "color": "Green" }
+    ],
+    "notes": "أكبر محطة تبادلية؛ تربط الخط الثالث بالقطار الكهربائي (LRT) والأتوبيس الترددي (BRT) وموقف سوبر جيت"
+  },
+  {
+    "place": "محطة المنيب (تبادل مترو و BRT)",
+    "aliases": ["el monieb station", "تبادل المنيب"],
+    "nearest_stations": [
+      { "name": "المنيب", "line": 2, "color": "Red" }
+    ],
+    "notes": "نهاية الخط الثاني؛ محطة تبادلية هامة مع الأتوبيس الترددي (BRT) على الطريق الدائري"
+  },
+  {
+    "place": "محطة محور روض الفرج (تبادل مترو و BRT)",
+    "aliases": ["rod el farag axis station", "تبادل روض الفرج"],
+    "nearest_stations": [
+      { "name": "محور روض الفرج", "line": 3, "color": "Green" }
+    ],
+    "notes": "نهاية الخط الثالث (تفريعة روض الفرج)؛ نقطة تبادل مع الأتوبيس الترددي (BRT)"
+  }
+]
+]
