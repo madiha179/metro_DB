@@ -6,7 +6,7 @@ const subscriptionType = require("../models/subscriptionsTypesModel");
 const AppError = require("../utils/appError");
 const subscriptionOffices = require('../models/subscriptionOfficesModel');
 const catchAsyncError = require('../utils/catchAsyncError');
-
+const getLang=require('../utils/getLang');
 const DURATION_MONTHS = {
     monthly:     1,
     quarterly:   3,
@@ -46,7 +46,8 @@ function buildDocumentPaths(files) {
 }
 
 exports.displaySubPlans = catchAsyncError(async (req, res, next) => {
-    const categories = await subscriptionType.distinct('category');
+    const lang=getLang(req);
+    const categories = await subscriptionType.distinct(`category.${lang}`);
 
     if (!categories || categories.length === 0)
         return next(new AppError('No categories found.', 404));
@@ -59,6 +60,7 @@ exports.displaySubPlans = catchAsyncError(async (req, res, next) => {
 });
 
 exports.displaySubCategory = catchAsyncError(async (req, res, next) => {
+    const lang=getLang(req);
     const type = req.params.category;
     
     const plans = await subscriptionType.aggregate([
@@ -71,27 +73,12 @@ exports.displaySubCategory = catchAsyncError(async (req, res, next) => {
             }
         },
         {
-            $group: {
-                _id: {
-                    en: "$category.en",
-                    ar: "$category.ar"
-                },
-                category: { $first: "$category" },
-                plans: {
-                    $push: {
-                        _id: "$_id",
-                        duration: "$duration",
-                        zones: "$zones",
-                        prices: "$prices"
-                    }
-                }
-            }
-        },
-        {
             $project: {
                 _id: 0,
-                category: 1,
-                plans: 1
+                category: `$category.${lang}`,
+                duration:`$duration.${lang}`,
+                zones:1,
+                prices:1
             }
         }
     ]);
@@ -100,15 +87,15 @@ exports.displaySubCategory = catchAsyncError(async (req, res, next) => {
     
     res.status(200).json({
         status: 'success',
-        numOfRecords: plans[0].plans.length,
-        data: plans[0]
+        numOfRecords: plans.length,
+        data: plans
     });
 });
 
 exports.createSubscription = catchAsyncError(async (req, res, next) => {
     const { category, duration, zones, numOfLines, office, start_station, end_station } = req.body;
     const files = req.files || {};
-
+    const lang=getLang(req);
     // 1. National ID is always required
     if (!files.nationalId_front || !files.nationalId_back) {
         cleanupFiles(files);
@@ -207,14 +194,25 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
         { path: 'start_station', select: 'name line_number position' },
         { path: 'end_station',   select: 'name line_number position' },
     ]);
-
+    const safeDate=sub.toObject();
+    if(safeDate.type){
+        safeDate.type.category=safeDate.type.category[lang];
+        safeDate.type.duration=safeDate.type.duration[lang];
+    }
+    if(safeDate.office){
+        safeDate.office.officeName=safeDate.office.officeName?.[lang];
+        safeDate.office.address=safeDate.office.address?.[lang];
+    }
+     if(safeDate.start_station) safeDate.start_station.name=safeDate.start_station.name?.[lang];
+    if(safeDate.end_station) safeDate.end_station.name=safeDate.end_station.name?.[lang];
     return res.status(201).json({
         success: true,
-        data: sub,
+        data: safeDate,
     });
 });
 
 exports.getMySubscription = catchAsyncError( async (req, res, next) => {
+    const lang=getLang(req);
     const sub = await Subscription.findOne({
         user: req.user.id
     }).sort({ createdAt: -1 })
@@ -228,7 +226,16 @@ exports.getMySubscription = catchAsyncError( async (req, res, next) => {
 
     const safe = sub.toObject();
     delete safe.documents;
-    
+    if(safe.type){
+        safe.type.category=safe.type.category?.[lang];
+        safe.type.duration=safe.type.duration?.[lang];
+    }
+    if(safe.office){
+        safe.office.officeName=safe.office.officeName?.[lang];
+        safe.office.address=safe.office.address?.[lang];
+    }
+    if(safe.start_station) safe.start_station.name=safe.start_station.name?.[lang];
+    if(safe.end_station) safe.end_station.name=safe.end_station.name?.[lang];
     return res.status(200).json({
         success: true,
         data: safe,

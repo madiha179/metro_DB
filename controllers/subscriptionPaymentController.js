@@ -4,6 +4,7 @@ const subscriptions=require('../models/subscriptionModel');
 const appError=require('../utils/appError');
 const catchAsyncError=require('../utils/catchAsyncError');
 const subscriptionPayment=require('../models/subscriptionPaymentModel');
+const getLang=require('../utils/getLang');
 const dotenv=require('dotenv');
 dotenv.config({path:'./config.env'});
 const PAYMOB_API_KEY = process.env.PAYMOB_SUB_API_KEY;        
@@ -91,6 +92,7 @@ async function payWithPaymob(paymentKey, paymentMethod) {
 }
 //controllers 
 exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
+  const lang=getLang(req);
   const {paymentMethod,subscriptionId}=req.body;
   if(!paymentMethod||!subscriptionId)
     return next(new appError("Please provide payment method and subscriptionId",400));
@@ -127,12 +129,12 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
         paymentMethod:'cash',
        },
        office:{
-        name:subscription.office.officeName,
+        name:subscription.office.officeName[lang],
         workingHours:subscription.office.workingHours
        },
        subscription:{
-        category:subscription.type.category.en,
-        duration:subscription.type.duration.en,
+        category:subscription.type.category[lang],
+        duration:subscription.type.duration[lang],
         status:subscription.status,
        }
       }
