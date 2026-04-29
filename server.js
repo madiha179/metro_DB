@@ -25,6 +25,7 @@ const homeDashRouter=require('./routes/homeDashRoute.js');
 const subscriptionDashRoute=require('./routes/subscriptionsDashRoute.js');
 const SubscriptionRouter = require('./routes/subscriptionRoutes.js');
 const subPaymentRoute=require('./routes/subscriptionPaymentRoute.js');
+const chatBotRouter=require('./routes/chatBotRoute.js');
 dotenv.config({path:'config.env'});
 require('./utils/subscriptionCorn.js');
 const app=express();
@@ -90,6 +91,7 @@ app.use('/api/v1/dashboard',homeDashRouter);
 app.use('/api/v1/dashboard/subscriptions',subscriptionDashRoute);
 app.use('/api/v1/subscriptions', SubscriptionRouter);
 app.use('/api/v1/subscriptions',subPaymentRoute);
+app.use('/api/v1',chatBotRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
