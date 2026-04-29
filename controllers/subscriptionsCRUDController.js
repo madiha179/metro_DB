@@ -31,6 +31,23 @@ exports.getAllSubscriptionsTypes=catchAsyncError(async(req,res,next)=>{
     data:subscriptionTypes
   });
 });
+exports.getSubscriptionsType=catchAsyncError(async(req,res,next)=>{
+  const subTypeDate=await subscriptionsTypesModel.findById(req.params.id,{
+    'category.en':1,
+      'duration.en':1,
+      zones:1,
+      prices:1
+  });
+  if(!subTypeDate){
+    return next(new AppError('Subscription Type not found',400));
+  }
+  res.status(200).json({
+    status:'success',
+    data:{
+      subscriptionType:subTypeDate
+    }
+  });
+});
 exports.createSubscriptionType=catchAsyncError(async(req,res,next)=>{
   const {zones,numOfLines,category,duration,prices}=req.body;
   if(!category||!duration||!prices){

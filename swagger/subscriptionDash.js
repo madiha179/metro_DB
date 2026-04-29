@@ -161,3 +161,26 @@
  *       404:
  *         description: Subscription type not found
  */
+
+/**
+ * @swagger
+ * /api/v1/dashboard/subscriptions/subscriptiontype/{id}:
+ *   get:
+ *     tags: [Subscription Types]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: j12545484kk
+ *     responses:
+ *       200:
+ *         description: return subscroption type data successfully
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Subscription type not found
+ */

@@ -3,6 +3,8 @@ const appError=require('../utils/appError');
 const catchAsyncError=require('../utils/catchAsyncError');
 const jwt=require('jsonwebtoken');
 const { promisify }=require('util');
+const dotenv = require('dotenv');
+dotenv.config({ path: './config.env' });
 const signToken=id=>{
   return jwt.sign({id},
     process.env.JWT_SECRET,{
