@@ -26,6 +26,7 @@ const subscriptionDashRoute=require('./routes/subscriptionsDashRoute.js');
 const SubscriptionRouter = require('./routes/subscriptionRoutes.js');
 const subPaymentRoute=require('./routes/subscriptionPaymentRoute.js');
 dotenv.config({path:'config.env'});
+require('./utils/subscriptionCorn.js');
 const app=express();
 app.set('trust proxy', 1);
 //security http headers

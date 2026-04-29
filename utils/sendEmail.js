@@ -4,16 +4,26 @@ const nodemailer = require('nodemailer');
 const https = require('https');
 
 module.exports = class Email {
-  constructor(user, otp) {
+  constructor(user, otp,amount,renewalDate,expiryDate,maskedPan) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.otp = otp;
+    this.amount=amount;
+    this.renewalDate=renewalDate;
+    this.expiryDate=expiryDate;
+    this.maskedPan=maskedPan;
     this.from = process.env.EMAIL_FROM;
   }
 
   async send(template, subject) {
     let html = fs.readFileSync(`${__dirname}/../views/emails/${template}.html`, 'utf-8');
-    html = html.replace('{{firstName}}', this.firstName).replace('{{otp}}', this.otp);
+    html = html.replace('{{firstName}}', this.firstName).replace('{{otp}}', this.otp)
+    .replace('{{otp}}', this.otp || '')
+  .replace('{{amount}}', this.amount || '')
+  .replace('{{renewalDate}}', this.renewalDate || '')
+  .replace('{{expiryDate}}', this.expiryDate || '')
+  .replace('{{maskedPan}}', this.maskedPan || '')
+    ;
     const textContent = htmlToText.convert(html);
 
     try {
@@ -93,4 +103,17 @@ module.exports = class Email {
   async sendOTP() {
     await this.send('sendOTP', 'Send OTP verification');
   }
+  async sendSubscriptionReminder() {
+  await this.send('subscriptionReminder', 'Metro Mate - تذكير بتجديد اشتراكك');
+}
+
+async sendRenewalFailed() {
+  await this.send('subscriptionRenewalFailed', 'Metro Mate - فشل تجديد اشتراكك');
+}
+async sendSubscriptionRenewed() {
+  await this.send('subscriptionRenewed', 'Metro Mate - Your Subscription Has Been Renewed ✅');
+}
+async sendSubscriptionExpired() {
+  await this.send('subscriptionExpired', 'Metro Mate - Your Subscription Has Expired');
+}
 };

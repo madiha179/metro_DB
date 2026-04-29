@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .container { background: #fff; border-radius: 10px; padding: 30px; max-width: 500px; margin: auto; }
+    .header { text-align: center; color: #01338D; }
+    .amount { font-size: 24px; font-weight: bold; color: #1782FB; text-align: center; margin: 20px 0; }
+    .footer { text-align: center; color: #7F98C5; font-size: 12px; margin-top: 30px; }
+    .btn { display: block; background: #1782FB; color: #fff; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="header">🚇 Metro Mate</h2>
+    <p>Dear <strong>{{firstName}}</strong>,</p>
+    <p>This is a friendly reminder that your Metro Mate subscription will expire soon.</p>
+    <p>Your subscription will be <strong>automatically renewed</strong> within 7 days for:</p>
+    <div class="amount">{{amount}} EGP</div>
+    <p>If you do not wish to renew, please contact us before the renewal date.</p>
+    <p>Thank you for using Metro Mate! 🚇</p>
+    <div class="footer">© 2026 Metro Mate. All rights reserved.</div>
+  </div>
+</body>
+</html>
