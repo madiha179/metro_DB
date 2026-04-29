@@ -75,7 +75,7 @@ exports.displaySubCategory = catchAsyncError(async (req, res, next) => {
         {
             $project: {
                 _id: 0,
-                category: `category.${lang}`,
+                category: `$category.${lang}`,
                 duration:`$duration.${lang}`,
                 zones:1,
                 prices:1
@@ -87,15 +87,15 @@ exports.displaySubCategory = catchAsyncError(async (req, res, next) => {
     
     res.status(200).json({
         status: 'success',
-        numOfRecords: plans[0].plans.length,
-        data: plans[0]
+        numOfRecords: plans.length,
+        data: plans
     });
 });
 
 exports.createSubscription = catchAsyncError(async (req, res, next) => {
     const { category, duration, zones, numOfLines, office, start_station, end_station } = req.body;
     const files = req.files || {};
-
+    const lang=getLang(req);
     // 1. National ID is always required
     if (!files.nationalId_front || !files.nationalId_back) {
         cleanupFiles(files);
@@ -199,6 +199,12 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
         safeDate.type.category=safeDate.type.category[lang];
         safeDate.type.duration=safeDate.type.duration[lang];
     }
+    if(safeDate.office){
+        safeDate.office.officeName=safeDate.office.officeName?.[lang];
+        safeDate.office.address=safeDate.office.address?.[lang];
+    }
+     if(safeDate.start_station) safeDate.start_station.name=safeDate.start_station.name?.[lang];
+    if(safeDate.end_station) safeDate.end_station.name=safeDate.end_station.name?.[lang];
     return res.status(201).json({
         success: true,
         data: safeDate,
@@ -229,7 +235,7 @@ exports.getMySubscription = catchAsyncError( async (req, res, next) => {
         safe.office.address=safe.office.address?.[lang];
     }
     if(safe.start_station) safe.start_station.name=safe.start_station.name?.[lang];
-    if(safe.end_station) safe.end_date.name=safe.end_station.name?.[lang];
+    if(safe.end_station) safe.end_station.name=safe.end_station.name?.[lang];
     return res.status(200).json({
         success: true,
         data: safe,
