@@ -7,4 +7,5 @@ subscriptionDashRoute.get('/allsubscriptionstypes',subscriptionCRUDController.ge
 subscriptionDashRoute.post('/createnewsubscriptionstype',subscriptionCRUDController.createSubscriptionType);
 subscriptionDashRoute.patch('/updatesubscriptionstype/:id',subscriptionCRUDController.updateSubscriptionTypes);
 subscriptionDashRoute.delete('/deletesubscriptionstype/:id',subscriptionCRUDController.deleteSubscriptionType);
+subscriptionDashRoute.get('/subscriptiontype/:id',subscriptionCRUDController.getSubscriptionsType);
 module.exports=subscriptionDashRoute;

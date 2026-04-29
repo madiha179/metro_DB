@@ -32,7 +32,7 @@ const options = {
     path.join(__dirname, "../routes/*.js"),
     path.join(__dirname,"adminDocs.js"),
     path.join(__dirname,"homeDashDoc.js"),
-    path.join(__dirname,"subscriptionDash.js")
+    path.join(__dirname,"subscriptionDash.js"),
     path.join(__dirname,"tripHistoryDoc.js")
   ],
 };

@@ -46,6 +46,7 @@ AdminSchema.methods.correctpassword=async function (candidatepassword,password) 
    const createDefaultAdmin = async () => {
     try {
         const adminData = {
+             _id: new mongoose.Types.ObjectId('64a1b2c3d4e5f6789012abcd'),
             ssn: 28730125615274,
             name: 'Admin 1',
             password: 'Admin$123',
@@ -54,7 +55,6 @@ AdminSchema.methods.correctpassword=async function (candidatepassword,password) 
         const adminExists = await Admin.findOne({ email: adminData.email });
         if (!adminExists) {
             await Admin.create(adminData);
-            console.log(' Default admin created successfully');
         }
     } catch (error) {
         console.error('Error creating admin:', error);
