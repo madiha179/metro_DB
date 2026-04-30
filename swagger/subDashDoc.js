@@ -102,6 +102,7 @@
  *           type: string
  *         description: MongoDB ObjectId of the subscription
  *         example: "664a1b2c3d4e5f6a7b8c9d0e"
+ *
  *     requestBody:
  *       required: true
  *       content:
