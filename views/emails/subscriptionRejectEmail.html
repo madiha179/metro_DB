@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .container { background: #fff; border-radius: 10px; padding: 30px; max-width: 500px; margin: auto; }
+    .header { text-align: center; color: #8D0101; }
+    .message { font-size: 16px; color: #333; margin: 20px 0; }
+    .reject { font-size: 18px; font-weight: bold; color: #D32F2F; margin: 15px 0; }
+    .footer { text-align: center; color: #7F98C5; font-size: 12px; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="header">🚇 Metro Mate</h2>
+    <p>Dear <strong>{{firstName}}</strong>,</p>
+
+    <p class="message">
+      We regret to inform you that your request has been <strong>rejected</strong>.
+    </p>
+
+    <p>Reason:</p>
+    <div class="reject">{{rejectMessage}}</div>
+
+    <p>
+      If you believe this was a mistake or need further clarification, please make a subscription form again.
+    </p>
+
+    <p>Thank you for your understanding.</p>
+
+    <div class="footer">© 2026 Metro Mate. All rights reserved.</div>
+  </div>
+</body>
+</html>
