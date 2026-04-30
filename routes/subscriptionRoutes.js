@@ -1,11 +1,12 @@
 const express = require('express');
-const authcontroller=require('./../controllers/authController');
-const adminController=require('../controllers/adminAuthConroller');
+const authcontroller = require('./../controllers/authController');
+const adminController = require('../controllers/adminAuthConroller');
 const { handleUploadErrors } = require('../utils/uploadMiddleware');
 const { createSubscription, getMySubscription, displaySubPlans, displaySubCategory } = require('../controllers/subscriptionController');
 const { getAllSubscriptions, updateSubStatus, getSubDoc,getAllMails } = require('../controllers/subscriptionDashController');
 const subPaymentRoute = require('./subscriptionPaymentRoute');
 const SubscriptionRouter = express.Router();
+const AdminSubRouter = express.Router();
 
 SubscriptionRouter.get('/plans', displaySubPlans);
 SubscriptionRouter.get('/plans/:category', displaySubCategory);
