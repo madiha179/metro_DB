@@ -16,7 +16,7 @@
 /**
  * @swagger
  * /api/v1/brt/route:
- *   get:
+ *   post:
  *     summary: Get route between two BRT stations
  *     tags: [BRT]
  *     parameters:
