@@ -15,10 +15,10 @@ exports.getAllSubscriptions = catchAsyncError(async (req, res, next) => {
     .skip((page - 1) * limit)
     .limit(Number(limit))
     .populate('user',          'name email phone')
-    .populate('type',          'category duration zones')
-    .populate('office',        'officeName')
-    .populate('start_station', 'name')
-    .populate('end_station',   'name')
+    .populate('type',          'category.en duration.en zones')
+    .populate('office',        'officeName.en')
+    .populate('start_station', 'name.en')
+    .populate('end_station',   'name.en')
     .sort({ createdAt: -1 });
 
     const total = await Subscription.countDocuments(filter);

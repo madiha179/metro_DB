@@ -10,7 +10,7 @@ const getLang=require('../utils/getLang');
 const DURATION_MONTHS = {
     monthly:     1,
     quarterly:   3,
-    // 'semi-annual': 6,
+    'half yearly': 6,
     yearly:      12,
 };
 
@@ -203,7 +203,7 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
         safeDate.office.officeName=safeDate.office.officeName?.[lang];
         safeDate.office.address=safeDate.office.address?.[lang];
     }
-     if(safeDate.start_station) safeDate.start_station.name=safeDate.start_station.name?.[lang];
+    if(safeDate.start_station) safeDate.start_station.name=safeDate.start_station.name?.[lang];
     if(safeDate.end_station) safeDate.end_station.name=safeDate.end_station.name?.[lang];
     return res.status(201).json({
         success: true,
