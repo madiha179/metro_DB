@@ -7,6 +7,8 @@ exports.getAllSubscriptionsTypes=catchAsyncError(async(req,res,next)=>{
   if(!req.query.limit){
     req.query.limit='10';
   }
+  const totalCount = await subscriptionsTypesModel.countDocuments();
+  const totalPages = Math.ceil(totalCount / req.query.limit);
   const features=new ApiFeatures(
     subscriptionsTypesModel.find({},{
       'category.en':1,
@@ -27,6 +29,8 @@ exports.getAllSubscriptionsTypes=catchAsyncError(async(req,res,next)=>{
   }
   res.status(200).json({
     success:true,
+    totalCount,
+    totalPages,
     count:subscriptionTypes.length,
     data:subscriptionTypes
   });

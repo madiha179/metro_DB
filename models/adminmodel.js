@@ -28,6 +28,10 @@ const AdminSchema=new mongoose.Schema({
             lowercase:true,
             validate:[validator.isEmail,'please provied a valid email']
         },
+        role:{
+            type:String,
+            enum:['superadmin','admin'],
+        },
     gender:{
         type:String
     },
@@ -50,7 +54,8 @@ AdminSchema.methods.correctpassword=async function (candidatepassword,password) 
             ssn: 28730125615274,
             name: 'Admin 1',
             password: 'Admin$123',
-            email: 'metromate534@gmail.com'
+            email: 'metromate534@gmail.com',
+            role:'superadmin'
         };
         const adminExists = await Admin.findOne({ email: adminData.email });
         if (!adminExists) {

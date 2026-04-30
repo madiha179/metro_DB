@@ -1,0 +1,10 @@
+const express=require('express');
+const adminsCRUDController=require('../controllers/adminsCRUDController');
+const adminsAuthController=require('../controllers/adminAuthConroller');
+const adminsCRUDRouter=express.Router();
+adminsCRUDRouter.use(adminsAuthController.protect);
+adminsCRUDRouter.use(adminsAuthController.restrictTo('superadmin'));
+adminsCRUDRouter.post('/admins',adminsCRUDController.createAdminController);
+adminsCRUDRouter.get('/admins',adminsCRUDController.getAllAdminsController);
+adminsCRUDRouter.delete('/admins/:id',adminsCRUDController.deletAdmin);
+module.exports=adminsCRUDRouter;

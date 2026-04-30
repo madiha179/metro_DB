@@ -51,6 +51,14 @@ const signToken=id=>{
   req.admin=currentAdmin;
   next();
 });
+   exports.restrictTo=(...roles)=>{
+    return (req,res,next)=>{
+      if(!roles.includes(req.admin.role)){
+        return next(new appError('You do not have permission to perform this action',403));
+      }
+      next();
+    }
+    }
     exports.adminlogin=catchAsyncError(async(req,res,next)=>{
       const {email,password}=req.body;
       if(!email||!password){

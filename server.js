@@ -27,6 +27,7 @@ const  SubscriptionRouter  = require('./routes/subscriptionRoutes.js');
 const subPaymentRoute=require('./routes/subscriptionPaymentRoute.js');
 const chatBotRouter=require('./routes/chatBotRoute.js');
 const brtRouter=require('./routes/brtRoutes.js');
+const adminsCRUDRouter=require('./routes/adminsCRUDRoutes.js');
 dotenv.config({path:'config.env'});
 require('./utils/subscriptionCorn.js');
 const app=express();
@@ -54,7 +55,6 @@ mongoose.connect(DB,{
 })
 .then(async () => {
   console.log("✅ DB connection successful");
- await Admin.deleteMany({ email: "metromate534@gmail.com" });
 await createDefaultAdmin();
 })
 .catch(err => console.error("❌ DB connection error:", err));
@@ -89,6 +89,7 @@ app.use('/api/v1/admin',adminRoute);
 app.use('/api/v1/dashboard',stationCRUDRouter);
 app.use('/api/v1/dashboard',ticketCRUDRouter);
 app.use('/api/v1/dashboard',homeDashRouter);
+app.use('/api/v1/dashboard',adminsCRUDRouter);
 app.use('/api/v1/dashboard/subscriptions',subscriptionDashRoute);
 app.use('/api/v1/dashboard/subscriptions', SubscriptionRouter);
 app.use('/api/v1/subscriptions', SubscriptionRouter);
