@@ -77,25 +77,10 @@
  *                   createdAt: "2024-06-01T10:30:00.000Z"
  *       401:
  *         description: Unauthorized — missing or invalid token
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Not authorized, token missing or invalid"
  *       403:
  *         description: Forbidden — admin role required
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Access denied. Admins only."
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Internal server error."
  */
 
 /**
@@ -107,16 +92,8 @@
  *     security:
  *       - bearerAuth: []
  *     description: |
- *       Updates the status of a subscription.
- *       Allowed statuses are defined on the backend (VALID_STATUSES).
- *       Optionally includes a rejection reason when status is "rejected".
- *
- *       Example flows:
- *       - pending → accepted
- *       - accepted → active
- *       - active → expired
- *       - pending → rejected (with rejectionReason)
- *
+ *       Manually transitions a subscription's status.
+ *       Typical flow: `pending` → `active` (after document review) → `expired` or `rejected`.
  *     parameters:
  *       - in: path
  *         name: id
@@ -137,79 +114,27 @@
  *             properties:
  *               status:
  *                 type: string
- *                 description: New status value (must match backend VALID_STATUSES)
- *                 enum: [pending, active, expired, canceled, rejected]  # adjust if needed
- *                 example: rejected
+ *                 enum: [pending, active, expired, rejected]
+ *                 example: active
  *               rejectionReason:
  *                 type: string
- *                 description: Reason for rejection (required when status is rejected)
- *                 example: "Invalid documents provided"
- *           examples:
- *             activate:
- *               summary: Activate subscription
- *               value:
- *                 status: active
- *             reject:
- *               summary: Reject subscription with reason
- *               value:
- *                 status: rejected
- *                 rejectionReason: "Incomplete documents"
- *
+ *                 description: Required when status is rejected
+ *                 example: "Invalid documents"
+ *           example:
+ *             status: active
  *     responses:
  *       200:
  *         description: Status updated successfully
- *         content:
- *           application/json:
- *             example:
- *               success: true
- *               data:
- *                 _id: "664a1b2c3d4e5f6a7b8c9d0e"
- *                 status: "rejected"
- *                 rejectionReason: "Incomplete documents"
- *                 user: "663f0a1b2c3d4e5f6a7b8c9d"
- *                 type: "663e1a2b3c4d5e6f7a8b9c0d"
- *                 office: "663c9a8b7f6e5d4c3b2a1f0e"
- *                 updatedAt: "2024-06-02T09:00:00.000Z"
- *
  *       400:
  *         description: Invalid status value
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Invalid status value."
- *
  *       401:
  *         description: Unauthorized — missing or invalid token
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Not authorized, token missing or invalid"
- *
  *       403:
  *         description: Forbidden — admin role required
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Access denied. Admins only."
- *
  *       404:
  *         description: Subscription not found
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Subscription not found."
- *
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Internal server error."
  */
 
 /**
@@ -231,7 +156,6 @@
  *         required: true
  *         schema:
  *           type: string
- *         description: MongoDB ObjectId of the subscription
  *         example: "664a1b2c3d4e5f6a7b8c9d0e"
  *       - in: path
  *         name: docType
@@ -239,74 +163,41 @@
  *         schema:
  *           type: string
  *           enum: [nationalId_front, nationalId_back, universityId]
- *         description: Which document to retrieve
  *         example: nationalId_front
  *     responses:
  *       200:
  *         description: The requested file streamed as binary
- *         content:
- *           image/jpeg:
- *             schema:
- *               type: string
- *               format: binary
- *           application/pdf:
- *             schema:
- *               type: string
- *               format: binary
  *       400:
  *         description: Invalid document type
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Invalid document type."
  *       401:
- *         description: Unauthorized — missing or invalid token
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Not authorized, token missing or invalid"
+ *         description: Unauthorized
  *       403:
- *         description: Forbidden — admin role required or path traversal blocked
- *         content:
- *           application/json:
- *             examples:
- *               adminRequired:
- *                 summary: Not an admin
- *                 value:
- *                   success: false
- *                   message: "Access denied. Admins only."
- *               pathTraversal:
- *                 summary: Path traversal attempt blocked
- *                 value:
- *                   success: false
- *                   message: "Access denied."
+ *         description: Forbidden
  *       404:
- *         description: Subscription or file not found
- *         content:
- *           application/json:
- *             examples:
- *               subscriptionNotFound:
- *                 summary: Subscription not found
- *                 value:
- *                   success: false
- *                   message: "Subscription not found."
- *               documentNotFound:
- *                 summary: Document field is null (e.g. universityId on a non-student)
- *                 value:
- *                   success: false
- *                   message: "Document not found."
- *               fileNotFound:
- *                 summary: File missing from disk
- *                 value:
- *                   success: false
- *                   message: "File not found on server."
+ *         description: Not found
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             example:
- *               success: false
- *               message: "Internal server error."
+ */
+
+/**
+ * @swagger
+ * /api/v1/dashboard/subscriptions/mails:
+ *   get:
+ *     summary: Get all sent emails history
+ *     tags: [Subscriptions (Admin)]
+ *     security:
+ *       - bearerAuth: []
+ *     description: |
+ *       Returns all email logs including success and failed attempts.
+ *     responses:
+ *       200:
+ *         description: Email history retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: No mails found
+ *       500:
+ *         description: Internal server error
  */
