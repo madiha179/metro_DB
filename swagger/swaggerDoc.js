@@ -38,7 +38,8 @@ const options = {
     path.join(__dirname,"subscriptionDoc.js"),
     path.join(__dirname,"subDashDoc.js"),
     path.join(__dirname,"subPaymentDoc.js"),
-    path.join(__dirname,"chatBotDoc.js")
+    path.join(__dirname,"chatBotDoc.js"),
+    path.join(__dirname,"brtDocs.js")
   ],
 };
 const swaggerSpec = swaggerJSDoc(options);
