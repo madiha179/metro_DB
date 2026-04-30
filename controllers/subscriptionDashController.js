@@ -32,15 +32,34 @@ exports.getAllSubscriptions = catchAsyncError(async (req, res, next) => {
     });
 });
 
+exports.getPendingSubscriptions = catchAsyncError(async (req, res, next) => {
+
+    const allStatuses = await Subscription.find({}, 'status').lean();
+
+    const filter = { status: 'pending' };
+    const subscriptions = await Subscription.find(filter)
+        .populate('user', 'name email phone')
+        .populate('type', 'category.en duration.en zones')
+        .populate('office', 'officeName.en')
+        .populate('start_station', 'name.en')
+        .populate('end_station', 'name.en');
+
+    return res.status(200).json({
+        success: true,
+        total: subscriptions.length,
+        data: subscriptions,
+    });
+});
+
 exports.updateSubStatus = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, rejectionReason } = req.body;
     if(!VALID_STATUSES.includes(status)) 
         return next(new AppError('Invalid status value.', 400));
 
     const sub = await Subscription.findByIdAndUpdate(
         id, 
-        { status },
+        { status, rejectionReason },
         { new: true, runValidators: true }
     );
 

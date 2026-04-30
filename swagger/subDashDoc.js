@@ -107,8 +107,16 @@
  *     security:
  *       - bearerAuth: []
  *     description: |
- *       Manually transitions a subscription's status.
- *       Typical flow: `pending` → `active` (after document review) → `expired` or `canceled`.
+ *       Updates the status of a subscription.
+ *       Allowed statuses are defined on the backend (VALID_STATUSES).
+ *       Optionally includes a rejection reason when status is "rejected".
+ *
+ *       Example flows:
+ *       - pending → accepted
+ *       - accepted → active
+ *       - active → expired
+ *       - pending → rejected (with rejectionReason)
+ *
  *     parameters:
  *       - in: path
  *         name: id
@@ -117,6 +125,7 @@
  *           type: string
  *         description: MongoDB ObjectId of the subscription
  *         example: "664a1b2c3d4e5f6a7b8c9d0e"
+ *
  *     requestBody:
  *       required: true
  *       content:
@@ -128,10 +137,24 @@
  *             properties:
  *               status:
  *                 type: string
- *                 enum: [pending, active, expired, canceled]
- *                 example: active
- *           example:
- *             status: active
+ *                 description: New status value (must match backend VALID_STATUSES)
+ *                 enum: [pending, active, expired, canceled, rejected]  # adjust if needed
+ *                 example: rejected
+ *               rejectionReason:
+ *                 type: string
+ *                 description: Reason for rejection (required when status is rejected)
+ *                 example: "Invalid documents provided"
+ *           examples:
+ *             activate:
+ *               summary: Activate subscription
+ *               value:
+ *                 status: active
+ *             reject:
+ *               summary: Reject subscription with reason
+ *               value:
+ *                 status: rejected
+ *                 rejectionReason: "Incomplete documents"
+ *
  *     responses:
  *       200:
  *         description: Status updated successfully
@@ -141,14 +164,13 @@
  *               success: true
  *               data:
  *                 _id: "664a1b2c3d4e5f6a7b8c9d0e"
- *                 status: active
+ *                 status: "rejected"
+ *                 rejectionReason: "Incomplete documents"
  *                 user: "663f0a1b2c3d4e5f6a7b8c9d"
  *                 type: "663e1a2b3c4d5e6f7a8b9c0d"
  *                 office: "663c9a8b7f6e5d4c3b2a1f0e"
- *                 priceSnapshot: 250
- *                 start_date: "2024-06-01T00:00:00.000Z"
- *                 end_date: "2024-07-01T00:00:00.000Z"
  *                 updatedAt: "2024-06-02T09:00:00.000Z"
+ *
  *       400:
  *         description: Invalid status value
  *         content:
@@ -156,6 +178,7 @@
  *             example:
  *               success: false
  *               message: "Invalid status value."
+ *
  *       401:
  *         description: Unauthorized — missing or invalid token
  *         content:
@@ -163,6 +186,7 @@
  *             example:
  *               success: false
  *               message: "Not authorized, token missing or invalid"
+ *
  *       403:
  *         description: Forbidden — admin role required
  *         content:
@@ -170,6 +194,7 @@
  *             example:
  *               success: false
  *               message: "Access denied. Admins only."
+ *
  *       404:
  *         description: Subscription not found
  *         content:
@@ -177,6 +202,7 @@
  *             example:
  *               success: false
  *               message: "Subscription not found."
+ *
  *       500:
  *         description: Internal server error
  *         content:

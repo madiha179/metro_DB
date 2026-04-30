@@ -184,3 +184,99 @@
  *       404:
  *         description: Subscription type not found
  */
+
+/**
+ * @swagger
+ * /api/v1/dashboard/subscriptions/getPending:
+ *   get:
+ *     summary: Get all pending subscriptions
+ *     tags: [Subscriptions Dashboard]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of pending subscriptions retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 total:
+ *                   type: number
+ *                   example: 2
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: "69f2b1983b26c03bd5fbc0cf"
+ *                       status:
+ *                         type: string
+ *                         example: "pending"
+ *                       user:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: string
+ *                             example: "Rahma Naser"
+ *                           email:
+ *                             type: string
+ *                             example: "rahma@email.com"
+ *                           phone:
+ *                             type: string
+ *                             example: "01000000000"
+ *                       type:
+ *                         type: object
+ *                         properties:
+ *                           category:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                                 example: "special needs"
+ *                           duration:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                                 example: "3 months"
+ *                           zones:
+ *                             type: number
+ *                             example: 2
+ *                       office:
+ *                         type: object
+ *                         properties:
+ *                           officeName:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                                 example: "Nasr City Office"
+ *                       start_station:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                                 example: "Helwan"
+ *                       end_station:
+ *                         type: object
+ *                         properties:
+ *                           name:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                                 example: "Sadat"
+ *       401:
+ *         description: Unauthorized (admin not logged in)
+ *       500:
+ *         description: Internal server error
+ */
