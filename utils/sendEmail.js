@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const https = require('https');
 
 module.exports = class Email {
-  constructor(user, otp,amount,renewalDate,expiryDate,maskedPan) {
+  constructor(user, otp,amount,renewalDate,expiryDate,maskedPan,rejectMessage) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.otp = otp;
@@ -12,6 +12,7 @@ module.exports = class Email {
     this.renewalDate=renewalDate;
     this.expiryDate=expiryDate;
     this.maskedPan=maskedPan;
+    this.rejectMessage=rejectMessage;
     this.from = process.env.EMAIL_FROM;
   }
 
@@ -23,6 +24,7 @@ module.exports = class Email {
   .replace('{{renewalDate}}', this.renewalDate || '')
   .replace('{{expiryDate}}', this.expiryDate || '')
   .replace('{{maskedPan}}', this.maskedPan || '')
+  .replace('{{rejectMessage}}',this.rejectMessage||'')
     ;
     const textContent = htmlToText.convert(html);
 
@@ -114,6 +116,9 @@ async sendSubscriptionRenewed() {
   await this.send('subscriptionRenewed', 'Metro Mate - Your Subscription Has Been Renewed ✅');
 }
 async sendSubscriptionExpired() {
-  await this.send('subscriptionExpired', 'Metro Mate - Your Subscription Has Expired');
+  await this.send('subscriptionExpired', 'Metro Mate - Your Subscription Has Expired ❌');
+}
+async sendSubscriptionRejectReason(){
+  await this.send('subscriptionRejectEmail','Metro Mate - Your Subscription Request Has Rejected ❌')
 }
 };

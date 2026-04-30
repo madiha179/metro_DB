@@ -4,6 +4,7 @@ const subscriptionModel=require('../models/subscriptionModel');
 const subscriptionPayment=require('../models/subscriptionPaymentModel');
 const Users=require('../models/usermodel');
 const Email=require('./sendEmail');
+const emailHistoryModel=require('../models/emailHistoryModel');
 const dotenv=require('dotenv');
 dotenv.config({path:'./config.env'});
 const PAYMOB_API_URL = process.env.PAYMOB_API_URL;
@@ -101,9 +102,23 @@ cron.schedule('0 8 * * *',async()=>{
         await subscriptionModel.findByIdAndUpdate(sub._id,{
           $set:{reminderSentAt:new Date()}
         });
+        await emailHistoryModel.create({
+           to:sub.user.email,
+            user:sub.user._id,
+            subscription:sub._id,
+            type:'reminder',
+            status:'sent',
+        })
       }
       catch(err){
         console.error(` Failed to send reminder to ${sub.user.email}:`, err.message);
+        await emailHistoryModel.create({
+            to:           sub.user.email,
+            user:         sub.user._id,
+            subscription: sub._id,
+            type:         'reminder',
+            status:       'failed',
+        });
       }
     }
   }
@@ -164,6 +179,14 @@ cron.schedule('0 9 * * *',async()=>{
           const expireDate=addMonths(new Date(),months).toLocaleDateString('en-GB');
           await new Email(user,null,sub.type.prices,renewalDate,expireDate,paymentRecord.masked_pan||'xxxx-xxxx-xxxx-xxxx')
           .sendSubscriptionRenewed();
+           await emailHistoryModel.create({
+                      to:sub.user.email,
+                      user:sub.user._id,
+                      subscription:sub._id,
+                      type:'renewed',
+                      metadata:{amount:sub.type.prices},
+                      status:'sent',
+                  });
         }
         else{
           throw new Error('Charge failed');
@@ -178,8 +201,22 @@ cron.schedule('0 9 * * *',async()=>{
       if(user){
         try {
             await new Email(user, null, null, null, null, null).sendRenewalFailed();
+            await emailHistoryModel.create({  
+                to:           user.email,
+                user:         user._id,
+                subscription: sub._id,
+                type:         'renewal_failed',
+                status:       'sent',
+            });
           } catch (emailErr) {
             console.error(` Failed to send failure email:`, emailErr.message);
+             await emailHistoryModel.create({       
+                to:           user.email,
+                user:         user._id,
+                subscription: sub._id,
+                type:         'renewal_failed',
+                status:       'failed',
+            });
           }
       }
     }
@@ -187,7 +224,7 @@ cron.schedule('0 9 * * *',async()=>{
   }
    catch(err)
   {
-    console.log('7-day reminder job error:',err.message);
+    console.log('Renewal job error:',err.message);
   }
 });
 
@@ -213,6 +250,13 @@ cron.schedule('0 10 * * *',async()=>{
           expireDate,
           null
         ).sendSubscriptionExpired();
+        await emailHistoryModel.create({
+                    to:sub.user.email,
+                    user:sub.user._id,
+                    subscription:sub._id,
+                    type:'expired',
+                    status:'sent',
+                });
       }
       catch(err){
         console.error(` Failed to send expiry email to ${sub.user.email}:`, err.message);

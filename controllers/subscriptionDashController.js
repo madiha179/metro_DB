@@ -3,8 +3,9 @@ const fs = require('fs');
 const Subscription = require("../models/subscriptionModel");
 const AppError = require("../utils/appError");
 const catchAsyncError = require("../utils/catchAsyncError");
-
-VALID_STATUSES = ['active','accepted','expired', 'canceled', 'pending'];
+const emailHistoryModel=require('../models/emailHistoryModel');
+const Email =require('../utils/sendEmail');
+VALID_STATUSES = ['active','accepted','expired', 'rejected', 'pending'];
 const VALID_DOC_TYPES = ['nationalId_front', 'nationalId_back', 'universityId', 'militaryId'];
 
 exports.getAllSubscriptions = catchAsyncError(async (req, res, next) => {
@@ -34,18 +35,48 @@ exports.getAllSubscriptions = catchAsyncError(async (req, res, next) => {
 
 exports.updateSubStatus = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status , rejectionReason} = req.body;
     if(!VALID_STATUSES.includes(status)) 
         return next(new AppError('Invalid status value.', 400));
-
+    if(status==='rejected'&&!rejectionReason){
+         return next(new AppError('Rejection reason is required when rejecting a subscription.', 400));
+    }
+    const updateData={status};
+    if(status==='rejected') updateData.rejectionReason=rejectionReason;
     const sub = await Subscription.findByIdAndUpdate(
         id, 
-        { status },
+        updateData,
         { new: true, runValidators: true }
-    );
+    ).populate('user','name email');
 
     if(!sub)
         return next( new AppError('Subscription not found.', 404));
+    if(status==='rejected'&&sub.user?.email){
+        try{
+        await new Email(
+            sub.user,
+            null,null,null,null,null,rejectionReason
+        ).sendSubscriptionRejectReason();
+        await emailHistoryModel.create({
+            to:sub.user.email,
+            user:sub.user._id,
+            subscription:sub._id,
+            type:'rejection',
+            metadata:{rejectionReason},
+            status:'sent',
+        });
+    }
+catch(err){
+    await emailHistoryModel.create({
+            to:           sub.user.email,
+            user:         sub.user._id,
+            subscription: sub._id,
+            type:         'rejection',
+            metadata:     { rejectionReason },
+            status:       'failed',
+        });
+}
+    }
     return res.status(200).json({
         success: true,
         data: sub
@@ -74,4 +105,16 @@ exports.getSubDoc = catchAsyncError(async (req, res, next) => {
         return next(new AppError('File not found on server.', 404));
     
     return res.sendFile(filePath);
+});
+exports.getAllMails=catchAsyncError(async(req,res,next)=>{
+const mails=await emailHistoryModel.find();
+if(!mails||mails.length===0){
+    return next(new AppError('Mails not found',404))
+}
+res.status(200).json({
+    status:'success',
+    data:{
+        emailHistory:mails
+    }
+});
 });
