@@ -7,6 +7,11 @@ ticketSchema = new mongoose.Schema({
     no_of_stations:{
         type: Number,
         require: [true, 'Please provided the number of station']
+    },
+    colors:{
+        type:String,
+        enum:['yellow','green','pink','beige'],
+        require:true
     }
 });
 
