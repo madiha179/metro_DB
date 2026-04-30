@@ -89,7 +89,7 @@ app.use('/api/v1/dashboard',stationCRUDRouter);
 app.use('/api/v1/dashboard',ticketCRUDRouter);
 app.use('/api/v1/dashboard',homeDashRouter);
 app.use('/api/v1/dashboard/subscriptions',subscriptionDashRoute);
-app.use('/api/v1/subscriptions', SubscriptionRouter);
+app.use('/api/v1/dashboard/subscriptions', SubscriptionRouter);
 app.use('/api/v1/subscriptions',subPaymentRoute);
 app.use('/api/v1',chatBotRouter);
 app.all('*', (req, res, next) => {

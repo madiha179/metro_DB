@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/v1/subscriptions:
+ * /api/v1/dashboard/subscriptions:
  *   get:
  *     summary: List all subscriptions
  *     tags: [Subscriptions (Admin)]
@@ -100,7 +100,7 @@
 
 /**
  * @swagger
- * /api/v1/subscriptions/{id}/status:
+ * /api/v1/dashboard/subscriptions/{id}/status:
  *   patch:
  *     summary: Update a subscription's status
  *     tags: [Subscriptions (Admin)]
@@ -188,7 +188,7 @@
 
 /**
  * @swagger
- * /api/v1/subscriptions/{id}/documents/{docType}:
+ * /api/v1/dashboard/subscriptions/{id}/documents/{docType}:
  *   get:
  *     summary: Download a subscription document
  *     tags: [Subscriptions (Admin)]
