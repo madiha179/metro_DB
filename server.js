@@ -23,7 +23,7 @@ const ticketCRUDRouter=require('./routes/ticketCRUDRoutes.js');
 const userTripsHistoryRouter=require('./routes/userTripsHistoryRoute.js');
 const homeDashRouter=require('./routes/homeDashRoute.js');
 const subscriptionDashRoute=require('./routes/subscriptionsDashRoute.js');
-const { SubscriptionRouter } = require('./routes/subscriptionRoutes.js');
+const  SubscriptionRouter  = require('./routes/subscriptionRoutes.js');
 const subPaymentRoute=require('./routes/subscriptionPaymentRoute.js');
 const chatBotRouter=require('./routes/chatBotRoute.js');
 dotenv.config({path:'config.env'});
