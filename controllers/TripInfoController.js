@@ -208,6 +208,7 @@ exports.tripInfo = catchAsync(async (req, res, next) => {
     
         const userTrip = await userTrips.create({
         userId: req.user.id,
+        ticketId: ticket?._id,
         trip_history: [{
             fromStation: {
                 en: stationList[0].name.en,

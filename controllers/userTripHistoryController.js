@@ -4,7 +4,7 @@ const AppError=require('../utils/appError');
 const getLang=require('../utils/getLang');
 exports.userTripsHistory=catchAsyncError(async(req,res,next)=>{
  const lang =getLang(req);
- const userTrip_docs=await userTrips.find({userId:req.user.id});
+ const userTrip_docs=await userTrips.find({userId:req.user.id}).populate('trip_history.ticketId', 'price no_of_stations colors');
  if(!userTrip_docs){
   return next(new AppError('No trip history found',404));
  }
