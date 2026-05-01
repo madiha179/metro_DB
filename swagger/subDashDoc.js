@@ -201,3 +201,105 @@
  *       500:
  *         description: Internal server error
  */
+/**
+ * @swagger
+ * /api/v1/dashboard/subscriptions/search:
+ *   get:
+ *     summary: Search subscriptions by user name or status
+ *     tags: [Subscriptions (Admin)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: false
+ *         schema:
+ *           type: string
+ *         example: mark
+ *       - in: query
+ *         name: status
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [pending, active, expired, rejected, accepted]
+ *         example: accepted
+ *     responses:
+ *       200:
+ *         description: Filtered list of subscriptions
+ *         content:
+ *           application/json:
+ *             examples:
+ *               searchExample:
+ *                 summary: Search subscriptions
+ *                 value:
+ *                   request:
+ *                     url: /api/v1/dashboard/subscriptions/search?status=accepted&name=mark
+ *                   response:
+ *                     status: success
+ *                     results: 2
+ *                     data:
+ *                       subscriptions:
+ *                         - _id: "69f36c1db9cd369505faf7d9"
+ *                           user:
+ *                             _id: "69eb8c662e507426f1bb4604"
+ *                             name: "Mark"
+ *                             email: "mark@example.com"
+ *                           type:
+ *                             _id: "69f2a41be41bd6b7fcea1429"
+ *                             category:
+ *                               en: "special needs"
+ *                             duration:
+ *                               en: "quarterly"
+ *                             zones: 2
+ *                             prices: 200
+ *                           office:
+ *                             _id: "69f2a41be41bd6b7fcea1461"
+ *                             officeName:
+ *                               en: "el-zahraa"
+ *                           start_station: "69f2a416e41bd6b7fcea1270"
+ *                           end_station: "69f2a416e41bd6b7fcea127e"
+ *                           status: "accepted"
+ *                           documents:
+ *                             nationalId_front: "uploads/sample-front.jpg"
+ *                             nationalId_back: "uploads/sample-back.jpg"
+ *                             universityId: null
+ *                             militaryId: null
+ *                           createdAt: "2026-04-30T14:50:05.878Z"
+ *                           updatedAt: "2026-04-30T16:08:02.321Z"
+ *
+ *                         - _id: "69f36b90b9cd369505faf7b5"
+ *                           user:
+ *                             _id: "69eb8c662e507426f1bb4604"
+ *                             name: "Mark"
+ *                             email: "mark@example.com"
+ *                           type:
+ *                             _id: "69f2a41be41bd6b7fcea1429"
+ *                             category:
+ *                               en: "special needs"
+ *                             duration:
+ *                               en: "quarterly"
+ *                             zones: 2
+ *                             prices: 200
+ *                           office:
+ *                             _id: "69f2a41be41bd6b7fcea1461"
+ *                             officeName:
+ *                               en: "el-zahraa"
+ *                           start_station: "69f2a416e41bd6b7fcea1270"
+ *                           end_station: "69f2a416e41bd6b7fcea127e"
+ *                           status: "accepted"
+ *                           documents:
+ *                             nationalId_front: "uploads/sample2-front.jpg"
+ *                             nationalId_back: "uploads/sample2-back.jpg"
+ *                             universityId: null
+ *                             militaryId: null
+ *                           createdAt: "2026-04-30T14:47:44.671Z"
+ *                           updatedAt: "2026-04-30T14:47:58.923Z"
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Subscription not found
+ *       500:
+ *         description: Internal server error
+ */

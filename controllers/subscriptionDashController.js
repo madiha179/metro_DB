@@ -1,10 +1,12 @@
 const path = require('path');
 const fs = require('fs');
 const Subscription = require("../models/subscriptionModel");
+const user =require('../models/usermodel');
 const AppError = require("../utils/appError");
 const catchAsyncError = require("../utils/catchAsyncError");
 const emailHistoryModel=require('../models/emailHistoryModel');
 const Email =require('../utils/sendEmail');
+const ApiFeatures=require('../utils/ApiFeatures');
 VALID_STATUSES = ['active','accepted','expired', 'rejected', 'pending'];
 const VALID_DOC_TYPES = ['nationalId_front', 'nationalId_back', 'universityId', 'militaryId'];
 
@@ -136,4 +138,32 @@ res.status(200).json({
         emailHistory:mails
     }
 });
+});
+exports.searchSubscription=catchAsyncError(async(req,res,next)=>{
+    const {name,status}=req.query;
+    let userFilter={};
+    if(name){
+        const users=await user.find({
+            name:{$regex:name,$options:'i'}
+        }).select('_id');
+        //console.log('Users found:', users);
+        userFilter.user={$in:users.map(u=>u._id)};
+    }
+if (status) userFilter.status = { $regex: status, $options: 'i' };
+    //console.log('userFilter:', userFilter);
+    const data=new ApiFeatures(
+        Subscription.find(userFilter)
+        .populate('user', 'name email')
+        .populate('type', 'category.en duration.en zones prices')
+        .populate('office', 'officeName.en '),
+        req.query
+    ).sort();
+    const subscriptions=await data.query;
+    if (!subscriptions || subscriptions.length === 0)
+    return next(new AppError('Subscription not found', 404));
+    res.status(200).json({
+        status:'success',
+        results: subscriptions.length,
+        data:{subscriptions}
+    });
 });
