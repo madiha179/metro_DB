@@ -7,9 +7,9 @@
     "operating_hours": "6 صباحاً - 8 مساءً",
     "frequency_minutes": 3,
     "ticket_prices": {
-      "1_to_4_stations": 6,
-      "5_to_9_stations": 10,
-      "10_to_14_stations": 16,
+      "1_to_4_stations": 5,
+      "5_to_10_stations": 10,
+      "10_to_14_stations": 15,
       "senior_discount": "نصف السعر لمن هم بين 60-70 سنة"
     }
   },

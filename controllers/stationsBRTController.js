@@ -74,8 +74,8 @@ const price = await ticketBRTModel.findOne({
       from: start.name[lang] || start.name.en,
       to: end.name[lang] || end.name.en,
       stops,
-      distance: `${totalDistance} km`,
-      travelTime: `${travelTime} min`,
+      distance: totalDistance,
+      travelTime: travelTime,
       price: price ? price.price : null,
       stations: stationBetweens.map(s => ({
         name: s.name[lang] || s.name.en,
