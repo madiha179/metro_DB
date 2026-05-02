@@ -108,7 +108,11 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
     return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
   const subscriptionPrice=await subscription.type.prices;
   if(paymentMethod==='cash'){
-    const issuingDate =Date.now();
+    const issuingDate = new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+   });
     const cashPayment=await subscriptionPayment.create({
       userId:user.id,
       subscriptionId:subscriptionId,
@@ -141,7 +145,11 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
     });
   }
     if(paymentMethod==='visa card'){
-          const issuingDate=Date.now();
+         const issuingDate = new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+           });
       try{
         const authToken=await getAuthToken();
         const orderId=await createOrder(authToken,subscription);
@@ -149,7 +157,24 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
         await createPaymentHistory(user.id,subscriptionId,subscriptionPrice,paymentMethod,orderId);
        return res.status(200).json({
           status:'success',
-          paymentKey
+          paymentKey,
+          data:{
+             payment:{
+        issuingDate,
+        amount:subscriptionPrice,
+        currency:'EGP',
+        paymentMethod:'visa card',
+       },
+       office:{
+        name:subscription.office.officeName[lang],
+        workingHours:subscription.office.workingHours
+       },
+       subscription:{
+        category:subscription.type.category[lang],
+        duration:subscription.type.duration[lang],
+        status:subscription.status,
+       }
+          }
         });
       }
       catch(err){
@@ -182,31 +207,6 @@ exports.visaPayController=(req,res,next)=>{
     });
   }
 }
-exports.confirmPayment = catchAsyncError(async (req, res, next) => {
-  const user = await Users.findById(req.user.id);
-  if (!user) return next(new appError("User not found", 404));
-
-  const userPayment = await subscriptionPayment.findOne({ userId: req.user.id }).sort({createdAt:-1});
-
-  if (!userPayment || !userPayment.payment_history.length) {
-    return next(new appError('No payment history found', 404));
-  }
-
-  const latestPayment = userPayment.payment_history.at(-1);
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      userName: user.name,
-      payment: {
-        invoice_number: latestPayment.invoice_number,
-        payment_method: latestPayment.payment_method,
-        issuing_date: latestPayment.issuing_date.toISOString().split('T')[0],
-        amount_paid: latestPayment.amount_paid
-      }
-    }
-  });
-});
 exports.getStatus=catchAsyncError(async(req,res,next)=>{
   const user=await Users.findById(req.user.id);
   if(!user)

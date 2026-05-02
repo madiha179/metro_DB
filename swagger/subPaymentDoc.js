@@ -71,24 +71,6 @@
  *       401:
  *         description: Unauthorized
  */
-
-/**
- * @swagger
- * /api/v1/subscriptions/subscription-pay/confirm:
- *   get:
- *     summary: Get latest payment for user
- *     tags: [Subscription Payment]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Return latest payment details
- *       404:
- *         description: No payment history found
- *       401:
- *         description: Unauthorized
- */
-
 /**
  * @swagger
  * /api/v1/subscriptions/subscription-pay/status:
