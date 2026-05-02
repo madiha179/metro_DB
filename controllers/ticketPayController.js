@@ -81,16 +81,24 @@ async function createPaymentKey(authToken, orderId, user, ticketPrice, paymentMe
 
 // 4) Save Payment History
 async function createPaymentHistory(userId, ticketPrice, paymentMethod, invoiceNumber) {
-  return PaymentHistory.create({
-    userid: userId,
-    payment_history: [{
-      issuing_date: new Date(),
-      amount_paid: ticketPrice,
-      payment_method: paymentMethod,
-      invoice_number: invoiceNumber,
-      payment_status: 'pending'
-    }]
-  });
+  return PaymentHistory.findOneAndUpdate(
+    {userid:userId},
+    {
+      $push:{
+        payment_history:{
+          $each:[{
+            issuing_date:new Date(),
+            amount_paid:ticketPrice,
+            payment_method:paymentMethod,
+            invoice_number:invoiceNumber,
+            payment_status:'pending'
+          }],
+          $position:0
+        }
+      }
+    },
+    {upsert:true,new:true}
+  );
 }
 
 // Create Payment Key Endpoint
