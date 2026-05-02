@@ -108,11 +108,12 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
     return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
   const subscriptionPrice=await subscription.type.prices;
   if(paymentMethod==='cash'){
-    const issuingDate = new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+    const issuingDateData = new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
    });
+   const issuingDate = new Date();
     const cashPayment=await subscriptionPayment.create({
       userId:user.id,
       subscriptionId:subscriptionId,
@@ -126,8 +127,9 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
     res.status(200).json({
       status:'success',
       data:{
+        userName:user.name,
        payment:{
-        issuingDate,
+        issuingDateData,
         amount:subscriptionPrice,
         currency:'EGP',
         paymentMethod:'cash',
@@ -159,6 +161,7 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
           status:'success',
           paymentKey,
           data:{
+             userName:user.name,
              payment:{
         issuingDate,
         amount:subscriptionPrice,
@@ -173,6 +176,16 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
         category:subscription.type.category[lang],
         duration:subscription.type.duration[lang],
         status:subscription.status,
+        start_date:subscription.start_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+           }),
+        expire_date:subscription.end_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+           }),
        }
           }
         });
