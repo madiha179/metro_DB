@@ -19,7 +19,7 @@
     "place": "كلية الفنون الجميلة جامعة حلوان",
     "aliases": ["fine arts helwan", "فنون جميلة حلوان", "كلية فنون حلوان"],
     "nearest_stations": [
-      { "name": "حدائق حلوان", "line": 1, "color": "Blue" }
+      { "name": "الزمالك", "line": 3, "color": "Green" }
     ],
     "notes": ""
   },

@@ -87,8 +87,8 @@ async function chargeWithToken(paymobKey,cardToken) {
   return response.data;
 }
 
-//job1 => send email  before 7 days of exp-date//
-cron.schedule('0 8 * * *',async()=>{
+//job1 => send email  before 7 days of exp-date => every day at 8am//
+cron.schedule('* 8 * * *',async()=>{
   try{
     const now=new Date();
     const in7Dayes=new Date(Date.now()+7*24*60*60*1000);
@@ -112,6 +112,7 @@ cron.schedule('0 8 * * *',async()=>{
       }
       catch(err){
         console.error(` Failed to send reminder to ${sub.user.email}:`, err.message);
+        if(!sub.user?.email) continue;
         await emailHistoryModel.create({
             to:           sub.user.email,
             user:         sub.user._id,
@@ -128,14 +129,15 @@ cron.schedule('0 8 * * *',async()=>{
   }
 });
 
-//job2 => send email renew and payment //
-cron.schedule('0 9 * * *',async()=>{
+//job2 => send email renew and payment every hour //
+cron.schedule('0 * * * *',async()=>{
   try{
     const now=new Date();
     const in2Days=new Date(Date.now()+2*24*60*60*1000);
     const expiringString=await subscriptionModel
     .find({status:'active',end_date:{$gte:now,$lte:in2Days},renewalInitiatedAt:null})
-    .populate('type','prices duration');
+    .populate('type','prices duration')
+    .populate('user','name email phone');
     for(const sub of expiringString){
       try{
         const paymentRecord=await subscriptionPayment.findOne({
@@ -146,9 +148,9 @@ cron.schedule('0 9 * * *',async()=>{
            console.log(` No card token for subscription ${sub._id}`);
            continue;
         }
-        const user=await Users.findById(sub.user);
-        if(!user){
-          console.log(`user not found for subscription ${sub._id}`);
+        const user=sub.user;
+        if(!user||!user.email){
+          console.log(`user or email not found for subscription ${sub._id}`);
           continue;
         }
         const amountCents=sub.type.prices*100;
@@ -166,17 +168,22 @@ cron.schedule('0 9 * * *',async()=>{
                 invoice_number: orderId,
                 amount_paid: sub.type.prices,
                 payment_method: 'visa card',
-                payment_status: 'pending'
+                payment_status: 'active'
               }
             }
           });
+          const durationEn = sub.type?.duration?.en?.toLowerCase();
+          const months = Duration_Months[durationEn] || 1;
+          const newEndDate = addMonths(new Date(), months);
           await subscriptionModel.findByIdAndUpdate(sub._id,{
-            $set:{renewalInitiatedAt:new Date()}
+            $set:{renewalInitiatedAt:new Date(),
+              end_date:newEndDate,
+              status:'active',
+              reminderSentAt:null
+            }
           });
           const renewalDate=new Date().toLocaleDateString('en-GB');
-          const durationEn=sub.type?.duration?.en?.toLowerCase();
-          const months=Duration_Months[durationEn]||1;
-          const expireDate=addMonths(new Date(),months).toLocaleDateString('en-GB');
+          const expireDate = newEndDate.toLocaleDateString('en-GB');
           await new Email(user,null,sub.type.prices,renewalDate,expireDate,paymentRecord.masked_pan||'xxxx-xxxx-xxxx-xxxx')
           .sendSubscriptionRenewed();
            await emailHistoryModel.create({
@@ -197,8 +204,11 @@ cron.schedule('0 9 * * *',async()=>{
       await subscriptionModel.findByIdAndUpdate(sub._id,{
         $set:{status:'pending'}
       });
-      const user=await Users.findById(sub.user);
-      if(user){
+      const user=sub.user;
+      if(!user||!user.email){
+        console.error(`Cannot send failure email: user or email missing for sub ${sub._id}`);
+          continue;
+      }
         try {
             await new Email(user, null, null, null, null, null).sendRenewalFailed();
             await emailHistoryModel.create({  
@@ -218,7 +228,6 @@ cron.schedule('0 9 * * *',async()=>{
                 status:       'failed',
             });
           }
-      }
     }
     }
   }
@@ -228,9 +237,9 @@ cron.schedule('0 9 * * *',async()=>{
   }
 });
 
-//expire date subscriptions//
+//expire date subscriptions every day at 9am//
 
-cron.schedule('0 10 * * *',async()=>{
+cron.schedule('0 9 * * *',async()=>{
   try{
     const expiredSubs = await subscriptionModel
       .find({ status: 'active', end_date: { $lt: new Date() } })

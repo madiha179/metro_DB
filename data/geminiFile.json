@@ -20,14 +20,14 @@
   {
     "id":"faq_004",
     "question":"How can I make a subscription from the app?",
-    "answer":"Open the app and go to the Home screen. Tap 'Get Subscription', select a subscription plan, fill in the application form, then complete payment using Visa",
+    "answer":"Open the app and go to the Home screen. Tap 'Get Subscription', select a subscription plan, fill in the application form, then complete payment using Visa or Cash in the subscription office",
     "tags":[ "subscription", "pricing", "app"]
   },
   {
     "id":"faq_005",
     "question":"How can I get my subscription card?",
-    "answer":"After completing payment, enable your location. The nearest subscription office will automatically appear on the screen so you can go pick up your card.",
-    "tags":[ "subscription", "card", "location", "app"]
+    "answer":"After complete payment,Go to the subscription Office you choose in the form.",
+    "tags":[ "subscription", "card", "app"]
   },
   {
   "id": "faq_006",
@@ -161,6 +161,12 @@
     "id": "faq_027",
     "question": "What is the ticket price for 20 stations?",
     "answer": "A trip that covers 17 to 23 stations costs 15 EGP.",
+    "tags": ["tickets", "prices"]
+  },
+  {
+    "id": "faq_027",
+    "question": "Can I buy a ticket for BRT from app?",
+    "answer": "Currently,buy a ticket for BRT is not available in Metro Mate App .",
     "tags": ["tickets", "prices"]
   }
 ]
