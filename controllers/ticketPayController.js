@@ -120,8 +120,8 @@ exports.createPayment = catchAsync(async (req, res, next) => {
     const paymentKey = await createPaymentKey(authToken, orderId, user, finalPrice, paymentmethod);
     await createPaymentHistory(req.user.id, finalPrice, paymentmethod, orderId);
     if(tripId){
-      await UserTrips.findByIdAndUpdate(tripId, {
-        $set: { 'trip_history.0.payment_method': paymentmethod }
+      await UserTrips.findOneAndUpdate({_id:tripId}, {
+        $set: { 'trip_history.0.payment_method': paymentmethod,'trip_history.0.totalPrice': finalPrice }
       });
     }
     res.status(200).json({
