@@ -176,16 +176,17 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
         category:subscription.type.category[lang],
         duration:subscription.type.duration[lang],
         status:subscription.status,
-        start_date:subscription.start_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-           }),
-        expire_date:subscription.end_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-           }),
+        start_date: subscription.start_date
+  ? subscription.start_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    })
+  : null,
+
+expire_date: subscription.end_date
+  ? subscription.end_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    })
+  : null,
        }
           }
         });
