@@ -108,17 +108,17 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
     return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
   const subscriptionPrice=await subscription.type.prices;
   if(paymentMethod==='cash'){
-    const issuingDateData = new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+    const issuingDate = new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
    });
-   const issuingDate = new Date();
+   const issuingDateData = new Date();
     const cashPayment=await subscriptionPayment.create({
       userId:user.id,
       subscriptionId:subscriptionId,
       payment_history:[{
-        issuing_date:issuingDate,
+        issuing_date:issuingDateData,
         amount_paid:subscriptionPrice,
         payment_method:'cash',
         payment_status: 'pending'
@@ -129,7 +129,7 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
       data:{
         userName:user.name,
        payment:{
-        issuingDateData,
+        issuingDate,
         amount:subscriptionPrice,
         currency:'EGP',
         paymentMethod:'cash',
