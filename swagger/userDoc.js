@@ -82,6 +82,9 @@
  *               password:
  *                 type: string
  *                 example: user1234
+ * *               fcmToken:
+ *                 type: string
+ *                 example: ""
  *     responses:
  *       200:
  *         description: user login successfully
