@@ -7,6 +7,8 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const emailHistoryModel=require('../models/emailHistoryModel');
 const Email =require('../utils/sendEmail');
 const ApiFeatures=require('../utils/ApiFeatures');
+const pushNotifications=require('../utils/sendNotificationFirebase');
+const notificationsHistory=require('../models/notificationsHistoryModel');
 VALID_STATUSES = ['active','accepted','expired', 'rejected', 'pending'];
 const VALID_DOC_TYPES = ['nationalId_front', 'nationalId_back', 'universityId', 'militaryId'];
 
@@ -72,6 +74,20 @@ exports.updateSubStatus = catchAsyncError(async (req, res, next) => {
 
     if(!sub)
         return next( new AppError('Subscription not found.', 404));
+    try{
+     const title='Subscription Status Update';
+     const notficatonsMessages={
+        accepted:'Your subscription has been accepted!',
+        rejected:`Your subscription has been rejected. Reason: ${rejectionReason}`
+        };
+        const message=notficatonsMessages[status]||`Your subscription status is now: ${status}`;
+        const notificationDate=new Date().toLocaleDateString('en-EG');
+        await pushNotifications(sub.user._id,title,message);
+        await notificationsHistory.create({userId:sub.user._id,title:title,message:message,sendAt:notificationDate});
+    }
+    catch(err){
+        console.error('Notification error:', err);
+    }
     if(status==='rejected'&&sub.user?.email){
         try{
         await new Email(

@@ -166,10 +166,12 @@ exports.changePassword=CatchAsync(async(req,res,next)=>{
 
 //login section
 exports.Login =CatchAsync(async (req, res, next) => {
-  const {email, password} = req.body;
+  const {email, password,fcmToken} = req.body;
   if(!email || !password)
     return next(new AppError("Email and password are required!", 400));
   
+  if(!fcmToken)
+    return next(new AppError("FCM Token is required",400));
   const user = await User.findOne({email}).select('+password');
   
   if(!user || !(await user.correctPassword(password, user.password)))
@@ -178,6 +180,8 @@ exports.Login =CatchAsync(async (req, res, next) => {
   if(!user.verified){
     return next(new AppError("Email not verified.", 403));
   }
+  user.fcmToken=fcmToken;
+  await user.save({ validateBeforeSave: false });
   createSendToken(user, 200, res);
 });
 

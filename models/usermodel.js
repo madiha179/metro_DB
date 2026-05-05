@@ -69,6 +69,9 @@ const UserSchema=new mongoose.Schema({
   lastLogOut:{
     type:Date,
     default:null
+  },
+  fcmToken:{
+    type:String
   }
 });
 //Hash password before saving 

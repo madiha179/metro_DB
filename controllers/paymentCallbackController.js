@@ -1,5 +1,7 @@
 const Payment = require('./../models/paymentmodel');
 const crypto = require('crypto');
+const pushNotifications=require('../utils/sendNotificationFirebase');
+const notificationsHistory=require('../models/notificationsHistoryModel');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 
@@ -48,20 +50,28 @@ exports.transactionProcessed = async (req, res) => {
     const success = parsedBody.obj?.success;
     const amountCents = Number(parsedBody.obj?.amount_cents) || 0;
 
-    const updated = await Payment.updateOne(
+    const updated = await Payment.findOneAndUpdate(
       { "payment_history.invoice_number": orderId },
-      {
-        $set: {
+        {$set: {
           "payment_history.$.payment_status": success ? "paid" : "failed",
           "payment_history.$.amount_paid": success ? amountCents / 100 : 0,
           "payment_history.$.paying_date": success ? new Date() : null
-        }
-      }
+        },
+      },
+         { new: true }
     );
-
+     if (!updated) {
+      return res.status(404).json({ message: "Payment record not found" });
+    }
     console.log("Update result:", updated);
     console.log({ orderId, success, amountCents });
-
+    if (success) {
+     const title=`Ticket Payment`;
+        const message=`Your payment was successful, and your Ticket is active`;
+        const notificationDate=new Date().toLocaleDateString('en-EG');
+        await pushNotifications(updated.userid,title,message);
+        await notificationsHistory.create({userId:updated.userid,title:title,message:message,sendAt:notificationDate});
+      }
     if (updated.modifiedCount === 0) {
       return res.status(404).json({ message: "Payment record not found" });
     }
