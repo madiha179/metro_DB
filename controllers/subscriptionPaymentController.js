@@ -104,7 +104,8 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
   if(!subscription) return next(new appError("subscription not found",404));
   if(subscription.user.toString()!==req.user.id)
     return next(new appError("This subscription does not belong to you",403));
-  if (subscription.status !== 'accepted')
+  const needRenew=subscription.status==='pending'&&subscription.renewalInitiatedAt!==null;
+  if (subscription.status !== 'accepted'||!needRenew)
     return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
   const subscriptionPrice=await subscription.type.prices;
   if(paymentMethod==='cash'){
@@ -225,13 +226,21 @@ exports.getStatus=catchAsyncError(async(req,res,next)=>{
   const user=await Users.findById(req.user.id);
   if(!user)
 return next(new appError("User not found", 404));
-  const SubscriptionStatus=await subscriptions.findOne({user:req.user.id}).select('status');
-  if(!SubscriptionStatus)
+  const Subscription=await subscriptions.findOne({user:req.user.id})
+  .select('status renewalInitiatedAt end_date type')
+  .populate('type','prices');
+  if(!Subscription.status)
     return next(new appError("Subscription not found", 404));
+  const needRenew=Subscription.status==='pending' && Subscription.renewalInitiatedAt!==null;
   res.status(200).json({
     status:'success',
     data:{
-      status:SubscriptionStatus.status
+      status:Subscription.status,
+      needRenew,
+      ...(needRenew&&{
+        amount:Subscription.type?.prices,
+        expireDate:Subscription.end_date.toLocaleDateString('en-EG')
+      })
     }
   });
 });

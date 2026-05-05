@@ -5,7 +5,10 @@ const subscriptionPayment=require('../models/subscriptionPaymentModel');
 const Users=require('../models/usermodel');
 const Email=require('./sendEmail');
 const emailHistoryModel=require('../models/emailHistoryModel');
+const pushNotification=require('./sendNotificationFirebase');
+const notificationHistory=require('./../models/notificationsHistoryModel');
 const dotenv=require('dotenv');
+const MailMessage = require('nodemailer/lib/mailer/mail-message');
 dotenv.config({path:'./config.env'});
 const PAYMOB_API_URL = process.env.PAYMOB_API_URL;
 const PAYMOB_SUB_API_KEY = process.env.PAYMOB_SUB_API_KEY;
@@ -24,7 +27,52 @@ function addMonths(date,months){
   d.setMonth(d.getMonth()+months);
   return d;
 }
+// helper function for send ar or en notifications
+function getNotificationMessages(lang, data = {}) {
+  const messages = {
+    reminder: {
+      title: { ar: 'تذكير بانتهاء الاشتراك', en: 'Subscription Expire Date Reminder' },
+      message: {
+        ar: `اشتراكك سينتهي خلال 7 أيام. تأكد من وجود رصيد كافٍ ${data.price} جنيه في حسابك للتجديد التلقائي.`,
+        en: `Your subscription will expire within 7 days. Please ensure you have enough balance ${data.price} in your account for auto-renewal.`
+      }
+    },
+    manual_renewal: {
+      title: { ar: 'مطلوب تجديد يدوي', en: 'Action Required: Renew Your Subscription' },
+      message: {
+        ar: 'اشتراكك سينتهي قريباً. يرجى التجديد يدوياً لعدم وجود بطاقة محفوظة.',
+        en: 'Your subscription expires soon. Please renew manually as no saved card was found.'
+      }
+    },
+    renewed: {
+      title: { ar: 'تم تجديد الاشتراك بنجاح', en: 'Subscription Successfully Renewed' },
+      message: {
+        ar: `تم تجديد اشتراكك تلقائياً. تاريخ الانتهاء القادم: ${data.expireDate}`,
+        en: `Your subscription has been automatically renewed. next expire date ${data.expireDate}`
+      }
+    },
+    renewal_failed: {
+      title: { ar: 'فشل تجديد الاشتراك', en: 'Subscription Renewal Failed' },
+      message: {
+        ar: 'فشل تجديد اشتراكك تلقائياً. يرجى التجديد يدوياً.',
+        en: 'Your subscription automatic renewal failed. Please renew manually.'
+      }
+    },
+    expired: {
+      title: { ar: 'انتهى الاشتراك', en: 'Subscription Expired' },
+      message: {
+        ar: `انتهى اشتراكك بتاريخ ${data.expireDate}`,
+        en: `Your subscription has expired on ${data.expireDate}`
+      }
+    }
+  };
 
+  const t = messages[data.type];
+  return {
+    title: t.title[lang] || t.title.en,
+    message: t.message[lang] || t.message.en
+  };
+}
 //helper functions for payment //
 async function getAuthToken() {
   const res = await axios.post(`${PAYMOB_API_URL}/auth/tokens`, {
@@ -95,13 +143,17 @@ cron.schedule('* 8 * * *',async()=>{
     const expiringString=await subscriptionModel
     .find({status:'active',end_date:{$gte:now,$lte:in7Dayes},reminderSentAt:null})
     .populate('type','prices duration category')
-    .populate('user','name email');
+    .populate('user','name email preferredLanguage');
     for(const sub of expiringString){
       try{
         await new Email(sub.user,null,sub.type.prices,null,sub.end_date,null).sendSubscriptionReminder();
         await subscriptionModel.findByIdAndUpdate(sub._id,{
           $set:{reminderSentAt:new Date()}
         });
+        const lang=sub.user?.preferredLanguage||'en';
+       const {title, message}=getNotificationMessages(lang,{type:'reminder',price:sub.type.prices});
+        await pushNotification(sub.user._id,title,message);
+        await notificationHistory.create({userId:sub.user._id,title:title,message:message,sendAt:new Date()});
         await emailHistoryModel.create({
            to:sub.user.email,
             user:sub.user._id,
@@ -137,28 +189,70 @@ cron.schedule('0 * * * *',async()=>{
     const expiringString=await subscriptionModel
     .find({status:'active',end_date:{$gte:now,$lte:in2Days},renewalInitiatedAt:null})
     .populate('type','prices duration')
-    .populate('user','name email phone');
+    .populate('user','name email phone preferredLanguage');
     for(const sub of expiringString){
       try{
         const paymentRecord=await subscriptionPayment.findOne({
           subscriptionId:sub._id,
           card_token:{$ne:null}
-        }).sort({createdAt: -1});
+        }).sort({createdAt: -1}); 
+        // if user not save card 
         if(!paymentRecord?.card_token){
            console.log(` No card token for subscription ${sub._id}`);
-           continue;
+           // change subscription status 
+        await subscriptionModel.findByIdAndUpdate(sub._id,{
+          $set:{
+            status:'pending',
+            renewalInitiatedAt:new Date()
+          }
+        });
+        try{
+          // send email
+          await new Email(sub.user,null,sub.type.prices,null,sub.end_date,null)
+          .sendManualRenewalRequired();
+          await emailHistoryModel.create({
+            to:sub.user.email,
+            user:sub.user._id,
+            subscription:sub._id,
+            type: 'manual_renewal_required',
+            status:'sent'
+          });
         }
+        catch(emailErr){
+    console.error(`Failed to send manual renewal email:`, emailErr.message);
+    await emailHistoryModel.create({
+      to: sub.user.email,
+      user: sub.user._id,
+      subscription: sub._id,
+      type: 'manual_renewal_required',
+      status: 'failed',
+    });
+        }
+        // push notification 
+   const lang = sub.user?.preferredLanguage || 'en';
+const { title, message } = getNotificationMessages(lang, { type: 'manual_renewal' });
+  await pushNotification(sub.user._id, title, message);
+  await notificationHistory.create({
+    userId: sub.user._id,
+    title,
+    message,
+    sendAt:new Date()
+  });
+
+  continue;
+      }
         const user=sub.user;
         if(!user||!user.email){
           console.log(`user or email not found for subscription ${sub._id}`);
           continue;
         }
         const amountCents=sub.type.prices*100;
-        //payment
+        //renew payment
         const authToken=await getAuthToken();
         const orderId=await createOrder(authToken,amountCents);
         const paymobKey=await createPaymentKey(authToken,orderId,user,sub.type.prices);
         const result=await chargeWithToken(paymobKey,paymentRecord.card_token);
+        //update payment history 
         if(result.success){
           await subscriptionPayment.findByIdAndUpdate(paymentRecord._id,{
             $push:{
@@ -172,6 +266,7 @@ cron.schedule('0 * * * *',async()=>{
               }
             }
           });
+          // update subscription status and end date 
           const durationEn = sub.type?.duration?.en?.toLowerCase();
           const months = Duration_Months[durationEn] || 1;
           const newEndDate = addMonths(new Date(), months);
@@ -182,6 +277,7 @@ cron.schedule('0 * * * *',async()=>{
               reminderSentAt:null
             }
           });
+          // send renew email
           const renewalDate=new Date().toLocaleDateString('en-GB');
           const expireDate = newEndDate.toLocaleDateString('en-GB');
           await new Email(user,null,sub.type.prices,renewalDate,expireDate,paymentRecord.masked_pan||'xxxx-xxxx-xxxx-xxxx')
@@ -194,6 +290,11 @@ cron.schedule('0 * * * *',async()=>{
                       metadata:{amount:sub.type.prices},
                       status:'sent',
                   });
+                  //send renew notification
+                  const lang = sub.user?.preferredLanguage || 'en';
+                  const { title, message } = getNotificationMessages(lang, { type: 'renewed', expireDate });
+                  await pushNotification(sub.user._id, title, message);
+                  await notificationHistory.create({ userId: sub.user._id, title, message, sendAt: new Date() });
         }
         else{
           throw new Error('Charge failed');
@@ -209,6 +310,7 @@ cron.schedule('0 * * * *',async()=>{
         console.error(`Cannot send failure email: user or email missing for sub ${sub._id}`);
           continue;
       }
+      // email if renew failed
         try {
             await new Email(user, null, null, null, null, null).sendRenewalFailed();
             await emailHistoryModel.create({  
@@ -243,29 +345,26 @@ cron.schedule('0 9 * * *',async()=>{
   try{
     const expiredSubs = await subscriptionModel
       .find({ status: 'active', end_date: { $lt: new Date() } })
-      .populate('user', 'name email');
+      .populate('user', 'name email preferredLanguage');
    await subscriptionModel.updateMany(
       {status:'active',end_date:{$lt:new Date()}},
       {$set:{status:'expired'}}
     );
     for(const sub of expiredSubs){
       try{
-        const expireDate=sub.end_date.toLocaleDateString('en-GB');
-        await new Email(
-          sub.user,
-          null,
-          null,
-          null,
-          expireDate,
-          null
-        ).sendSubscriptionExpired();
-        await emailHistoryModel.create({
+                const lang = sub.user?.preferredLanguage || 'en';
+                const expireDate = sub.end_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US');
+                await new Email(sub.user, null, null, null, expireDate, null).sendSubscriptionExpired();
+                await emailHistoryModel.create({
                     to:sub.user.email,
                     user:sub.user._id,
                     subscription:sub._id,
                     type:'expired',
                     status:'sent',
                 });
+                const { title, message } = getNotificationMessages(lang, { type: 'expired', expireDate });
+                await pushNotification(sub.user._id, title, message);
+                await notificationHistory.create({ userId: sub.user._id, title, message, sendAt: new Date() });
       }
       catch(err){
         console.error(` Failed to send expiry email to ${sub.user.email}:`, err.message);

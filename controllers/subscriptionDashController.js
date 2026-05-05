@@ -70,20 +70,24 @@ exports.updateSubStatus = catchAsyncError(async (req, res, next) => {
         id, 
         updateData,
         { new: true, runValidators: true }
-    ).populate('user','name email');
+    ).populate('user','name email preferredLanguage');
 
     if(!sub)
         return next( new AppError('Subscription not found.', 404));
     try{
-     const title='Subscription Status Update';
+     const lang=sub.user?.preferredLanguage || 'en';
+     const title=lang==='ar'?'تحديث حالة الاشتراك': 'Subscription Status Update';
      const notficatonsMessages={
-        accepted:'Your subscription has been accepted!',
-        rejected:`Your subscription has been rejected. Reason: ${rejectionReason}`
+        accepted:{ar: 'تم قبول اشتراكك!',
+                  en: 'Your subscription has been accepted!'},
+        rejected:{
+                  ar: `تم رفض اشتراكك. السبب: ${rejectionReason}`,
+                en: `Your subscription has been rejected. Reason: ${rejectionReason}`
+                }
         };
-        const message=notficatonsMessages[status]||`Your subscription status is now: ${status}`;
-        const notificationDate=new Date().toLocaleDateString('en-EG');
+        const message=notficatonsMessages[status]?.[lang]|| (lang === 'ar' ? `حالة اشتراكك الآن: ${status}` : `Your subscription status is now: ${status}`);
         await pushNotifications(sub.user._id,title,message);
-        await notificationsHistory.create({userId:sub.user._id,title:title,message:message,sendAt:notificationDate});
+        await notificationsHistory.create({userId:sub.user._id,title:title,message:message,sendAt:new Date()});
     }
     catch(err){
         console.error('Notification error:', err);

@@ -9,9 +9,10 @@ exports.getNotficationsHistory=catchAsyncError(async(req,res,next)=>{
   if(!notificationsHistoryData||notificationsHistoryData.length===0){
     return next(new appError('No notifications history found',400));
   }
+  const lang=req.user.preferredLanguage||'en';
   const formatted = notificationsHistoryData.map(n => ({
   ...n,
-  sendAt: new Date(n.sendAt).toLocaleDateString('en-US', {
+  sendAt: new Date(n.sendAt).toLocaleDateString(lang==='ar'?'ar-EG':'en-EG' ,{
     year: 'numeric',
     month: 'long',
     day: 'numeric',

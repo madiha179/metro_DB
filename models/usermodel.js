@@ -72,6 +72,11 @@ const UserSchema=new mongoose.Schema({
   },
   fcmToken:{
     type:String
+  },
+  preferredLanguage:{
+    type:String,
+    enum:['ar','en'],
+    default:'en'
   }
 });
 //Hash password before saving 

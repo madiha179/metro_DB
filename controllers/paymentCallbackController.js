@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const pushNotifications=require('../utils/sendNotificationFirebase');
 const notificationsHistory=require('../models/notificationsHistoryModel');
 const dotenv = require('dotenv');
+const User = require('../models/usermodel');
 dotenv.config({ path: './config.env' });
 
 function getNested(obj, path) {
@@ -66,11 +67,14 @@ exports.transactionProcessed = async (req, res) => {
     console.log("Update result:", updated);
     console.log({ orderId, success, amountCents });
     if (success) {
-     const title=`Ticket Payment`;
-        const message=`Your payment was successful, and your Ticket is active`;
-        const notificationDate=new Date().toLocaleDateString('en-EG');
+      const user=await User.findById(updated.userid).select('preferredLanguage');
+      const lang=user?.preferredLanguage||'en';
+     const title= lang === 'ar' ? 'دفع التذكرة' : 'Ticket Payment';
+        const message=lang === 'ar' 
+            ? 'تم الدفع بنجاح، تذكرتك فعّالة' 
+            : 'Your payment was successful, and your Ticket is active';
         await pushNotifications(updated.userid,title,message);
-        await notificationsHistory.create({userId:updated.userid,title:title,message:message,sendAt:notificationDate});
+        await notificationsHistory.create({userId:updated.userid,title:title,message:message,sendAt: new Date()});
       }
     if (updated.modifiedCount === 0) {
       return res.status(404).json({ message: "Payment record not found" });

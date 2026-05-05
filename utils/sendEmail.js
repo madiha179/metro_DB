@@ -121,4 +121,7 @@ async sendSubscriptionExpired() {
 async sendSubscriptionRejectReason(){
   await this.send('subscriptionRejectEmail','Metro Mate - Your Subscription Request Has Rejected ❌')
 }
+async sendManualRenewalRequired(){
+  await this.send('sendManualRenewalRequired','Metro Mate - Action Required: Renew Your Subscription ')
+}
 };

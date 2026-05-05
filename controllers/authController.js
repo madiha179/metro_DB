@@ -10,7 +10,7 @@ const transporter = require('./../utils/sendOTP');
 const UserOTPVerification = require('./../models/userOTPVerification');
 const catchAsyncError = require('./../utils/catchAsyncError');
 const bcrypt = require('bcryptjs');
-
+const getLang=require('../utils/getLang');
 //sign token
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -180,8 +180,8 @@ exports.Login =CatchAsync(async (req, res, next) => {
   if(!user.verified){
     return next(new AppError("Email not verified.", 403));
   }
-  user.fcmToken=fcmToken;
-  await user.save({ validateBeforeSave: false });
+  const lang=getLang(req);
+  await User.findByIdAndUpdate(user._id,{$set:{fcmToken:fcmToken,preferredLanguage:lang}});
   createSendToken(user, 200, res);
 });
 
