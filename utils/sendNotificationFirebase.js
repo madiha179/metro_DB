@@ -1,10 +1,19 @@
 const admin=require('firebase-admin');
 const User=require('../models/usermodel');
+const dotenv=require('dotenv');
+dotenv.config({path:'./config.env'});
 const serviceAccount = require("../notficatons-firebase-adminsdk-fbsvc-88780ad8c4.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+if(!admin.app.length){
+  admin.initializeApp({
+    credential:admin.credential.cert({
+      projectId: process.env.FCM_PROJECT_ID,
+      privateKey: process.env.FCM_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      clientEmail: process.env.FCM_CLIENT_EMAIL
+    })
+  })
+}
+
 
 const pushNotifications=async(userId,title,message)=>{
   try{
