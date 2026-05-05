@@ -3,7 +3,7 @@ const User=require('../models/usermodel');
 const dotenv=require('dotenv');
 dotenv.config({path:'./config.env'});
 
-if(!admin.app.length){
+if(!admin.apps.length){
   admin.initializeApp({
     credential:admin.credential.cert({
       projectId: process.env.FCM_PROJECT_ID,
