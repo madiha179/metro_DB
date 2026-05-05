@@ -2,7 +2,6 @@ const admin=require('firebase-admin');
 const User=require('../models/usermodel');
 const dotenv=require('dotenv');
 dotenv.config({path:'./config.env'});
-const serviceAccount = require("../notficatons-firebase-adminsdk-fbsvc-88780ad8c4.json");
 
 if(!admin.app.length){
   admin.initializeApp({
