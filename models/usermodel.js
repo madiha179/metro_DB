@@ -69,6 +69,14 @@ const UserSchema=new mongoose.Schema({
   lastLogOut:{
     type:Date,
     default:null
+  },
+  fcmToken:{
+    type:String
+  },
+  preferredLanguage:{
+    type:String,
+    enum:['ar','en'],
+    default:'en'
   }
 });
 //Hash password before saving 

@@ -206,7 +206,7 @@ exports.chatBotController=catchAsyncError(async(req,res,next)=>{
 exports.getChatHistory=catchAsyncError(async(req,res,next)=>{
     const user=await usersModel.findById(req.user.id);
     const chatHistory=await chatHistoryModel.find({userId:user._id}).sort({createdAt:-1});
-    if(!chatHistory){
+    if(!chatHistory||chatHistory===0){
       return next(new appError('No chat history found',400));
     }
     res.status(200).json({

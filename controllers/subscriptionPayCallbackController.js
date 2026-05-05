@@ -1,5 +1,8 @@
 const subscriptionPayment = require('./../models/subscriptionPaymentModel');
 const subscriptionModel = require('./../models/subscriptionModel');
+const pushNotifications=require('../utils/sendNotificationFirebase');
+const notificationsHistory=require('../models/notificationsHistoryModel');
+const User=require('../models/usermodel');
 const crypto=require('crypto');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
@@ -123,6 +126,19 @@ exports.transactionProcessed = async (req, res) => {
           );
 
           console.log(' Subscription activated:', activated?.status, 'until:', activated?.end_date);
+        const user=await User.findById(subscription.user._id).select('preferredLanguage');
+        const lang=user?.preferredLanguage||'en';
+        const title=lang==='ar'?'دفع الاشتراك':'Subscription Payment';
+        const message=lang==='ar'?`تم الدفع بنجاح، اشتراكك فعّال حتى ${end_date.toLocaleDateString('ar-EG')}`:
+        `Your payment was successful, and your subscription is active until ${end_date.toLocaleDateString('en-EG')}`;
+        const notificationDate=new Date().toLocaleDateString(lang==='ar'?'ar-EG':'en-EG');
+        await pushNotifications(subscription.user._id,title,message);
+        await notificationsHistory.create({
+          userId:subscription.user._id,
+          title:title,
+          message:message,
+          sendAt:notificationDate
+        });
         }
       }
 

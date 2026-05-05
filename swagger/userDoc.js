@@ -74,6 +74,7 @@
  *             required:
  *               - email
  *               - password
+ *               - fcmToken
  *             properties:
  *               email:
  *                 type: string
@@ -412,6 +413,34 @@
 *                 
  *     responses:
  *       200:
+ *         description: name updated
+ *       400:
+ *         description: user not login 
+ *       500:
+ *         description: Server error
+ */
+/**
+ * @swagger
+ *   /api/v1/users/language:
+ *   patch:
+ *     summary: update user preferred Language
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             required:
+*               - lang
+*             properties:
+*               lang:
+*                 type: string
+*                 example: ar || en 
+*     responses:
+*       200:
  *         description: name updated
  *       400:
  *         description: user not login 
