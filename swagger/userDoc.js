@@ -82,7 +82,7 @@
  *               password:
  *                 type: string
  *                 example: user1234
- * *               fcmToken:
+ *               fcmToken:
  *                 type: string
  *                 example: ""
  *     responses:
