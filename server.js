@@ -76,6 +76,14 @@ const paymentLimiter=rateLimit({
   standardHeaders: true,
    legacyHeaders: false
 });
+const dashboardLimiter=rateLimit({
+  max:100,
+  windowMs:60*60*1000,
+  message:"Too many payment requests, Please try again in an hour!",
+  statusCode:429,
+  standardHeaders: true,
+   legacyHeaders: false
+})
 app.use(cors({
   origin:true,
   credentials:true
@@ -84,22 +92,22 @@ swaggerDocs(app);
 app.use('/api/v1/users',userRouter);
 app.use('/api/v1/trips',limiter,TripRouter);
 app.use('/api/v1/tickets',limiter,ticketRouter);
-app.use('/api/v1/ticketpay',limiter,paymentLimiter,ticketPayRouter);
+app.use('/api/v1/ticketpay',paymentLimiter,ticketPayRouter);
 app.use('/api/v1/neareststation',limiter,nearestStationRoute);
 app.use('/api/v1/trips',limiter,userTripsHistoryRouter);
-app.use('/api/v1/admin',adminRoute);
-app.use('/api/v1/dashboard',stationCRUDRouter);
-app.use('/api/v1/dashboard',ticketCRUDRouter);
-app.use('/api/v1/dashboard',homeDashRouter);
-app.use('/api/v1/dashboard/subscriptions',subscriptionDashRoute);
+app.use('/api/v1/admin',dashboardLimiter,adminRoute);
+app.use('/api/v1/dashboard',dashboardLimiter,stationCRUDRouter);
+app.use('/api/v1/dashboard',dashboardLimiter,ticketCRUDRouter);
+app.use('/api/v1/dashboard',dashboardLimiter,homeDashRouter);
+app.use('/api/v1/dashboard/subscriptions',dashboardLimiter,subscriptionDashRoute);
 app.use('/api/v1/dashboard/subscriptions', SubscriptionRouter);
-app.use('/api/v1/dashboard',adminsCRUDRouter);
-app.use('/api/v1/subscriptions', SubscriptionRouter);
-app.use('/api/v1/subscriptions',subPaymentRoute);
-app.use('/api/v1/brt',brtRouter);
-app.use('/api/v1',chatBotRouter);
-app.use('/api/v1',notificationsHistoryRouter);
-app.use('/api/v1/users',langRouter);
+app.use('/api/v1/dashboard',dashboardLimiter,adminsCRUDRouter);
+app.use('/api/v1/subscriptions', limiter,SubscriptionRouter);
+app.use('/api/v1/subscriptions',paymentLimiter,subPaymentRoute);
+app.use('/api/v1/brt',limiter,brtRouter);
+app.use('/api/v1',limiter,chatBotRouter);
+app.use('/api/v1',limiter,notificationsHistoryRouter);
+app.use('/api/v1/users',limiter,langRouter);
 app.all('*', (req, res, next) => {
   next(new apperr(`Can't find ${req.originalUrl} on this server!`, 404));
 });
