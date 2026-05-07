@@ -30,8 +30,16 @@ async function model(userMessage, historyText) {
 
   const msg = userMessage.toLowerCase();
   const needsBRT = msg.includes("brt") || msg.includes("أتوبيس") || msg.includes("ترددي");
-  const needsStations = msg.includes("محطة") || msg.includes("station") || msg.includes("أقرب");
-
+const needsStations = 
+  msg.includes("محطة") || 
+  msg.includes("station") || 
+  msg.includes("أقرب") ||
+  msg.includes("ازاي") ||
+  msg.includes("اروح") ||
+  msg.includes("أروح") ||
+  msg.includes("how") ||
+  msg.includes("get to") ||
+  msg.includes("where");
   const relevantStations = needsStations ? stationsData : [];
   const relevantBRT = needsBRT ? brtData : [];
 
@@ -75,12 +83,16 @@ Western Branch: Tawfikia → Wadi El Nil → Gamaet El Dowal → Bulaq Dakrour �
 
 ## IMPORTANT GEOGRAPHIC FACTS:
 - Cairo International Book Fair → EISEC, nearest station: "El-Estad" on Line 3.
-- Cairo Airport → "Cairo Airport T3" on Line 3.
+- Cairo Airport → "adly mansour" on Line 3.
 - Tahrir Square → "Sadat" station, Lines 1 & 2.
 - Ramses Station → "Al-Shohadaa" station, Lines 1 & 2.
 - Cairo University → "Cairo University" station on Line 2.
 - Giza Pyramids → nearest metro: "Giza" on Line 2, then microbus/taxi.
-- Ain Shams University (جامعة عين شمس) → nearest stations: "Ain Shams" or "El-Matareya" on Line 1 (Blue).
+- Ain Shams University (جامعة عين شمس) → nearest stations: "abbassiya" on Line 3 (Green) or "manshiet el-sadr" on Line 1 (Blue).
+- Faculty of Agriculture Ain Shams (كلية الزراعة عين شمس): 
+  From manshiet el-sadr → take Line 1 direction HELWAN → get off at AL-SHOHADAA → transfer to Line 2 direction SHUBRA EL-KHEIMA → get off at KOLIET EL-ZERAA station.
+  NEVER say "direction El-Marg". The correct direction from manshiet el-sadr is HELWAN (south), not El-Marg (north).
+  - manshiet el-sadr (Line 1) is only for faculties near that area, NOT for Faculty of Agriculture.
 - Keep navigation answers brief — max 4 lines.
 
 ## KNOWLEDGE HIERARCHY:
