@@ -105,7 +105,7 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
   if(subscription.user.toString()!==req.user.id)
     return next(new appError("This subscription does not belong to you",403));
   const needRenew=subscription.status==='pending'&&subscription.renewalInitiatedAt!==null;
-  if (subscription.status !== 'accepted'||!needRenew)
+  if (subscription.status !== 'accepted'&&!needRenew)
     return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
   const subscriptionPrice=await subscription.type.prices;
   if(paymentMethod==='cash'){
