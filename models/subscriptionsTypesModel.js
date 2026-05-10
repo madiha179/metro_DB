@@ -9,7 +9,7 @@ const subscriptionTypeSchema=new mongoose.Schema({
   category:{
     en:{
     type:String,
-    enum:["public","students","military","Elderly","special","special needs"],
+    enum:["public","students","military","elderly","special","special needs"],
     required:true,
     trim: true
     },
