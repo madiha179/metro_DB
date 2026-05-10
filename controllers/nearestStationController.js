@@ -1,7 +1,9 @@
 const CatchAsync = require('../utils/catchAsyncError')
 const AppError = require('../utils/appError');
 const stationLocation = require('../models/stationsLocation');
-const getLang=require('../utils/getLang')
+const crowdModel=require('../utils/crowdingAI');
+const getLang=require('../utils/getLang');
+const catchAsyncError = require('../utils/catchAsyncError');
 exports.getSatationWithIn = CatchAsync(async (req, res, next) => {
   const { lat, lng } = req.params;
   if (!lat || !lng) {
@@ -39,5 +41,20 @@ const lang=getLang(req);
         lng: nearestStation.location.coordinates[0]
       }
     }
+  });
+});
+exports.getStationCrowdingController = catchAsyncError(async (req, res, next) => {
+  const { lat, lng} = req.params;
+    const { stationName } = req.query;
+  if (!lat || !lng || !stationName)
+   return next (new AppError('Please provide latitude and longitude and station name',400));
+  const parsedLat=parseFloat(lat);
+  const parsedLng=parseFloat(lng);
+if (isNaN(parsedLat) || isNaN(parsedLng))
+    return next(new AppError('Latitude and longitude must be valid numbers', 400));
+  const color=await crowdModel(parsedLat,parsedLng,stationName);
+  res.status(200).json({
+    status: 'success',
+    data: { color }
   });
 });

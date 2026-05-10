@@ -82,10 +82,10 @@ app.use(cors({
 }));
 swaggerDocs(app);
 app.use('/api/v1/users',userRouter);
+app.use('/api/v1/neareststation',limiter,nearestStationRoute);
 app.use('/api/v1/trips',limiter,TripRouter);
 app.use('/api/v1/tickets',limiter,ticketRouter);
 app.use('/api/v1/ticketpay',paymentLimiter,ticketPayRouter);
-app.use('/api/v1/neareststation',limiter,nearestStationRoute);
 app.use('/api/v1/trips',limiter,userTripsHistoryRouter);
 app.use('/api/v1/admin',adminRoute);
 app.use('/api/v1/dashboard',stationCRUDRouter);
