@@ -148,7 +148,8 @@ exports.getSubDoc = catchAsyncError(async (req, res, next) => {
     return res.sendFile(filePath);
 });
 exports.getAllMails=catchAsyncError(async(req,res,next)=>{
-const mails=await emailHistoryModel.find();
+const mails=await emailHistoryModel.find()
+.populate('user','name');
 if(!mails||mails.length===0){
     return next(new AppError('Mails not found',404))
 }

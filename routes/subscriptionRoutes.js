@@ -2,7 +2,7 @@ const express = require('express');
 const authcontroller = require('./../controllers/authController');
 const adminController = require('../controllers/adminAuthConroller');
 const { handleUploadErrors } = require('../utils/uploadMiddleware');
-const { createSubscription, getMySubscription, displaySubPlans, displaySubCategory } = require('../controllers/subscriptionController');
+const { createSubscription, getMySubscription, displaySubPlans, displaySubCategory,getAllOffices } = require('../controllers/subscriptionController');
 const { getAllSubscriptions, updateSubStatus, getSubDoc,getAllMails ,searchSubscription} = require('../controllers/subscriptionDashController');
 const subPaymentRoute = require('./subscriptionPaymentRoute');
 const subscriptionDashRoute = require('./subscriptionsDashRoute');
@@ -13,6 +13,7 @@ SubscriptionRouter.get('/plans', displaySubPlans);
 SubscriptionRouter.get('/plans/:category', displaySubCategory);
 SubscriptionRouter.post('/create', authcontroller.protect, handleUploadErrors, createSubscription);
 SubscriptionRouter.get('/me', authcontroller.protect, getMySubscription);
+SubscriptionRouter.get('/offices',getAllOffices);
 
 /////////////Admin////////////////
 SubscriptionRouter.get('/', adminController.protect, getAllSubscriptions);
