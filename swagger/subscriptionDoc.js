@@ -237,3 +237,45 @@
  *         description: Internal server error
  */
 
+/**
+ * @swagger
+ * /api/v1/subscriptions/offices:
+ *   get:
+ *     summary: Get all subscriptions offices 
+ *     tags: [Subscriptions (User)]
+ *     description: |
+ *       add Accept-Language in headers ar || en
+ *       Returns a list of subscriptions offices  .
+ *     responses:
+ *       200:
+ *         description: offices retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 numOfOffices:
+ *                   type: number
+ *                   example: 30
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       officeName:
+ *                         type: string
+ *                         example: helwan
+ *                       offersQuarterly:
+ *                         type: bool
+ *                         example: true
+ *                       offersYearly:
+ *                         type: bool
+ *                         example: true
+ *       404:
+ *         description: No categories found
+ *       500:
+ *         description: Internal server error
+ */

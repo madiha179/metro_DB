@@ -92,6 +92,24 @@ exports.displaySubCategory = catchAsyncError(async (req, res, next) => {
     });
 });
 
+exports.getAllOffices=catchAsyncError(async(req,res,next)=>{
+        const lang=getLang(req);
+        const allOffices=await subscriptionOffices.find();
+        if(!allOffices||allOffices.length===0){
+            return next(new AppError("No offices found",404));
+        }
+        const formattedOffices=allOffices.map(office=>({
+            officeName:office.officeName[lang]||office.officeName['en'],
+            offersQuarterly: office.offersQuarterly,
+            offersYearly: office.offersYearly,
+        }));
+        res.status(200).json({
+            status:'success',
+            numOfOffices:allOffices.length,
+            data:formattedOffices
+        })
+});
+
 exports.createSubscription = catchAsyncError(async (req, res, next) => {
     const { category, duration, zones, numOfLines, office, start_station, end_station } = req.body;
     const files = req.files || {};
