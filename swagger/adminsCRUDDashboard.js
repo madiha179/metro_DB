@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/v1/admins:
+ * /api/v1/dashboard/admins:
  *   post:
  *     summary: Create new admin
  *     tags: [Admins (Super Admin)]
@@ -64,7 +64,7 @@
 
 /**
  * @swagger
- * /api/v1/admins/{id}:
+ * /api/v1/dashboard/admins/{id}:
  *   delete:
  *     summary: Delete admin by ID
  *     tags: [Admins (Super Admin)]
