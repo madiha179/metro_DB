@@ -63,5 +63,4 @@ userRouter.get('/profile/photo',profileLimiter,authcontroller.protect,userContro
 userRouter.patch('/profile/updateuserphoto',profileLimiter,authcontroller.protect,userController.updateuserphoto);
 userRouter.patch('/profile/updateusername',profileLimiter,authcontroller.protect,userController.updateusername);
 userRouter.get('/profile/getpaymentmethod',profileLimiter,authcontroller.protect,userController.getPaymentMethod);
-userRouter.get('/profile/getbalance',profileLimiter,authcontroller.protect,userController.getWalletBalance);
 module.exports=userRouter;

@@ -103,8 +103,8 @@ metro_DB/
 | Auth | JWT + bcryptjs |
 | Validation | express-validator |
 | API Docs | Swagger UI + swagger-jsdoc |
-| Email | Nodemailer / SendGrid / Brevo / Resend |
-| AI | Google Generative AI |
+| Email | Nodemailer|Brevo|
+| AI | Google/Genai |
 | Notifications | Firebase Admin SDK |
 | Route Algorithm | Dijkstra (node-dijkstra) |
 | Templates  |
@@ -151,7 +151,15 @@ EMAIL_HOST=smtp.example.com
 EMAIL_PORT=587
 EMAIL_USER=your_email
 EMAIL_PASS=your_password
-
+#Paymob
+PAYMOB_API_KEY=your_paymob_api_key
+PAYMOB_SUB_API_KEY
+PAYMOB_KIOSK_INTEGRATION_ID
+PAYMOB_API_URL
+PAYMOB_HMAC_SECRET
+PAYMOB_SUB_HMAC_SECRET
+PAYMOB_SUB_IFRAME_ID
+PAYMOB_CARD_INTEGRATION_ID
 # Firebase
 FIREBASE_PROJECT_ID=your_firebase_project_id
 FIREBASE_PRIVATE_KEY=your_firebase_private_key

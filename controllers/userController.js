@@ -1,6 +1,5 @@
 const User=require('./../models/usermodel');
 const Payment=require('./../models/paymentmodel');
-const wallet=require('./../models/walletModel')
 const catchAsync=require('./../utils/catchAsyncError');
 const filterObject=require('./../utils/filterObject');
 exports.getUserByName=catchAsync(async (req,res,next)=>{
@@ -80,14 +79,4 @@ exports.getPaymentMethod=catchAsync(async(req,res,next)=>{
       payment_method:lastMethod
     }
   })
-});
-exports.getWalletBalance=catchAsync(async(req,res,next)=>{
-  const userWallet=await wallet.findOne({userid:req.user.id});
-    return res.status(200).json({
-      status:'success',
-      data:{
-        balance:userWallet?.balance||0,
-        currency:"EGP"
-      }
-    })
 });

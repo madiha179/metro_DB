@@ -44,6 +44,7 @@ const uploadSubDocs = upload.fields([
     { name: 'nationalId_front', maxCount: 1 },
     { name: 'nationalId_back',  maxCount: 1 },
     { name: 'universityId',     maxCount: 1 },
+    { name: 'militaryId',       maxCount: 1 }
 ]);
 
 const handleUploadErrors = (req, res, next) => {

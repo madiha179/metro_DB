@@ -351,23 +351,6 @@
  */
 /**
  * @swagger
- *   /api/v1/users/profile/getbalance:
- *   get:
- *     summary: return balance and currency 
- *     tags: [Profile]
- *     security:
- *       - bearerAuth: []
- *     
- *     responses:
- *       200:
- *         description: return balance and currency 
- *       400:
- *         description: user not login 
- *       500:
- *         description: Server error
- */
-/**
- * @swagger
  *   /api/v1/users/profile/updateuserphoto:
  *   patch:
  *     summary: update user profile photo
