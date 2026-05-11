@@ -37,9 +37,11 @@ const needsStations =
   msg.includes("ازاي") ||
   msg.includes("اروح") ||
   msg.includes("أروح") ||
+  msg.includes("امتي بتكون")||
   msg.includes("how") ||
   msg.includes("get to") ||
-  msg.includes("where");
+  msg.includes("where")||
+  msg.includes("when is it busy");;
   const relevantStations = needsStations ? stationsData : [];
   const relevantBRT = needsBRT ? brtData : [];
 
@@ -66,7 +68,12 @@ You combine two sources of knowledge:
 6. If you are unsure about something not in the knowledge base, say so honestly and direct the user to: https://cairometro.gov.eg
 7. For real-time crowding (الزحمة دلوقتي):
    - Use Google Search to check the current live traffic or status for the specific station mentioned.
-   - If Google shows "Busy" or "Live crowd data", report it to the user.
+   - If Google shows "Busy" or "Live crowd data", report it to the user .
+   - If the user asks WHEN a station gets crowded (امتي بتكون زحمة / when is it busy):
+  Explain the peak hours for that station based on your knowledge.
+  Then ALWAYS suggest the nearest alternative station with the walking distance between them.
+  Example: "المحطة البديلة الأقرب هي [اسم المحطة] وتبعد عنها حوالي [X] دقائق مشي."
+  
 
 ## STRICT LANGUAGE RULE:
 - Detect the language of the "CURRENT USER MESSAGE".
@@ -77,10 +84,26 @@ You combine two sources of knowledge:
 ## LINE 3 COMPLETE STATIONS (West to East):
 Rod El Farag → Sudan → Imbaba → El Bohy → Al Qawmeyya → Ring Road → Kit Kat → Maspero → Safaa Hegazy → Nasser → Attaba → Bab El Shaariya → El Geish → Abdou Pasha → Abbassiya → Fair Zone → Cairo Stadium → Koleyet El Banat → Al Ahram → Heliopolis Square → El Shams Club → Haroun → El Nozha → Adly Mansour
 Western Branch: Tawfikia → Wadi El Nil → Gamaet El Dowal → Bulaq Dakrour → Cairo University
-
-## CRITICAL RULE:
-- IF the user asks about crowding (ازدحام/مزدحم/زحمة) or current status of any station, you MUST use "Google Search" immediately to get the latest info.
-
+CRITICAL RULES:
+## CRITICAL RULES:
+- Metro Working Hours: 05:15 AM to 01:00 AM (Cairo time).
+- BRT Working Hours: 05:00 AM to 01:00 AM (Cairo time).
+- The current Cairo time is: ${new Date().toLocaleString("en-US", { timeZone: "Africa/Cairo" })}.
+- If the user asks about crowding or station status AND the current time is outside working hours, 
+  respond IMMEDIATELY that the metro is not running and the station is empty. 
+  Do NOT use Google Search in this case.
+  Tell the user the metro opens at 5:15 AM.
+- If the user asks about crowding AND the metro IS currently running, use Google Search.
+-If the user asks about crowding (ازدحام / مزدحم / زحمة) or the current status of any station, you MUST use Google Maps immediately to get the latest real-time information.MUST suggest the nearest station to the station the user asks about if it is crwod or at crowd times and calucate the distance between the two stations.
+Metro Working Hours: 05:15 AM to 01:00 AM
+Cairo Metro – Last Train Schedule:
+The last train on Line 1 departs from Helwan Station at 11:40 PM and from El Marg El Gedida Station at 11:45 PM.
+The last train on Line 1 meets the last train on Line 2 at Anwar El-Sadat Station at 12:15 AM.
+The last train on Line 1 meets the last train on Line 3 at Gamal Abd El-Nasser Station at 12:10 AM.
+Travel time from Helwan Station to El Marg El Gedida Station and vice versa is 79 minutes.
+Headway between trains throughout the day is 4 minutes.
+If the user asks about crowding at a station and the metro is currently outside working hours, respond that:
+"The station is empty because the metro is currently not in service. The metro will open again at 5:15 AM."
 ## IMPORTANT GEOGRAPHIC FACTS:
 - Cairo International Book Fair → EISEC, nearest station: "El-Estad" on Line 3.
 - Cairo Airport → "adly mansour" on Line 3.
@@ -96,9 +119,9 @@ Western Branch: Tawfikia → Wadi El Nil → Gamaet El Dowal → Bulaq Dakrour �
 - Keep navigation answers brief — max 4 lines.
 
 ## KNOWLEDGE HIERARCHY:
-1. LIVE STATUS (Crowding, Delays): Use Google Search Tool ONLY.
+1. LIVE STATUS (Crowding, Delays): Use Google Map Tool ONLY.
 2. APP POLICIES (Tickets, Fines): Use "App Knowledge Base" JSON ONLY.
-3. NAVIGATION: Use "Places JSON" + Internal Training.
+3. NAVIGATION: Use "Places JSON" + Internal Training+ Google search tool
 
 ## APP KNOWLEDGE BASE (Tickets, Subscriptions, Fines, Features):
 ${JSON.stringify(metroData)}
@@ -129,7 +152,7 @@ ${userMessage}
         config: {
           thinkingConfig: { thinkingBudget: 0 },
         },
-        tools: needsSearch ? [{ googleSearchRetrieval: {} }] : [],
+        tools: needsSearch ? [{ googleSearchRetrieval: {} },{ googleMaps: {} }] : [],
       });
 
       currentIndex = (keyIndex + 1) % keys.length;
