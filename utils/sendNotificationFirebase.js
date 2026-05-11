@@ -33,6 +33,9 @@ const pushNotifications=async(userId,title,message)=>{
  console.log('Successfully sent message:',response);
 }
 catch(err){
+  if(err.code==='messaging/registration-token-not-registered'){
+    await User.findByIdAndUpdate(userId,{fcmToken:null});
+  }
   console.error('Error sending message:', err);
 }
 };

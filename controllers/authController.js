@@ -256,7 +256,7 @@ exports.resendOTP = CatchAsync(async (req, res, next) => {
 });
 
 exports.logOUT=CatchAsync(async(req,res,next)=>{
-  await User.findByIdAndUpdate(req.user.id,{lastLogOut:Date.now()});
+  await User.findByIdAndUpdate(req.user.id,{lastLogOut:Date.now(),fcmToken:null});
   res.cookie('jwt','loggedout',{
     expires: new Date(Date.now()+10*1000),
     httpOnly:true

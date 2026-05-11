@@ -132,7 +132,7 @@ ${JSON.stringify(relevantStations)}
 ## BRT KNOWLEDGE BASE:
 ${JSON.stringify(relevantBRT)}
 
-## CONVERSATION HISTORY (last 5 messages for context):
+## CONVERSATION HISTORY USE IF ONLY USER ASK  ABOUT METRO MATE APP (last 5 messages for context):
 ${historyText}
 
 ## CURRENT USER MESSAGE:
