@@ -10,4 +10,5 @@ subPaymentRoute.post('/subscription-pay',[body('subscriptionId').notEmpty().with
 ,subPaymentController.subPaymentController);
 subPaymentRoute.post('/subscription-pay/visa',subPaymentController.visaPayController);
 subPaymentRoute.get('/subscription-pay/status',subPaymentController.getStatus);
+subPaymentRoute.get('/subscription-pay',subPaymentController.getActivedData);
 module.exports=subPaymentRoute;

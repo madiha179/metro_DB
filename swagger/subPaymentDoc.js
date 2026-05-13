@@ -87,3 +87,83 @@
  *       401:
  *         description: Unauthorized
  */
+/**
+ * @swagger
+ * /api/v1/subscriptions/subscription-pay:
+ *   get:
+ *     summary: Get active subscription data
+ *     tags: [Subscription Payment]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Return active subscription data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     userName:
+ *                       type: string
+ *                       example: Mark
+ *                     subscription:
+ *                       type: object
+ *                       properties:
+ *                         status:
+ *                           type: string
+ *                           example: active
+ *                         category:
+ *                           type: string
+ *                           example: public
+ *                         duration:
+ *                           type: string
+ *                           example: monthly
+ *                         price:
+ *                           type: number
+ *                           example: 600
+ *                         start_date:
+ *                           type: string
+ *                           example: May 1, 2026
+ *                         end_date:
+ *                           type: string
+ *                           example: June 1, 2026
+ *                         start_station:
+ *                           type: string
+ *                           example: Helwan
+ *                         end_station:
+ *                           type: string
+ *                           example: Sadat
+ *                     office:
+ *                       type: object
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           example: Helwan Office
+ *                         workingHours:
+ *                           type: object
+ *                           properties:
+ *                             from:
+ *                               type: string
+ *                               example: "08:00"
+ *                             to:
+ *                               type: string
+ *                               example: "17:00"
+ *       404:
+ *         description: Subscription not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Subscription not found
+ *       401:
+ *         description: Unauthorized
+ */

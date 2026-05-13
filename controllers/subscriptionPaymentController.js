@@ -244,3 +244,43 @@ return next(new appError("User not found", 404));
     }
   });
 });
+exports.getActivedData=catchAsyncError(async(req,res,next)=>{
+  const user=await Users.findById(req.user.id);
+  if(!user)
+return next(new appError("User not found", 404));
+  const Subscription=await subscriptions.findOne({user:req.user.id}).
+  populate('type','prices category duration')
+  .populate('office','officeName workingHours address')
+  .populate('start_station', 'name')
+  .populate('end_station', 'name');
+  if(!Subscription)
+    return next(new appError("Subscription not found", 404));
+  if(Subscription.status!=='active')
+    return next(new appError("Subscription is not active", 400));
+      const lang = getLang(req);
+ res.status(200).json({
+    status: 'success',
+    data: {
+      userName: user.name,
+      subscription: {
+        status: Subscription.status,
+        category: Subscription.type.category[lang],
+        duration: Subscription.type.duration[lang],
+        price: Subscription.type.prices,
+        start_date: Subscription.start_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        }),
+        end_date: Subscription.end_date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        }),
+        start_station: Subscription.start_station.name[lang],
+        end_station: Subscription.end_station.name[lang],
+      },
+      office: {
+        name: Subscription.office.officeName[lang],
+        workingHours: Subscription.office.workingHours,
+        address: Subscription.office.address
+      }
+    }
+  });
+});
