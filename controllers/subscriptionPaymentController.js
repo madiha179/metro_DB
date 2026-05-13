@@ -107,7 +107,7 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
   const needRenew=subscription.status==='pending'&&subscription.renewalInitiatedAt!==null;
   if (subscription.status !== 'accepted'&&!needRenew)
     return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
-  const subscriptionPrice=await subscription.type.prices;
+  const subscriptionPrice= subscription.type.prices;
   if(paymentMethod==='cash'){
     const issuingDate = new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
     year: 'numeric',
@@ -229,7 +229,7 @@ return next(new appError("User not found", 404));
   const Subscription=await subscriptions.findOne({user:req.user.id})
   .select('status renewalInitiatedAt end_date type')
   .populate('type','prices');
-  if(!Subscription.status)
+  if(!Subscription)
     return next(new appError("Subscription not found", 404));
   const needRenew=Subscription.status==='pending' && Subscription.renewalInitiatedAt!==null;
   res.status(200).json({
