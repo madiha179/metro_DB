@@ -133,19 +133,28 @@ exports.getSubDoc = catchAsyncError(async (req, res, next) => {
     const sub = await Subscription.findById(id);
     if(!sub) 
         return next(new AppError('Subscription not found.' , 404));
-    const relativePath = sub.documents[docType];
-    if (!relativePath) 
-        return next(new AppError('Document not found.', 404));
-    const uploadsRoot = path.resolve(__dirname, '..', 'uploads');
-    const filePath    = path.resolve(__dirname, '..', relativePath);
     
-        if (!filePath.startsWith(uploadsRoot)) 
-        return next(new AppError('Access denied.', 403));
+    // const relativePath = sub.documents[docType];
+    // if (!relativePath) 
+    //     return next(new AppError('Document not found.', 404));
+    
+    // const uploadsRoot = path.resolve(__dirname, '..', 'uploads');
+    // const filePath    = path.resolve(__dirname, '..', relativePath);
+    
+    //     if (!filePath.startsWith(uploadsRoot)) 
+    //     return next(new AppError('Access denied.', 403));
 
-        if (!fs.existsSync(filePath)) 
-        return next(new AppError('File not found on server.', 404));
+    //     if (!fs.existsSync(filePath)) 
+    //     return next(new AppError('File not found on server.', 404));
     
-    return res.sendFile(filePath);
+    // return res.sendFile(filePath);
+
+    const fileUrl = sub.documents[docType];
+
+    if (!fileUrl)
+        return next(new AppError('Document not found.', 404));
+
+    return res.redirect(fileUrl);
 });
 exports.getAllMails=catchAsyncError(async(req,res,next)=>{
 const mails=await emailHistoryModel.find()
