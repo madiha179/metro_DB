@@ -18,17 +18,15 @@ Current time: ${hour}:00, Day: ${day}.
 
 Google Maps popular times bar uses these colors:
 - Dark RED/ORANGE bar = very busy (busier than usual)
-- ORANGE bar = busy (usually busy at this time)  
 - YELLOW bar = moderate (not too busy)
 - No bar or very small = not busy (less than usual)
 
 Based on what Google Maps shows for THIS station at THIS exact hour:
-ORANGE → bar is Dark Red or very tall = Busier than usual / As busy as it gets
-RED    → bar is Orange = Busy / Usually busy at this time
+RED    → bar is Orange = Busy / Usually busy at this time / Dark Red or very tall = Busier than usual / As busy as it gets
 YELLOW → bar is Yellow or medium = Not too busy / Normal crowd
 GREEN  → bar is very small or none = Less busy than usual / Not busy
 
-Respond with ONLY one word: ORANGE, RED, YELLOW, or GREEN.
+Respond with ONLY one word: RED, YELLOW, or GREEN.
 `;
 
   const MAX_RETRIES = 10;

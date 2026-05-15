@@ -5,6 +5,7 @@ const emailHistorySchema=new mongoose.Schema({
     type:String,
     required:true
   },
+  userName: { type: String },
   user:{
     type:mongoose.Schema.ObjectId,
     ref:'User',
@@ -22,8 +23,8 @@ const emailHistorySchema=new mongoose.Schema({
             'reminder',
             'renewal_failed',
             'renewed',
-            'expired'
-        ],
+            'expired',
+          'manual_renewal_required'        ],
         required: true,
     },
     metadata: {

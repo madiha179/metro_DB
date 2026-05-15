@@ -7,6 +7,8 @@ const AppError = require("../utils/appError");
 const subscriptionOffices = require('../models/subscriptionOfficesModel');
 const catchAsyncError = require('../utils/catchAsyncError');
 const getLang=require('../utils/getLang');
+const cloudinary = require('../utils/cloudinary');
+
 const DURATION_MONTHS = {
     monthly:     1,
     quarterly:   3,
@@ -31,18 +33,37 @@ function safeRegex(str) {
     return new RegExp(escaped, 'i');
 }
 
-function buildDocumentPaths(files) {
-    const uploadsDir = 'uploads';
-    return {
-        nationalId_front: path.join(uploadsDir, path.basename(files.nationalId_front[0].path)),
-        nationalId_back:  path.join(uploadsDir, path.basename(files.nationalId_back[0].path)),
-        universityId: files.universityId
-            ? path.join(uploadsDir, path.basename(files.universityId[0].path))
-            : null,
-        militaryId: files.militaryId
-            ? path.join(uploadsDir, path.basename(files.militaryId[0].path))
-            : null,
-    };
+// function buildDocumentPaths(files) {
+//     const uploadsDir = 'uploads';
+//     return {
+//         nationalId_front: path.join(uploadsDir, path.basename(files.nationalId_front[0].path)),
+//         nationalId_back:  path.join(uploadsDir, path.basename(files.nationalId_back[0].path)),
+//         universityId: files.universityId
+//             ? path.join(uploadsDir, path.basename(files.universityId[0].path))
+//             : null,
+//         militaryId: files.militaryId
+//             ? path.join(uploadsDir, path.basename(files.militaryId[0].path))
+//             : null,
+//     };
+// }
+
+async function uploadDocuments(files) {
+
+    const result = {};
+
+    for (const key in files) {
+
+        const localFilePath = files[key][0].path;
+
+        const uploaded = await cloudinary.uploader.upload(localFilePath, {
+            folder: 'metro-subscriptions',
+            resource_type: 'auto'
+        });
+
+        result[key] = uploaded.secure_url;
+    }
+
+    return result;
 }
 
 exports.displaySubPlans = catchAsyncError(async (req, res, next) => {
@@ -183,17 +204,14 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
     // 7. Prevent duplicate active subscriptions
     const existingActive = await Subscription.findOne({
         user: req.user.id,
-        status: { $in: ['active', 'pending'] },
+        status: { $in: ['active', 'pending', 'accepted', 'renew','manualRenew'] },
     });
     if (existingActive) {
         cleanupFiles(files);
-        return next(new AppError('You already have an active or pending subscription.', 409));
+        return next(new AppError('You already have a subscription request.', 409));
     }
 
-    // 8. Compute dates 
-    // const start_date = new Date();
-    // const months = DURATION_MONTHS[subType.duration.en] || 1;
-    // const end_date = addMonth(start_date, months);
+    const uploadedDocs = await uploadDocuments(files);
 
     // 8. Create the subscription
     const sub = await Subscription.create({
@@ -203,7 +221,8 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
         start_station:  startStation._id,
         end_station:    endStation._id,
         status:         'pending',
-        documents:      buildDocumentPaths(files),
+        // documents:      buildDocumentPaths(files),
+        documents: uploadedDocs,
     });
 
     await sub.populate([
