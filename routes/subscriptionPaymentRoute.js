@@ -11,4 +11,5 @@ subPaymentRoute.post('/subscription-pay',[body('subscriptionId').notEmpty().with
 subPaymentRoute.post('/subscription-pay/visa',subPaymentController.visaPayController);
 subPaymentRoute.get('/subscription-pay/status',subPaymentController.getStatus);
 subPaymentRoute.get('/subscription-pay',subPaymentController.getActivedData);
+subPaymentRoute.patch('/renew',subPaymentController.updateRenewStatus);
 module.exports=subPaymentRoute;

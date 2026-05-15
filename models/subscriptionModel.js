@@ -52,7 +52,7 @@ const subSchema = new mongoose.Schema({
     
     status: {
     type: String,
-    enum: ['active', 'accepted','expired', 'rejected', 'pending'],
+    enum: ['active', 'accepted','expired', 'rejected', 'pending','renew','manualRenew'],
     default: 'pending',
     },
     start_date: {
@@ -64,6 +64,9 @@ const subSchema = new mongoose.Schema({
     reminderSentAt:{
         type:Date,
         default:null
+    },
+    renew:{
+        type:Boolean
     },
     renewalInitiatedAt: { type: Date,
          default: null

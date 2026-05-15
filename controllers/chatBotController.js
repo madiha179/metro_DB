@@ -140,7 +140,8 @@ ${userMessage}
 
 ## YOUR RESPONSE:
 `;
-
+  const MAX_RETRIES=3;
+  for(let attempt=0;attempt<MAX_RETRIES;attempt++){
   for (let i = 0; i < keys.length; i++) {
     const keyIndex = (currentIndex + i) % keys.length;
     const ai = new GoogleGenAI({ apiKey: keys[keyIndex] });
@@ -196,16 +197,17 @@ ${userMessage}
       }
 
       if (is503 || is500) {
-        const waitTime = (i + 1) * 3000;
+        const waitTime = (attempt+ 1) * 5000;
         console.log(`Model busy/error (${is500 ? 500 : 503}), waiting ${waitTime / 1000}s before retry...`);
         await new Promise(res => setTimeout(res, waitTime));
         currentIndex = (keyIndex + 1) % keys.length;
-        continue;
+        break;
       }
 
       throw err;
     }
   }
+}
 
   throw new Error("All API keys tokens exceeded for today");
 }

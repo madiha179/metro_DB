@@ -167,3 +167,31 @@
  *       401:
  *         description: Unauthorized
  */
+/**
+ * @swagger
+ * /api/v1/subscriptions/renew:
+ *   patch:
+ *     summary: Update renew status
+ *     tags: [Subscription Payment]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - wantRenew
+ *             properties:
+ *               wantRenew:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: renew status updated successfully
+ *       404:
+ *         description: Subscription not found
+ *       401:
+ *         description: Unauthorized
+ */
