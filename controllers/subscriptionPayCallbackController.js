@@ -131,7 +131,7 @@ exports.transactionProcessed = async (req, res) => {
         const title=lang==='ar'?'دفع الاشتراك':'Subscription Payment';
         const message=lang==='ar'?`تم الدفع بنجاح، اشتراكك فعّال حتى ${end_date.toLocaleDateString('ar-EG')}`:
         `Your payment was successful, and your subscription is active until ${end_date.toLocaleDateString('en-EG')}`;
-        const notificationDate=new Date().toLocaleDateString(lang==='ar'?'ar-EG':'en-EG');
+        const notificationDate = new Date();
         await pushNotifications(subscription.user._id,title,message);
         await notificationsHistory.create({
           userId:subscription.user._id,

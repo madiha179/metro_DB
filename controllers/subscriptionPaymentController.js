@@ -6,6 +6,7 @@ const catchAsyncError=require('../utils/catchAsyncError');
 const subscriptionPayment=require('../models/subscriptionPaymentModel');
 const getLang=require('../utils/getLang');
 const dotenv=require('dotenv');
+const subscriptionModel = require('../models/subscriptionModel');
 dotenv.config({path:'./config.env'});
 const PAYMOB_API_KEY = process.env.PAYMOB_SUB_API_KEY;        
 const PAYMOB_API_URL = process.env.PAYMOB_API_URL;
@@ -104,7 +105,7 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
   if(!subscription) return next(new appError("subscription not found",404));
   if(subscription.user.toString()!==req.user.id)
     return next(new appError("This subscription does not belong to you",403));
-  const needRenew=subscription.status==='pending'&&subscription.renewalInitiatedAt!==null;
+  const needRenew=(subscription.status==='manualRenew'&& subscription.renewalInitiatedAt !== null);
   if (subscription.status !== 'accepted'&&!needRenew)
     return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
   const subscriptionPrice= subscription.type.prices;
@@ -257,6 +258,8 @@ return next(new appError("User not found", 404));
     return next(new appError("Subscription not found", 404));
   if(Subscription.status!=='active')
     return next(new appError("Subscription is not active", 400));
+   if (!Subscription.type)
+    return next(new appError("Subscription type data not found", 404));
       const lang = getLang(req);
  res.status(200).json({
     status: 'success',
@@ -284,3 +287,21 @@ return next(new appError("User not found", 404));
     }
   });
 });
+exports.updateRenewStatus=catchAsyncError(async(req,res,next)=>{
+  const {wantRenew}=req.body;
+  if(!wantRenew){
+    return next(new appError("Please Provide renew decision", 400));
+  }
+   const user=await Users.findById(req.user.id);
+  if(!user)
+  return next(new appError("User not found", 404));
+  const Subscription=await subscriptionModel.findOneAndUpdate({user:req.user.id},{renew:wantRenew});
+  if(!Subscription)
+    return next(new appError("Subscription not found", 404));
+   if(Subscription.status!=='active')
+    return next(new appError("Subscription is not active to set renew decision", 400));
+  res.status(200).json({
+    status:'success',
+    message:"renew status updated successfly"
+  });
+})

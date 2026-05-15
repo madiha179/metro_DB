@@ -9,6 +9,7 @@ const pushNotification=require('./sendNotificationFirebase');
 const notificationHistory=require('./../models/notificationsHistoryModel');
 const dotenv=require('dotenv');
 const MailMessage = require('nodemailer/lib/mailer/mail-message');
+const subscriptionType = require('../models/subscriptionsTypesModel');
 dotenv.config({path:'./config.env'});
 const PAYMOB_API_URL = process.env.PAYMOB_API_URL;
 const PAYMOB_SUB_API_KEY = process.env.PAYMOB_SUB_API_KEY;
@@ -136,7 +137,7 @@ async function chargeWithToken(paymobKey,cardToken) {
 }
 
 //job1 => send email  before 7 days of exp-date => every day at 8am//
-cron.schedule('* 8 * * *',async()=>{
+cron.schedule('0 8 * * *',async()=>{
   try{
     const now=new Date();
     const in7Dayes=new Date(Date.now()+7*24*60*60*1000);
@@ -148,7 +149,7 @@ cron.schedule('* 8 * * *',async()=>{
       try{
         await new Email(sub.user,null,sub.type.prices,null,sub.end_date,null).sendSubscriptionReminder();
         await subscriptionModel.findByIdAndUpdate(sub._id,{
-          $set:{reminderSentAt:new Date()}
+          $set:{status:'renew',reminderSentAt:new Date()}
         });
         const lang=sub.user?.preferredLanguage||'en';
        const {title, message}=getNotificationMessages(lang,{type:'reminder',price:sub.type.prices});
@@ -187,7 +188,7 @@ cron.schedule('0 * * * *',async()=>{
     const now=new Date();
     const in2Days=new Date(Date.now()+2*24*60*60*1000);
     const expiringString=await subscriptionModel
-    .find({status:'active',end_date:{$gte:now,$lte:in2Days},renewalInitiatedAt:null})
+    .find({status:'active',end_date:{$gte:now,$lte:in2Days},renewalInitiatedAt:null,renew:true})
     .populate('type','prices duration')
     .populate('user','name email phone preferredLanguage');
     for(const sub of expiringString){
@@ -202,7 +203,7 @@ cron.schedule('0 * * * *',async()=>{
            // change subscription status 
         await subscriptionModel.findByIdAndUpdate(sub._id,{
           $set:{
-            status:'pending',
+            status:'manualRenew',
             renewalInitiatedAt:new Date()
           }
         });
@@ -374,4 +375,59 @@ cron.schedule('0 9 * * *',async()=>{
   catch(err){
      console.error(' Expiry check error:', err.message);
   }
+});
+
+//expire subscriptions for students work every year at 1st july//
+cron.schedule('0 0 1 7 *',async()=>{
+ try{
+  const studentType=await subscriptionType.find({'category.en':'students'}).select('_id');
+  const studentTypeIds=studentType.map(t=>t._id);
+  //for send notifications
+  const studentSub=await subscriptionModel
+  .find({type:{$in:studentTypeIds},status:'active'})
+  .populate('user','name email preferredLanguage')
+  const result=await subscriptionModel.updateMany({
+    type:{$in:studentTypeIds},
+    status:'active'
+  },
+  {$set:{status:'expired'}}
+);
+ console.log(`Student subscriptions expired: ${studentSubs.length}`);
+ // send notifications for all students
+ for(const sub of studentSub){
+  try{
+   const lang = sub.user?.preferredLanguage || 'en';
+   const { title, message } = getNotificationMessages(lang, {
+          type: 'expired',
+  expireDate: new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US') });
+  await pushNotification(sub.user._id, title, message);
+                await notificationHistory.create({
+                    userId: sub.user._id,
+                    title,
+                    message,
+                    sendAt: new Date()
+                });
+                 await new Email(sub.user, null, null, null, null, null).sendSubscriptionExpired();
+                await emailHistoryModel.create({
+                    to: sub.user.email,
+                    user: sub.user._id,
+                    subscription: sub._id,
+                    type: 'expired',
+                    status: 'sent',
+                });
+  }
+  catch(err){
+     console.error(`Failed to notify student ${sub.user?.email}:`, err.message);
+                await emailHistoryModel.create({
+                    to: sub.user?.email,
+                    user: sub.user?._id,
+                    subscription: sub._id,
+                    type: 'expired',
+                    status: 'failed',
+                });
+  }
+} 
+}catch(err){
+  console.error('Cron job student expire error:', err);
+ }
 })
