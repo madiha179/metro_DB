@@ -105,7 +105,9 @@ exports.subPaymentController=catchAsyncError(async (req,res,next)=>{
   if(!subscription) return next(new appError("subscription not found",404));
   if(subscription.user.toString()!==req.user.id)
     return next(new appError("This subscription does not belong to you",403));
-  const needRenew=(subscription.status==='manualRenew'&& subscription.renewalInitiatedAt !== null);
+const needRenew = (
+  (subscription.status === 'manualRenew' || subscription.status === 'renew') 
+  && subscription.renewalInitiatedAt !== null) || subscription.status === 'renew'; 
   if (subscription.status !== 'accepted'&&!needRenew)
     return next(new appError(`Payment not allowed. Subscription status is "${subscription.status}".`, 400));
   const subscriptionPrice= subscription.type.prices;
@@ -232,7 +234,10 @@ return next(new appError("User not found", 404));
   .populate('type','prices');
   if(!Subscription)
     return next(new appError("Subscription not found", 404));
-  const needRenew=Subscription.status==='pending' && Subscription.renewalInitiatedAt!==null;
+const needRenew = (
+  (Subscription.status === 'manualRenew' || Subscription.status === 'renew') 
+  && Subscription.renewalInitiatedAt !== null
+) || Subscription.status === 'renew';
   res.status(200).json({
     status:'success',
     data:{
@@ -256,7 +261,7 @@ return next(new appError("User not found", 404));
   .populate('end_station', 'name');
   if(!Subscription)
     return next(new appError("Subscription not found", 404));
-  if(Subscription.status!=='active')
+  if(Subscription.status!=='active'&& Subscription.status!=='renew'&&Subscription.status!=='manualRenew')
     return next(new appError("Subscription is not active", 400));
    if (!Subscription.type)
     return next(new appError("Subscription type data not found", 404));
