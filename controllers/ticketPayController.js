@@ -220,7 +220,7 @@ exports.paymentConfirm = catchAsync(async (req, res, next) => {
     data: {
       userName: user.name,
       payment: {
-        invoice_number: latestPayment.invoice_number?.toString(),
+        invoice_number: latestPayment.invoice_number,
         payment_method: latestPayment.payment_method,
         issuing_date: latestPayment.issuing_date.toISOString().split('T')[0],
         amount_paid: latestPayment.amount_paid
