@@ -6,7 +6,7 @@ const getLang = require('../utils/getLang');
 const userTrips=require('../models/usersTripes');
 
 const DISTANCE = 2; 
-const TIME = 3; 
+const TIME = 2; 
 
 function pushNode(graph, nodeName, newNeighbors) {
     const existingNode = graph.graph.get(nodeName);
