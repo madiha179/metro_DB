@@ -204,11 +204,11 @@ exports.createSubscription = catchAsyncError(async (req, res, next) => {
     // 7. Prevent duplicate active subscriptions
     const existingActive = await Subscription.findOne({
         user: req.user.id,
-        status: { $in: ['active', 'pending'] },
+        status: { $in: ['active', 'pending', 'accepted', 'renew','manualRenew'] },
     });
     if (existingActive) {
         cleanupFiles(files);
-        return next(new AppError('You already have an active or pending subscription.', 409));
+        return next(new AppError('You already have a subscription request.', 409));
     }
 
     const uploadedDocs = await uploadDocuments(files);
