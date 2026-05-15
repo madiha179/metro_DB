@@ -158,6 +158,7 @@ cron.schedule('0 8 * * *',async()=>{
         await emailHistoryModel.create({
            to:sub.user.email,
             user:sub.user._id,
+            userName: sub.user.name,
             subscription:sub._id,
             type:'reminder',
             status:'sent',
@@ -169,6 +170,7 @@ cron.schedule('0 8 * * *',async()=>{
         await emailHistoryModel.create({
             to:           sub.user.email,
             user:         sub.user._id,
+            userName: sub.user.name,
             subscription: sub._id,
             type:         'reminder',
             status:       'failed',
@@ -213,6 +215,7 @@ cron.schedule('0 * * * *',async()=>{
           .sendManualRenewalRequired();
           await emailHistoryModel.create({
             to:sub.user.email,
+            userName: sub.user.name,
             user:sub.user._id,
             subscription:sub._id,
             type: 'manual_renewal_required',
@@ -223,6 +226,7 @@ cron.schedule('0 * * * *',async()=>{
     console.error(`Failed to send manual renewal email:`, emailErr.message);
     await emailHistoryModel.create({
       to: sub.user.email,
+      userName: sub.user.name,
       user: sub.user._id,
       subscription: sub._id,
       type: 'manual_renewal_required',
@@ -285,6 +289,7 @@ const { title, message } = getNotificationMessages(lang, { type: 'manual_renewal
           .sendSubscriptionRenewed();
            await emailHistoryModel.create({
                       to:sub.user.email,
+                     userName: sub.user.name,
                       user:sub.user._id,
                       subscription:sub._id,
                       type:'renewed',
@@ -317,6 +322,7 @@ const { title, message } = getNotificationMessages(lang, { type: 'manual_renewal
             await emailHistoryModel.create({  
                 to:           user.email,
                 user:         user._id,
+                userName: sub.user.name,
                 subscription: sub._id,
                 type:         'renewal_failed',
                 status:       'sent',
@@ -325,6 +331,7 @@ const { title, message } = getNotificationMessages(lang, { type: 'manual_renewal
             console.error(` Failed to send failure email:`, emailErr.message);
              await emailHistoryModel.create({       
                 to:           user.email,
+                userName: sub.user.name,
                 user:         user._id,
                 subscription: sub._id,
                 type:         'renewal_failed',
@@ -358,6 +365,7 @@ cron.schedule('0 9 * * *',async()=>{
                 await new Email(sub.user, null, null, null, expireDate, null).sendSubscriptionExpired();
                 await emailHistoryModel.create({
                     to:sub.user.email,
+                    userName: sub.user.name,
                     user:sub.user._id,
                     subscription:sub._id,
                     type:'expired',
@@ -392,7 +400,7 @@ cron.schedule('0 0 1 7 *',async()=>{
   },
   {$set:{status:'expired'}}
 );
- console.log(`Student subscriptions expired: ${studentSubs.length}`);
+ console.log(`Student subscriptions expired: ${studentSub.length}`);
  // send notifications for all students
  for(const sub of studentSub){
   try{
@@ -410,6 +418,7 @@ cron.schedule('0 0 1 7 *',async()=>{
                  await new Email(sub.user, null, null, null, null, null).sendSubscriptionExpired();
                 await emailHistoryModel.create({
                     to: sub.user.email,
+                    userName: sub.user.name,
                     user: sub.user._id,
                     subscription: sub._id,
                     type: 'expired',
@@ -420,6 +429,7 @@ cron.schedule('0 0 1 7 *',async()=>{
      console.error(`Failed to notify student ${sub.user?.email}:`, err.message);
                 await emailHistoryModel.create({
                     to: sub.user?.email,
+                   userName: sub.user.name,
                     user: sub.user?._id,
                     subscription: sub._id,
                     type: 'expired',

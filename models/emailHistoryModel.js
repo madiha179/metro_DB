@@ -5,6 +5,7 @@ const emailHistorySchema=new mongoose.Schema({
     type:String,
     required:true
   },
+  userName: { type: String },
   user:{
     type:mongoose.Schema.ObjectId,
     ref:'User',

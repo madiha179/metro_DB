@@ -9,7 +9,7 @@ const Email =require('../utils/sendEmail');
 const ApiFeatures=require('../utils/ApiFeatures');
 const pushNotifications=require('../utils/sendNotificationFirebase');
 const notificationsHistory=require('../models/notificationsHistoryModel');
-VALID_STATUSES = ['active','accepted','expired', 'rejected', 'pending'];
+VALID_STATUSES = ['active','accepted','expired', 'rejected', 'pending','manualRenew'];
 const VALID_DOC_TYPES = ['nationalId_front', 'nationalId_back', 'universityId', 'militaryId'];
 
 exports.getAllSubscriptions = catchAsyncError(async (req, res, next) => {
@@ -100,6 +100,7 @@ exports.updateSubStatus = catchAsyncError(async (req, res, next) => {
         ).sendSubscriptionRejectReason();
         await emailHistoryModel.create({
             to:sub.user.email,
+            userName: sub.user.name,
             user:sub.user._id,
             subscription:sub._id,
             type:'rejection',
@@ -110,6 +111,7 @@ exports.updateSubStatus = catchAsyncError(async (req, res, next) => {
 catch(err){
     await emailHistoryModel.create({
             to:           sub.user.email,
+            userName: sub.user.name,
             user:         sub.user._id,
             subscription: sub._id,
             type:         'rejection',
@@ -157,8 +159,7 @@ exports.getSubDoc = catchAsyncError(async (req, res, next) => {
     return res.redirect(fileUrl);
 });
 exports.getAllMails=catchAsyncError(async(req,res,next)=>{
-const mails=await emailHistoryModel.find()
-.populate('user','name');
+const mails=await emailHistoryModel.find();
 if(!mails||mails.length===0){
     return next(new AppError('Mails not found',404))
 }
