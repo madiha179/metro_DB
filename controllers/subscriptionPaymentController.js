@@ -287,21 +287,48 @@ return next(new appError("User not found", 404));
     }
   });
 });
-exports.updateRenewStatus=catchAsyncError(async(req,res,next)=>{
-  const {wantRenew}=req.body;
-  if(!wantRenew){
-    return next(new appError("Please Provide renew decision", 400));
-  }
-   const user=await Users.findById(req.user.id);
-  if(!user)
-  return next(new appError("User not found", 404));
-  const Subscription=await subscriptionModel.findOneAndUpdate({user:req.user.id},{renew:wantRenew});
-  if(!Subscription)
-    return next(new appError("Subscription not found", 404));
-   if(Subscription.status!=='active')
-    return next(new appError("Subscription is not active to set renew decision", 400));
+exports.updateRenewStatus = catchAsyncError(async (req, res, next) => {
+  const { wantRenew } = req.body;
+  const lang = getLang(req);
+
+  const messages = {
+    ar: {
+      missingDecision: "يرجى تقديم قرار التجديد",
+      userNotFound: "المستخدم غير موجود",
+      subscriptionNotFound: "الاشتراك غير موجود",
+      notActive: "الاشتراك غير نشط لتعيين قرار التجديد",
+      success: "تم تحديث حالة التجديد بنجاح",
+    },
+    en: {
+      missingDecision: "Please provide renew decision",
+      userNotFound: "User not found",
+      subscriptionNotFound: "Subscription not found",
+      notActive: "Subscription is not active to set renew decision",
+      success: "Renew status updated successfully",
+    },
+  };
+
+  const msg = messages[lang] ?? messages.en;
+
+  if (!wantRenew)
+    return next(new appError(msg.missingDecision, 400));
+
+  const user = await Users.findById(req.user.id);
+  if (!user)
+    return next(new appError(msg.userNotFound, 404));
+
+  const subscription = await subscriptionModel.findOneAndUpdate(
+    { user: req.user.id },
+    { renew: wantRenew }
+  );
+  if (!subscription)
+    return next(new appError(msg.subscriptionNotFound, 404));
+
+  if (subscription.status !== "active" && subscription.status !== "renew")
+    return next(new appError(msg.notActive, 400));
+
   res.status(200).json({
-    status:'success',
-    message:"renew status updated successfly"
+    status: "success",
+    message: msg.success,
   });
-})
+});
