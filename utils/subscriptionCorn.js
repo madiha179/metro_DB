@@ -190,7 +190,7 @@ cron.schedule('0 * * * *',async()=>{
     const now=new Date();
     const in2Days=new Date(Date.now()+2*24*60*60*1000);
     const expiringString=await subscriptionModel
-    .find({status:'active',end_date:{$gte:now,$lte:in2Days},renewalInitiatedAt:null,renew:true})
+    .find({status:'renew',end_date:{$gte:now,$lte:in2Days},renewalInitiatedAt:null,renew:true})
     .populate('type','prices duration')
     .populate('user','name email phone preferredLanguage');
     for(const sub of expiringString){

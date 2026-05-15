@@ -196,7 +196,9 @@ exports.visaCardPay = catchAsync(async(req, res, next) => {
 });
 exports.paymentConfirm = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id);
-  const userPayment = await PaymentHistory.findOne({ userid: req.user.id });
+  const userPayment = await PaymentHistory.findOne({ 
+    userid: new mongoose.Types.ObjectId(req.user.id) 
+  });
   if (!userPayment || !userPayment.payment_history.length) {
     return next(new AppError('No payment history found', 404));
   }
@@ -207,7 +209,7 @@ exports.paymentConfirm = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      userName: user?.name||User?.name,
+      userName: user?.name || 'Unknown',
       payment: {
         invoice_number: latestPayment.invoice_number,
         payment_method: latestPayment.payment_method,
