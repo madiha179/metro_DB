@@ -199,7 +199,8 @@ exports.paymentConfirm = catchAsync(async (req, res, next) => {
   if (!user) return next(new AppError('User not found', 404));
 
   let userPayment = null;
-  for (let i = 0; i < 3; i++) {
+  
+  for (let i = 0; i < 10; i++) {
     userPayment = await PaymentHistory.findOne({ userid: req.user.id });
     if (userPayment && userPayment.payment_history.length > 0) break;
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -209,19 +210,19 @@ exports.paymentConfirm = catchAsync(async (req, res, next) => {
     return next(new AppError('No payment history found', 404));
   }
 
-  const sortedHistory = userPayment.payment_history.sort(
+  const latestPayment = userPayment.payment_history.sort(
     (a, b) => new Date(b.issuing_date) - new Date(a.issuing_date)
-  );
-
-  const latestPayment = sortedHistory[0];
+  )[0];
 
   res.status(200).json({
     status: 'success',
     data: {
       userName: user.name,
+      userName: user.name,
       payment: {
         invoice_number: latestPayment.invoice_number,
         payment_method: latestPayment.payment_method,
+        issuing_date: latestPayment.issuing_date.toISOString().split('T')[0],
         issuing_date: latestPayment.issuing_date.toISOString().split('T')[0],
         amount_paid: latestPayment.amount_paid
       }
